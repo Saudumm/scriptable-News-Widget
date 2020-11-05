@@ -23,3 +23,5 @@ let alert = new Alert();
 alert.message = "\n"+alertMsg;
 alert.title = "Clear News Widget Cache";
 alert.presentAlert();
+
+// end of script
