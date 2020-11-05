@@ -2,7 +2,7 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: blue; icon-glyph: file-alt;
 /* SCRIPTABLE NEWS WIDGET (WORDPRESS OR RSS)
- v1.0.0 coded by Saudumm (https://twitter.com/saudumm)
+ v1.0.1 coded by Saudumm (https://twitter.com/saudumm)
  GitHub: https://github.com/Saudumm/scriptable-News-Widget
  
  WIDGET PARAMETERS: you can long press on the widget on your homescreen and edit parameters
@@ -23,8 +23,8 @@
  - SHOW_POST_IMAGES: true = display images next to the post headlines; set to false if you don't want images next to posts
  - Note: combining SHOW_POST_IMAGES = true + small widget will ignore BG_GRADIENT_COLOR values in small config widgets
  */
-var SITE_URL = "https://9to5google.com";
-var SITE_NAME = "9to5google";
+var SITE_URL = "https://news.google.com/rss";
+var SITE_NAME = "Google News";
 var BG_IMAGE_NAME = "none";
 var BG_IMAGE_BLUR = "true";
 var BG_IMAGE_GRADIENT = "true";
@@ -326,12 +326,19 @@ async function getRSSData(rssFeedURL) {
         const rssURL = aRSSItems[i][1].match(/<link>(.*?)<\/link>/)[1];
         
         let rssIMGURL = "none";
-        const rssIMGRegEx = aRSSItems[i][1].match(/\=\"(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)\"/i);
+        let rssIMGRegEx = aRSSItems[i][1].match(/\=\"(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)\"/i);
         if (rssIMGRegEx && rssIMGRegEx.length == 3) {
           let rssIMGPath = rssIMGRegEx[1];
           let rssIMGExt = rssIMGRegEx[2];
           
           rssIMGURL = rssIMGPath+rssIMGExt;
+        } else {
+          rssIMGRegEx = aRSSItems[i][1].match(/\<image\>(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)\<\/image\>/i);
+          if (rssIMGRegEx && rssIMGRegEx.length == 3) {
+            let rssIMGPath = rssIMGRegEx[1];
+            let rssIMGExt = rssIMGRegEx[2];
+            rssIMGURL = rssIMGPath+rssIMGExt;
+          }
         }
         
         aRSSData[i] = [rssDateSort, rssDate+"|||"+rssTitle+"|||"+rssURL+"|||"+rssIMGURL];
