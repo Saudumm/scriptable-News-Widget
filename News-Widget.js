@@ -1086,3 +1086,5 @@ async function cropImageToSquare(img) {
   }
   return img;
 }
+
+// end of script
