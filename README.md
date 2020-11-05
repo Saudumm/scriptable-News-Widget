@@ -29,6 +29,8 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
 ## Changelog
 
 - v1.0.0 - Initial Upload
+- v1.0.1 - small bugfix loading images in RSS feed
+- v1.0.2 - support for iOS light and dark mode
 
 ## Setup:
 
