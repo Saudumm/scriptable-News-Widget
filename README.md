@@ -53,9 +53,9 @@ First, you should add the __News-Widget.js__ Script to Scriptable. Either copy t
     - site url (url of the WordPress Website or RSS feed URL)
     - site name (name of the website, displayed at the top of the widget)
     - show post images (use true if you want to display the images of the posts or set to false if not)
-    - background image ()
-    - blur background image ()
-    - background image gradient ()
+    - background image (name of an image file. The file has to be stored in the scriptables folder in iCloud Drive (Files App))
+    - blur background image (use true if you want the background image to be blurry. Use false if not)
+    - background image gradient (use true to create a color gradient over the background image (for better readbility), use false to turn off the gradient)
 - parameters have to be separated by |
 - you don't have to set all parameters, the following examples will work just fine:
     - small|https://www.stadt-bremerhaven.de|Caschys Blog
