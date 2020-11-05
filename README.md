@@ -1,7 +1,7 @@
 # scriptable-News-Widget
 
 iOS Scriptable News Widget (for websites using WordPress or RSS feeds)
-Tap on a news in the widget to load it in your browser.
+Tap on a news in the widget to open it directly in your browser.
 
 ![widgets](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widgets.jpg)
 
