@@ -2,7 +2,7 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: blue; icon-glyph: file-alt;
 /* SCRIPTABLE NEWS WIDGET (WORDPRESS OR RSS)
- v1.0.1 coded by Saudumm (https://twitter.com/saudumm)
+ v1.0.2 coded by Saudumm (https://twitter.com/saudumm)
  GitHub: https://github.com/Saudumm/scriptable-News-Widget
  
  WIDGET PARAMETERS: you can long press on the widget on your homescreen and edit parameters
@@ -32,6 +32,7 @@ var SHOW_POST_IMAGES = "true";
 
 /*
  COLOR CONFIG: You can edit almost all colors of your widget
+ Colors are now dynamic, the first value is the color used in light mode, the second value is used in dark mode.
  - BG_GRADIENT: widget background; true = use gradient; false = single background color
  - BG_COLOR: background color value if BG_GRADIENT = false
  - BG_GRADIENT_COLOR_TOP: gradient color at the top
@@ -43,14 +44,14 @@ var SHOW_POST_IMAGES = "true";
  - FONT_COLOR_HEADLINE: font color of the post title
  */
 var BG_GRADIENT = false;
-var BG_COLOR = new Color("#1c1c1e");
-var BG_GRADIENT_COLOR_TOP = new Color("#222222");
-var BG_GRADIENT_COLOR_BTM = new Color("#444444");
-const BG_GRADIENT_OVERLAY_TOP = new Color("#1c1c1e", 0.3);
-const BG_GRADIENT_OVERLAY_BTM = new Color("#1c1c1e", 1.0);
-const FONT_COLOR_SITENAME = Color.white();
-const FONT_COLOR_POST_DATE = Color.gray();
-const FONT_COLOR_HEADLINE = Color.white();
+var BG_COLOR = Color.dynamic(new Color("#fefefe"), new Color("#1c1c1e"));
+var BG_GRADIENT_COLOR_TOP = Color.dynamic(new Color("#dddddd"), new Color("#222222"));
+var BG_GRADIENT_COLOR_BTM = Color.dynamic(new Color("#bbbbbb"), new Color("#444444"));
+const BG_GRADIENT_OVERLAY_TOP = Color.dynamic(new Color("#fefefe", 0.3), new Color("#1c1c1e", 0.3));
+const BG_GRADIENT_OVERLAY_BTM = Color.dynamic(new Color("#fefefe", 1.0), new Color("#1c1c1e", 1.0));
+const FONT_COLOR_SITENAME = Color.dynamic(new Color("#1c1c1e"), new Color("#fefefe"));
+const FONT_COLOR_POST_DATE = Color.dynamic(Color.darkGray(), Color.gray());
+const FONT_COLOR_HEADLINE = Color.dynamic(new Color("#1c1c1e"), new Color("#fefefe"));
 
 // DO NOT CHANGE ANYTHING BELOW!
 // Unless you know what you're doing.
@@ -138,7 +139,7 @@ async function createWidget() {
         
         // small shadow outline on SITE_NAME for better readability
         siteName.shadowRadius = 1;
-        siteName.shadowColor = Color.black();
+        siteName.shadowColor = Color.dynamic(Color.white(), Color.black());
       }
       
       const postStack = list.addStack();
@@ -195,8 +196,11 @@ async function createWidget() {
       }
     }
   } else {
+    siteName.textColor = Color.white();
+    
     const sad_face = list.addText(":(")
     sad_face.font = Font.regularSystemFont(config.widgetFamily === "large" ? 190 : 72);
+    sad_face.textColor = Color.white();
     sad_face.lineLimit = 1;
     sad_face.minimumScaleFactor = 0.1;
     
@@ -204,7 +208,7 @@ async function createWidget() {
     
     const err_msg = list.addText("Couldn't load data");
     err_msg.font = Font.regularSystemFont(12);
-    err_msg.textColor = FONT_COLOR_HEADLINE;
+    err_msg.textColor = Color.white();
     
     BG_COLOR = new Color("#1f67b1");
     BG_GRADIENT = false;
@@ -227,7 +231,7 @@ async function createWidget() {
       
       // small shadow outline on SITE_NAME for better readability
       siteName.shadowRadius = 1;
-      siteName.shadowColor = Color.black();
+      siteName.shadowColor = Color.dynamic(Color.white(), Color.black());
     } else {
       list.backgroundColor = BG_COLOR;
     }
