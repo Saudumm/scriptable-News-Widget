@@ -3,7 +3,7 @@
 // icon-color: blue; icon-glyph: file-alt;
 /*
  * SCRIPTABLE NEWS WIDGET (WORDPRESS OR RSS)
- * v1.1.0 - coded by Saudumm
+ * v1.1.1 - coded by Saudumm
  * https://twitter.com/saudumm
  
  * Feel free to contact me on Twitter
@@ -44,7 +44,7 @@ const CHECK_FOR_SCRIPT_UPDATE = true
 var PARAM_LINKS =
 [
   ["https://blog.playstation.com", "PlayStation Blog"],
-  ["http://rss.cnn.com/rss/edition_world.rss", "CNN"],
+  ["http://feeds.bbci.co.uk/news/world/rss.xml", "BBC News"],
 ];
 
 // Name of the website/feed to display in the widget (at the top)
@@ -177,7 +177,7 @@ var POST_COUNT = (WIDGET_SIZE == "small") ? 1 : (WIDGET_SIZE == "medium") ? 2 : 
 // check for updates
 var UPDATE_AVAILABLE = false;
 if (CHECK_FOR_SCRIPT_UPDATE) {
-  const CURRENT_VERSION = "v1.1.0"
+  const CURRENT_VERSION = "v1.1.1"
   const LATEST_VERSION = await loadGitHubVersion();
   if (CURRENT_VERSION.replace(/[^1-9]+/g, "") < LATEST_VERSION.replace(/[^1-9]+/g, "")) {
     UPDATE_AVAILABLE = true;
@@ -317,7 +317,7 @@ async function createWidget() {
     siteName.textColor = Color.white();
     
     const sad_face = list.addText(":(")
-    sad_face.font = Font.regularSystemFont(config.widgetFamily === "large" ? 190 : 72);
+    sad_face.font = Font.regularSystemFont(config.widgetFamily === "large" ? 190 : 60);
     sad_face.textColor = Color.white();
     sad_face.lineLimit = 1;
     sad_face.minimumScaleFactor = 0.1;
@@ -334,11 +334,13 @@ async function createWidget() {
   }
   
   if (UPDATE_AVAILABLE) {
+    list.addSpacer(2)
     const updateMsg = list.addText("Script Update available on GitHub");
     updateMsg.font = Font.thinSystemFont(9);
     updateMsg.textColor = Color.white();
     updateMsg.lineLimit = 1;
     updateMsg.minimumScaleFactor = 0.1;
+    updateMsg.url = "https://github.com/Saudumm/scriptable-News-Widget"
   }
   
   // widget background (image, single color or gradient)
@@ -378,13 +380,17 @@ async function getData() {
   try {
     const aData = await new Array();
     for (iLink = 0; iLink < PARAM_LINKS.length; iLink++) {
+      if (PARAM_LINKS[iLink][0].substring(0, 7) != "http://" && PARAM_LINKS[iLink][0].substring(0, 8) != "https://") {
+        PARAM_LINKS[iLink][0] = "https://"+PARAM_LINKS[iLink][0]
+      }
+      if (PARAM_LINKS[iLink][0].slice(-1) == "/") {PARAM_LINKS[iLink][0] = PARAM_LINKS[iLink][0].slice(0, -1);}
       if (await isJSON(PARAM_LINKS[iLink][0]+"/wp-json/wp/v2/posts?per_page=1")) {
         // WordPress JSON
         try {
           const loadedJSON = await new Request(PARAM_LINKS[iLink][0]+"/wp-json/wp/v2/posts?per_page=5").loadJSON();
-          
+                      
           let loadPosts = (loadedJSON.length >= 5) ? 5 : loadedJSON.length
-          
+                    
           let iPost;
           for (iPost = 0; iPost < loadPosts; iPost++) {
             let postDate = loadedJSON[iPost].date;
@@ -396,7 +402,7 @@ async function getData() {
             let postURL = loadedJSON[iPost].guid.rendered;
             
             let postIMGURL = await getMediaURL(PARAM_LINKS[iLink][0], loadedJSON[iPost].featured_media, loadedJSON[iPost].id);
-            
+                        
             aData.push([postDateSort, postDate+"|||"+postTitle+"|||"+postURL+"|||"+postIMGURL+"|||"+PARAM_LINKS[iLink][1]]);
           }
         } catch(err) {
@@ -501,7 +507,7 @@ async function getData() {
       })
       // reverse sorting - new to old date
       aData.reverse()
-      
+            
       const POSTS_TO_LOAD = (aData.length >= 5) ? 5 : aData.length;
       
       const aDates = await new Array(POSTS_TO_LOAD);
@@ -535,7 +541,7 @@ async function getData() {
             const addBGImage = (iNewPost == 0 ? true : false);
             aIMGURLs[iNewPost] = await encodeURI(aIMGURLs[iNewPost]);
             aIMGURLs[iNewPost] = await aIMGURLs[iNewPost].replaceAll("%25", "%"); // hack for some image URLs with %
-            
+
             aIMGPaths[iNewPost] = await downloadPostImage(aFileNames[iNewPost], aIMGURLs[iNewPost], addBGImage);
           } else {
             aIMGPaths[iNewPost] = "none";
@@ -686,7 +692,7 @@ async function downloadPostImage(fileName, url, addBGImage) {
       if (await Math.min(loadedImage.size.height, loadedImage.size.width) > 500) {
         loadedImage = await resizeImage(loadedImage, 500);
       }
-      
+
       // resize, crop and store image
       if(!fm.fileExists(imgPath)) {
         let loadedSmallImage = await resizeImage(loadedImage, 150);
@@ -1249,7 +1255,7 @@ async function resizeImage(img, maxShortSide) {
   let imgWidth = await img.size.width;
   let imgShortSide = await Math.min(imgHeight, imgWidth);
   let resizeFactor = await Math.round(imgShortSide/maxShortSide);
-
+  
   const js = `
     // Set up the canvas
     const img = document.getElementById("resImg");
