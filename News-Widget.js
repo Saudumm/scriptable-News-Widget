@@ -1,93 +1,196 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: blue; icon-glyph: file-alt;
-/* SCRIPTABLE NEWS WIDGET (WORDPRESS OR RSS)
- v1.0.2 coded by Saudumm (https://twitter.com/saudumm)
- GitHub: https://github.com/Saudumm/scriptable-News-Widget
- 
- WIDGET PARAMETERS: you can long press on the widget on your homescreen and edit parameters
- - example: small|https://www.stadt-bremerhaven.de|Caschys Blog|true|background.jpg|false|true
- - parameter order has to be: widget size, site url, site name, show post images, background image, blur background image, background image gradient
- - parameters have to be separated by |
- - You can omit parameters, for example background image: small|https://www.stadt-bremerhaven.de|Caschys Blog
- - you can just set "small", "medium" or "large" as a parameter
- - parameters that are not set will be set by the standard widget config
- 
- STANDARD WIDGET CONFIG: standard config below can be overwritten by widget parameters
- - SITE_URL: address (URL) of the website you want to fetch posts from
- - SITE_NAME: name of the website to display in the widget
- - BG_IMAGE_NAME: CASE SENSITIVE! filename of the custom background image, set to none if you don't want a custom image
- - Note: custom background image files have to be in the Scriptable iCloud Files directory (same as the script js file)
- - BG_IMAGE_BLUR: true if you want background images to be blurred, false if not
- - BG_IMAGE_GRADIENT: true = gradient over the background image, false = no gradient
- - SHOW_POST_IMAGES: true = display images next to the post headlines; set to false if you don't want images next to posts
- - Note: combining SHOW_POST_IMAGES = true + small widget will ignore BG_GRADIENT_COLOR values in small config widgets
- */
-var SITE_URL = "https://news.google.com/rss";
-var SITE_NAME = "Google News";
-var BG_IMAGE_NAME = "none";
-var BG_IMAGE_BLUR = "true";
-var BG_IMAGE_GRADIENT = "true";
-var SHOW_POST_IMAGES = "true";
-
 /*
- COLOR CONFIG: You can edit almost all colors of your widget
- Colors are now dynamic, the first value is the color used in light mode, the second value is used in dark mode.
- - BG_GRADIENT: widget background; true = use gradient; false = single background color
- - BG_COLOR: background color value if BG_GRADIENT = false
- - BG_GRADIENT_COLOR_TOP: gradient color at the top
- - BG_GRADIENT_COLOR_BTM: gradient color at the bottom
- - BG_GRADIENT_OVERLAY_TOP: gradient background image overlay color top
- - BG_GRADIENT_OVERLAY_BTM: gradient background image overlay color bottom
- - FONT_COLOR_SITENAME: font color of the website name (SITE_NAME)
- - FONT_COLOR_POST_DATE: font color of the date/time label
- - FONT_COLOR_HEADLINE: font color of the post title
+ * SCRIPTABLE NEWS WIDGET (WORDPRESS OR RSS)
+ * v1.1.0 - coded by Saudumm
+ * https://twitter.com/saudumm
+ 
+ * Feel free to contact me on Twitter
+ * or GitHub, if you have any
+ * questions or issues
+ 
+ * To download the newest version and
+ * instructions on how to set up the widget
+ * please visit:
+ * https://github.com/Saudumm/scriptable-News-Widget
+ 
+ * WIDGET PARAMETERS: you can long press on
+ * the widget on your homescreen and edit
+ * parameters
+ *
+ * - Example: small|https://www.stadt-bremerhaven.de|Caschys Blog|true|background.jpg|false|true|Avenir-Heavy
+ *   (displays a small layout widget for Caschys Blog with post images, a custom background image, no blur, a gradient over the image and with the font Avenir-Heavy)
+ * - Parameter order has to be: widget size, site url, site name, show post images, background image, blur background image, background image gradient, font name
+ * - Parameters have to be separated by |
+ * - You can omit all subsequent parameters, for example background image: small|https://www.stadt-bremerhaven.de|Caschys Blog
+ * - You can just set "small", "medium" or "large" as a parameter
+ * - Parameters that are not set will be set by the standard widget config
  */
-var BG_GRADIENT = false;
-var BG_COLOR = Color.dynamic(new Color("#fefefe"), new Color("#1c1c1e"));
-var BG_GRADIENT_COLOR_TOP = Color.dynamic(new Color("#dddddd"), new Color("#222222"));
-var BG_GRADIENT_COLOR_BTM = Color.dynamic(new Color("#bbbbbb"), new Color("#444444"));
-const BG_GRADIENT_OVERLAY_TOP = Color.dynamic(new Color("#fefefe", 0.3), new Color("#1c1c1e", 0.3));
-const BG_GRADIENT_OVERLAY_BTM = Color.dynamic(new Color("#fefefe", 1.0), new Color("#1c1c1e", 1.0));
-const FONT_COLOR_SITENAME = Color.dynamic(new Color("#1c1c1e"), new Color("#fefefe"));
-const FONT_COLOR_POST_DATE = Color.dynamic(Color.darkGray(), Color.gray());
-const FONT_COLOR_HEADLINE = Color.dynamic(new Color("#1c1c1e"), new Color("#fefefe"));
 
-// DO NOT CHANGE ANYTHING BELOW!
-// Unless you know what you're doing.
-// Unlike me, I don't know what I'm doing.
+// Check for script updates (set to false if you don't want to check for update)
+const CHECK_FOR_SCRIPT_UPDATE = true
+
+/* ============ CONFIG START ============ */
+
+/* ~~~~~ STANDARD WIDGET CONFIG ~~~~~ */
+// Everything in this section can be overwritten with Widget Parameters
+
+// Add Addresses (URLs/Links) of the website(s) and/or the RSS Feed(s) you want to fetch posts from
+// Format of a new line has to be:
+// ["Link to site/feed", "Name of site"],
+// Please note, the more sites you add, the longer the widgets needs to load all data
+// It's possible that the widget on your homescreen won't load anything or takes a very long time if you add too many links
+var PARAM_LINKS =
+[
+  ["https://blog.playstation.com", "PlayStation Blog"],
+  ["http://rss.cnn.com/rss/edition_world.rss", "CNN"],
+];
+
+// Name of the website/feed to display in the widget (at the top)
+// If only one site is configured (in the code or parameters), the name of the site is used
+var PARAM_WIDGET_TITLE = "NEWS WIDGET";
+
+// Note: custom background image files have to be in the Scriptable (iCloud) Files folder (same as the script .js file)
+// change to the filename of a custom background image (CASE SENSITIVE!) or set to "none" if you don't want a custom image
+var PARAM_BG_IMAGE_NAME = "none";
+
+// Blur the background image (custom or the news image in small widgets)
+// "true" = blur the background (or post) image; "false" = no blur
+var PARAM_BG_IMAGE_BLUR = "true";
+
+// "true" = gradient over the background image; "false" = no gradient
+var PARAM_BG_IMAGE_GRADIENT = "true";
+
+// Note: combining PARAM_SHOW_POST_IMAGES = true + small widget will ignore CONF_BG_GRADIENT_COLOR values in small config widgets
+// "true" = display images next to the post headlines; "false"  = no images next to posts
+var PARAM_SHOW_POST_IMAGES = "true";
+
+
+/* ~~~~~ CONFIGURE LOOK AND FEEL ~~~~~ */
+
+// !!! NOTE on dynamic colors below: the first value is used in iOS light mode, second value will be used in dark mode
+// Values are hexadecimal color values
+// Visit sites like https://htmlcolorcodes.com to find hex values for colors
+
+// Configure which time format to use
+// true = 12h time format; false = 24h time format
+const CONF_12_HOUR = false
+
+// Set the background color of your widget
+// 1st value is for iOS light mode, 2nd value will be used in dark mode
+var CONF_BG_COLOR = Color.dynamic(new Color("#fefefe"), new Color("#1c1c1e"));
+
+// Configure to use a color gradient instead of the single background color (CONF_BG_COLOR)
+// true = use a color gradient (colors configured below); false = use a single color (color configured above)
+var CONF_BG_GRADIENT = false;
+
+// gradient color from the top of the widget
+var CONF_BG_GRADIENT_COLOR_TOP = Color.dynamic(new Color("#dddddd"), new Color("#222222"));
+// gradient color to the bottom of the widget
+var CONF_BG_GRADIENT_COLOR_BTM = Color.dynamic(new Color("#bbbbbb"), new Color("#444444"));
+
+// gradient color image overlay from the top of the widget
+// used if a background image is displayed and PARAM_BG_IMAGE_GRADIENT = "true"
+const CONF_BG_GRADIENT_OVERLAY_TOP = Color.dynamic(new Color("#fefefe", 0.3), new Color("#1c1c1e", 0.3));
+// gradient color image overlay to the bottom of the widget
+// used if a background image is displayed and PARAM_BG_IMAGE_GRADIENT = "true"
+const CONF_BG_GRADIENT_OVERLAY_BTM = Color.dynamic(new Color("#fefefe", 1.0), new Color("#1c1c1e", 1.0));
+
+
+/* ~~~~~ TEXT FONTS AND SIZES ~~~~~ */
+
+// !!! NOTE on fonts: use System if you want to use the iOS system font (SF Pro) and choose your font weight
+// font weight options are: ultralight, thin, light, regular, medium, semibold, bold, heavy, black
+// Refer to http://iosfonts.com if you want to use other fonts and replace System with your chosen font name
+// (e.g. Copperplate or Copperplate-Bold)
+
+// Set the font, size and text color of the name at the top of the widget
+var CONF_FONT_SITENAME = "System"
+const CONF_FONT_WEIGHT_SITENAME = "bold";
+const CONF_FONT_SIZE_SITENAME = 16;
+const CONF_FONT_COLOR_SITENAME = Color.dynamic(new Color("#1c1c1e"), new Color("#fefefe"));
+
+// Set the font, size and text color of the date and time line(s) in the widget
+var CONF_FONT_DATE = "System"
+const CONF_FONT_WEIGHT_DATE = "bold";
+const CONF_FONT_SIZE_DATE = 12;
+const CONF_FONT_COLOR_DATE = Color.dynamic(Color.darkGray(), Color.gray());
+
+// Set the font, size and text color of the news titles in the widget
+var CONF_FONT_TITLE = "System"
+const CONF_FONT_WEIGHT_TITLE = "bold";
+const CONF_FONT_SIZE_TITLE = 12;
+const CONF_FONT_COLOR_TITLE = Color.dynamic(new Color("#1c1c1e"), new Color("#fefefe"));
+
+
+/* ============ CONFIG END ============ */
+
+
+/* =================================== */
+/* == DO NOT CHANGE ANYTHING BELOW! == */
+/* =================================== */
+var SINGLE_SITE_MODE = false
+
 var WIDGET_SIZE = (config.runsInWidget ? config.widgetFamily : "small");
+
+// process widget parameters
 if (args.widgetParameter) {
   let param = args.widgetParameter.split("|");
+  if (param.length == 1) {
+    SINGLE_SITE_MODE = (PARAM_LINKS.length == 1 ? true : false);
+    if (SINGLE_SITE_MODE) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
+  }
   if (param.length >= 1) {WIDGET_SIZE = param[0];}
-  if (param.length >= 2) {SITE_URL = param[1];}
-  if (param.length >= 3) {SITE_NAME = param[2];}
-  if (param.length >= 4) {SHOW_POST_IMAGES = param[3];}
-  if (param.length >= 5) {BG_IMAGE_NAME = param[4];}
-  if (param.length >= 6) {BG_IMAGE_BLUR = param[5];}
-  if (param.length >= 7) {BG_IMAGE_GRADIENT = param[6];}
+  if (param.length >= 2) {
+    if (param[1].substring(0, 4) == "http") {
+      PARAM_LINKS = [[param[1], ""]];
+      SINGLE_SITE_MODE = true;
+    } else {
+      PARAM_LINKS = await loadTextFileToArray(param[1])
+      if (PARAM_LINKS) {
+        SINGLE_SITE_MODE = (PARAM_LINKS.length == 1 ? true : false);
+        if (SINGLE_SITE_MODE) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
+      }
+    }
+  }
+  if (param.length >= 3) {
+    PARAM_WIDGET_TITLE = param[2];
+  }
+  if (param.length >= 4) {PARAM_SHOW_POST_IMAGES = param[3];}
+  if (param.length >= 5) {PARAM_BG_IMAGE_NAME = param[4];}
+  if (param.length >= 6) {PARAM_BG_IMAGE_BLUR = param[5];}
+  if (param.length >= 7) {PARAM_BG_IMAGE_GRADIENT = param[6];}
+  if (param.length >= 8) {
+    CONF_FONT_SITENAME = param[7];
+    CONF_FONT_DATE = param[7];
+    CONF_FONT_TITLE = param[7];
+  }
+} else {
+  SINGLE_SITE_MODE = (PARAM_LINKS.length == 1 ? true : false);
+  if (SINGLE_SITE_MODE) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
 }
 
 // set the number of posts depending on WIDGET_SIZE
-var POST_COUNT = 1;
-switch (WIDGET_SIZE) {
-  case "small":
-    POST_COUNT = 1;
-    break;
-  case "medium":
-    POST_COUNT = 2;
-    break;
-  case "large":
-    POST_COUNT = 5;
-    break;
+var POST_COUNT = (WIDGET_SIZE == "small") ? 1 : (WIDGET_SIZE == "medium") ? 2 : 5;
+
+// check for updates
+var UPDATE_AVAILABLE = false;
+if (CHECK_FOR_SCRIPT_UPDATE) {
+  const CURRENT_VERSION = "v1.1.0"
+  const LATEST_VERSION = await loadGitHubVersion();
+  if (CURRENT_VERSION.replace(/[^1-9]+/g, "") < LATEST_VERSION.replace(/[^1-9]+/g, "")) {
+    UPDATE_AVAILABLE = true;
+  }
 }
 
 // check directories
-await checkFileDirs()
+checkFileDirs()
 
-// Create Widget
+// create widget
 const widget = await createWidget();
 
+// show widget if run in app
 if (!config.runsInWidget) {
   switch (WIDGET_SIZE) {
     case "small":
@@ -102,42 +205,46 @@ if (!config.runsInWidget) {
   }
 }
 
+// set widget and end script
 Script.setWidget(widget);
 Script.complete();
 
+
+/* ============ FUNCTIONS ============ */
+
 // create the widget
-// parameter: none
-// return: an awesome widget
 async function createWidget() {
-  let postData
-  if (await isJSON(SITE_URL+"/wp-json/wp/v2/posts")) {
-    postData= await getJSONData();
-  } else {
-    postData = await getRSSData(SITE_URL);
-  }
-  
+  const postData = await getData();
+
   const list = new ListWidget();
   
+  const fontSiteName = await loadFont(CONF_FONT_SITENAME, CONF_FONT_WEIGHT_SITENAME, CONF_FONT_SIZE_SITENAME);
+  const fontDate = await loadFont(CONF_FONT_DATE, CONF_FONT_WEIGHT_DATE, CONF_FONT_SIZE_DATE);
+  const fontTitle = await loadFont(CONF_FONT_TITLE, CONF_FONT_WEIGHT_TITLE, CONF_FONT_SIZE_TITLE);
+  
   // display name of the website
-  const siteName = list.addText(SITE_NAME.toUpperCase());
-  siteName.font = Font.heavySystemFont(13);
-  siteName.textColor = FONT_COLOR_SITENAME;
+  const siteName = list.addText(PARAM_WIDGET_TITLE);
+    
+  siteName.font = fontSiteName
+  siteName.textColor = CONF_FONT_COLOR_SITENAME;
+  siteName.lineLimit = 1;
+  siteName.minimumScaleFactor = 0.5;
   
   list.addSpacer();
   
   if (postData) {
-    if (POST_COUNT == 1) {
-      // load widget background image (if SHOW_POST_IMAGES = true or BG_IMAGE_NAME is set)
-      if (SHOW_POST_IMAGES == "true" && BG_IMAGE_NAME == "none") {
+    if (POST_COUNT == 1 || postData.length == 1) {
+      // load widget background image (if PARAM_SHOW_POST_IMAGES = true or PARAM_BG_IMAGE_NAME is set)
+      if (PARAM_SHOW_POST_IMAGES == "true" && PARAM_BG_IMAGE_NAME == "none") {
         if (postData.aPostIMGPaths[0] != "none") {
-          list.backgroundImage = await loadLocalImage(postData.aPostIMGPaths[0]+(BG_IMAGE_BLUR == "true" ? "-bg-blur" : "-bg"));
+          list.backgroundImage = await loadLocalImage(postData.aPostIMGPaths[0]+(PARAM_BG_IMAGE_BLUR == "true" ? "-bg-blur" : "-bg"));
         }
         // draw gradient over background image for better readability
-        BG_GRADIENT = true;
-        BG_GRADIENT_COLOR_TOP = BG_GRADIENT_OVERLAY_TOP;
-        BG_GRADIENT_COLOR_BTM = BG_GRADIENT_OVERLAY_BTM;
+        CONF_BG_GRADIENT = true;
+        CONF_BG_GRADIENT_COLOR_TOP = CONF_BG_GRADIENT_OVERLAY_TOP;
+        CONF_BG_GRADIENT_COLOR_BTM = CONF_BG_GRADIENT_OVERLAY_BTM;
         
-        // small shadow outline on SITE_NAME for better readability
+        // small shadow outline on PARAM_WIDGET_TITLE for better readability
         siteName.shadowRadius = 1;
         siteName.shadowColor = Color.dynamic(Color.white(), Color.black());
       }
@@ -145,21 +252,32 @@ async function createWidget() {
       const postStack = list.addStack();
       postStack.layoutVertically();
       
-      const labelDateTime = postStack.addText(await new Date(postData.aPostDates[0]).toLocaleString([], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"}));
-      labelDateTime.font = Font.heavySystemFont(12);
-      labelDateTime.textColor = FONT_COLOR_POST_DATE;
+      if (!SINGLE_SITE_MODE) {
+        const labelSiteName = postStack.addText(postData.aPostSiteNames[0]);
+        labelSiteName.font = fontTitle;
+        labelSiteName.textColor = CONF_FONT_COLOR_DATE;;
+        labelSiteName.lineLimit = 1;
+        labelSiteName.minimumScaleFactor = 0.5;
+      }
+      
+      const labelDateTime = postStack.addText(await new Date(postData.aPostDates[0]).toLocaleString([], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: (CONF_12_HOUR ? true : false)}));
+      labelDateTime.font = fontDate;
+      labelDateTime.textColor = CONF_FONT_COLOR_DATE;
       labelDateTime.lineLimit = 1;
       labelDateTime.minimumScaleFactor = 0.5;
       
       const labelHeadline = postStack.addText(postData.aPostTitles[0]);
-      labelHeadline.font = Font.heavySystemFont(12);
-      labelHeadline.textColor = FONT_COLOR_HEADLINE;
+      labelHeadline.font = fontTitle;
+      labelHeadline.textColor = CONF_FONT_COLOR_TITLE;
       labelHeadline.lineLimit = 3;
       
       list.url = postData.aPostURLs[0];
     } else {
+      if (POST_COUNT < postData.length) {POST_COUNT = postData.length;}
+      
       const aStackRow = await new Array(POST_COUNT);
       const aStackCol = await new Array(POST_COUNT);
+      const aLblSiteName = await new Array(POST_COUNT);
       const aLblPostDate = await new Array(POST_COUNT);
       const aLblPostTitle = await new Array(POST_COUNT);
       const aLblPostIMG = await new Array(POST_COUNT);
@@ -172,19 +290,19 @@ async function createWidget() {
         
         aStackCol[i] = aStackRow[i].addStack();
         aStackCol[i].layoutVertically();
-        
-        aLblPostDate[i] = aStackCol[i].addText(await new Date(postData.aPostDates[i]).toLocaleString([], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"}));
-        aLblPostDate[i].font = Font.heavySystemFont(12);
-        aLblPostDate[i].textColor = FONT_COLOR_POST_DATE;
+
+        aLblPostDate[i] = aStackCol[i].addText((SINGLE_SITE_MODE ? "" : postData.aPostSiteNames[i]+" - ")+await new Date(postData.aPostDates[i]).toLocaleString([], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: (CONF_12_HOUR ? true : false)}));
+        aLblPostDate[i].font = fontDate;
+        aLblPostDate[i].textColor = CONF_FONT_COLOR_DATE;
         aLblPostDate[i].lineLimit = 1;
         aLblPostDate[i].minimumScaleFactor = 0.5;
         
         aLblPostTitle[i] = aStackCol[i].addText(postData.aPostTitles[i]);
-        aLblPostTitle[i].font = Font.heavySystemFont(12);
-        aLblPostTitle[i].textColor = FONT_COLOR_HEADLINE;
+        aLblPostTitle[i].font = fontTitle;
+        aLblPostTitle[i].textColor = CONF_FONT_COLOR_TITLE;
         aLblPostTitle[i].lineLimit = 2;
         
-        if (SHOW_POST_IMAGES == "true" && postData.aPostIMGPaths[i] != "none") {
+        if (PARAM_SHOW_POST_IMAGES == "true" && postData.aPostIMGPaths[i] != "none") {
           aStackRow[i].addSpacer();
           aLblPostIMG[i] = aStackRow[i].addImage(await loadLocalImage(postData.aPostIMGPaths[i]));
           aLblPostIMG[i].imageSize = new Size(45,45);
@@ -210,216 +328,278 @@ async function createWidget() {
     err_msg.font = Font.regularSystemFont(12);
     err_msg.textColor = Color.white();
     
-    BG_COLOR = new Color("#1f67b1");
-    BG_GRADIENT = false;
-    BG_IMAGE_NAME = "none";
+    CONF_BG_COLOR = new Color("#1f67b1");
+    CONF_BG_GRADIENT = false;
+    PARAM_BG_IMAGE_NAME = "none";
+  }
+  
+  if (UPDATE_AVAILABLE) {
+    const updateMsg = list.addText("Script Update available on GitHub");
+    updateMsg.font = Font.thinSystemFont(9);
+    updateMsg.textColor = Color.white();
+    updateMsg.lineLimit = 1;
+    updateMsg.minimumScaleFactor = 0.1;
   }
   
   // widget background (image, single color or gradient)
-  if (BG_IMAGE_NAME != "none") {
-    const customBGImage = await loadBGImage(BG_IMAGE_NAME, BG_IMAGE_BLUR);
+  if (PARAM_BG_IMAGE_NAME != "none") {
+    const customBGImage = await loadBGImage(PARAM_BG_IMAGE_NAME, PARAM_BG_IMAGE_BLUR);
     if (customBGImage != "not found") {
       list.backgroundImage = customBGImage;
       
-      if (BG_IMAGE_GRADIENT == "true") {
+      if (PARAM_BG_IMAGE_GRADIENT == "true") {
         // draw gradient over background image for better readability
         const gradient = new LinearGradient();
         gradient.locations = [0, 1];
-        gradient.colors = [BG_GRADIENT_OVERLAY_TOP, BG_GRADIENT_OVERLAY_BTM];
+        gradient.colors = [CONF_BG_GRADIENT_OVERLAY_TOP, CONF_BG_GRADIENT_OVERLAY_BTM];
         list.backgroundGradient = gradient;
       }
       
-      // small shadow outline on SITE_NAME for better readability
+      // small shadow outline on PARAM_WIDGET_TITLE for better readability
       siteName.shadowRadius = 1;
       siteName.shadowColor = Color.dynamic(Color.white(), Color.black());
     } else {
-      list.backgroundColor = BG_COLOR;
+      list.backgroundColor = CONF_BG_COLOR;
     }
-  } else if (BG_GRADIENT == true) {
+  } else if (CONF_BG_GRADIENT == true) {
     const gradient = new LinearGradient();
     gradient.locations = [0, 1];
-    gradient.colors = [BG_GRADIENT_COLOR_TOP, BG_GRADIENT_COLOR_BTM];
+    gradient.colors = [CONF_BG_GRADIENT_COLOR_TOP, CONF_BG_GRADIENT_COLOR_BTM];
     list.backgroundGradient = gradient;
   } else {
-    list.backgroundColor = BG_COLOR;
+    list.backgroundColor = CONF_BG_COLOR;
   }
   
   return list;
 }
 
-// get all the data for the widget - this is where the magic happens
-// for WordPress sites
-// parameter: nothing at all
-// return: arrays with data
-async function getJSONData() {
+// get data from all websites and extract necessary data
+async function getData() {
   try {
-    const loadedJSON = await new Request(SITE_URL+"/wp-json/wp/v2/posts").loadJSON();
-    
-    const aPostDates = await new Array(5);
-    const aPostTitles = await new Array(5);
-    const aPostURLs = await new Array(5);
-    const aPostIMGURLs = await new Array(5);
-    const aPostIMGPaths = await new Array(5);
-    const aPostFileNames = await new Array(7);
-    
-    let i;
-    for (i = 0; i < 5; i++) {
-      aPostDates[i] = loadedJSON[i].date;
-      
-      aPostTitles[i] = loadedJSON[i].title.rendered;
-      aPostTitles[i] = formatPostTitle(aPostTitles[i]);
-      
-      aPostURLs[i] = loadedJSON[i].guid.rendered;
-      
-      if (SHOW_POST_IMAGES == "true") {
-        aPostIMGURLs[i] = await getMediaURL(loadedJSON[i].featured_media, loadedJSON[i].id);
-        if (aPostIMGURLs[i] != "none") {
-          aPostIMGPaths[i] = await getImagePath(loadedJSON[i].id);
-          aPostFileNames[i] = await getFileName(loadedJSON[i].id);
+    const aData = await new Array();
+    for (iLink = 0; iLink < PARAM_LINKS.length; iLink++) {
+      if (await isJSON(PARAM_LINKS[iLink][0]+"/wp-json/wp/v2/posts?per_page=1")) {
+        // WordPress JSON
+        try {
+          const loadedJSON = await new Request(PARAM_LINKS[iLink][0]+"/wp-json/wp/v2/posts?per_page=5").loadJSON();
           
-          const addBGImage = (i == 0 ? true : false);
-          await downloadPostImage(aPostIMGPaths[i], aPostIMGURLs[i], addBGImage);
-        } else {
-          aPostIMGPaths[i] = "none";
-          aPostFileNames[i] = "none";
+          let loadPosts = (loadedJSON.length >= 5) ? 5 : loadedJSON.length
+          
+          let iPost;
+          for (iPost = 0; iPost < loadPosts; iPost++) {
+            let postDate = loadedJSON[iPost].date;
+            let postDateSort = await new Date(postDate).toLocaleString(["fr-CA"], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"});
+            
+            let postTitle = loadedJSON[iPost].title.rendered;
+            postTitle = formatPostTitle(postTitle);
+            
+            let postURL = loadedJSON[iPost].guid.rendered;
+            
+            let postIMGURL = await getMediaURL(PARAM_LINKS[iLink][0], loadedJSON[iPost].featured_media, loadedJSON[iPost].id);
+            
+            aData.push([postDateSort, postDate+"|||"+postTitle+"|||"+postURL+"|||"+postIMGURL+"|||"+PARAM_LINKS[iLink][1]]);
+          }
+        } catch(err) {
+         log(err);
+        }
+      } else {
+        // RSS Feeds
+        try {
+          const loadRSSFeed = await new Request(PARAM_LINKS[iLink][0]).loadString();
+                    
+          const aRSSItems = await new Array();
+          let itemValue = null;
+          let currentItem = null;
+          let xmlParser = new XMLParser(loadRSSFeed);
+          xmlParser.didStartElement = name => {
+            itemValue = "";
+            if (name == "entry" || name == "item") {
+              currentItem = {};
+            }
+          }
+          xmlParser.didEndElement = name => {
+            const hasItem = currentItem != null;
+            if (hasItem && name == "id") {
+              currentItem["id"] = itemValue;
+            }
+            if (hasItem && name == "link") {
+              currentItem["link"] = itemValue;
+            }
+            if (hasItem && name == "title") {
+              currentItem["title"] = itemValue;
+            }
+            if (hasItem && (name == "published" || name == "pubDate")) {
+              currentItem["published"] = itemValue;
+            }
+            if (hasItem && (name == "image" || name == "media:content")) {
+              currentItem["image"] = itemValue;
+            } else if (hasItem && name == "content" || name == "content:encoded") {
+              currentItem["content"] = itemValue;
+            }
+            if (name == "entry" || name == "item") {
+              aRSSItems.push(currentItem);
+              currentItem = {};
+            }
+          }
+          xmlParser.foundCharacters = str => {
+            itemValue += str;
+          }
+          xmlParser.didEndDocument = () => {}
+          await xmlParser.parse();
+                    
+          let loadPosts = (aRSSItems.length >= 5) ? 5 : aRSSItems.length
+          
+          for (iRSS = 0; iRSS < loadPosts; iRSS++) {
+            let rssDate = "none";
+            let rssDateSort = "none";
+            let rssTitle = "none";
+            let rssURL = "none";
+            let rssIMGURL = "none";
+
+            if (aRSSItems[iRSS].published) {
+              rssDate = aRSSItems[iRSS].published;
+              rssDateSort = await new Date(rssDate).toLocaleString(["fr-CA"], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"});
+            }
+            
+            if (aRSSItems[iRSS].title) {rssTitle = aRSSItems[iRSS].title;}
+                        
+            if (aRSSItems[iRSS].id) {
+              rssURL = aRSSItems[iRSS].id;
+            } else if (aRSSItems[iRSS].link) {
+              rssURL = aRSSItems[iRSS].link;
+            }
+                        
+            if (aRSSItems[iRSS].image) {
+              let rssIMGRegEx = await aRSSItems[iRSS].image.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
+              if (rssIMGRegEx && rssIMGRegEx.length == 3) {
+                rssIMGURL = rssIMGRegEx[1]+rssIMGRegEx[2];
+              }
+            } else if (aRSSItems[iRSS].content) {
+              let rssIMGRegEx = await aRSSItems[iRSS].content.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
+              if (rssIMGRegEx && rssIMGRegEx.length == 3) {
+                rssIMGURL = rssIMGRegEx[1]+rssIMGRegEx[2];
+              }
+            }
+                          
+            aData.push([rssDateSort, rssDate+"|||"+rssTitle+"|||"+rssURL+"|||"+rssIMGURL+"|||"+PARAM_LINKS[iLink][1]]);
+          }
+
+        } catch(err) {
+          log(err);
         }
       }
     }
     
-    if (SHOW_POST_IMAGES == "true") {
-      aPostFileNames[5] = aPostFileNames[0]+"-bg";
-      aPostFileNames[6] = aPostFileNames[0]+"-bg-blur";
-      await cleanUpImages(aPostFileNames);
+    if (aData.length >= 1) {
+      // sort all post according to date
+      aData.sort(function sortFunction(a, b) {
+        if (a[0] === b[0]) {
+          return 0;
+        } else {
+          return (a[0] < b[0]) ? -1 : 1;
+        }
+      })
+      // reverse sorting - new to old date
+      aData.reverse()
+      
+      const POSTS_TO_LOAD = (aData.length >= 5) ? 5 : aData.length;
+      
+      const aDates = await new Array(POSTS_TO_LOAD);
+      const aTitles = await new Array(POSTS_TO_LOAD);
+      const aURLs = await new Array(POSTS_TO_LOAD);
+      const aIMGURLs = await new Array(POSTS_TO_LOAD);
+      const aIMGPaths = await new Array(POSTS_TO_LOAD);
+      const aSiteNames = await new Array(POSTS_TO_LOAD);
+      const aFileNames = await new Array(POSTS_TO_LOAD);
+      
+      for (iNewPost = 0; iNewPost < POSTS_TO_LOAD; iNewPost++) {
+        const aStrSplit = aData[iNewPost][1].split("|||")
+                
+        aDates[iNewPost] = await new Date(aStrSplit[0]);
+        
+        aTitles[iNewPost] = aStrSplit[1];
+        aTitles[iNewPost] = formatPostTitle(aTitles[iNewPost]);
+        
+        aURLs[iNewPost] = aStrSplit[2];
+
+        aSiteNames[iNewPost] = aStrSplit[4];
+        
+        if (PARAM_SHOW_POST_IMAGES == "true") {
+          aIMGURLs[iNewPost] = aStrSplit[3];
+          if (aIMGURLs[iNewPost] != "none") {
+            let fileID = await hashCode(aIMGURLs[iNewPost])
+            fileID = Math.abs(fileID)
+
+            aFileNames[iNewPost] = await getFileName(aSiteNames[iNewPost], fileID);
+            
+            const addBGImage = (iNewPost == 0 ? true : false);
+            aIMGURLs[iNewPost] = await encodeURI(aIMGURLs[iNewPost]);
+            aIMGURLs[iNewPost] = await aIMGURLs[iNewPost].replaceAll("%25", "%"); // hack for some image URLs with %
+            
+            aIMGPaths[iNewPost] = await downloadPostImage(aFileNames[iNewPost], aIMGURLs[iNewPost], addBGImage);
+          } else {
+            aIMGPaths[iNewPost] = "none";
+          }
+        }
+      }
+      
+      if (PARAM_SHOW_POST_IMAGES == "true") {
+        aFileNames.push(aFileNames[0]+"-bg");
+        aFileNames.push(aFileNames[0]+"-bg-blur");
+        await cleanUpImages(aFileNames);
+      }
+      
+      return {
+        aPostDates: aDates,
+        aPostTitles: aTitles,
+        aPostURLs: aURLs,
+        aPostIMGPaths: aIMGPaths,
+        aPostSiteNames: aSiteNames
+      };
+    } else {
+      return null;
     }
-    
-    const result = {
-    aPostDates: aPostDates,
-    aPostTitles: aPostTitles,
-    aPostURLs: aPostURLs,
-    aPostIMGPaths: aPostIMGPaths
-    };
-    
-    return result;
-  } catch (err) {
-    logError(err)
+  } catch(err) {
+    logError(err);
     return null;
   }
 }
 
-// get all relevant data from the rss feed
-// for RSS Feeds - look, I'm not proud of this code, but it works
-// parameter: url of the feed
-// return: arrays with data
-async function getRSSData(rssFeedURL) {
+// load a text file with links and convert to a PARAM_LINKS array
+async function loadTextFileToArray(textFile) {
   try {
-    const loadRSSFeed = await new Request(rssFeedURL).loadString();
-    
-    if (!loadRSSFeed.includes("xml") && !loadRSSFeed.includes("rss")) {return null;}
-    
-    const aRSSItems = [...loadRSSFeed.matchAll(/<item>(.*?)<\/item>/gs)];
-    
-    let aRSSData = await new Array(5);
-    
-    if (aRSSItems.length >= 5) {
-      for (i = 0; i < 5; i++) {
-        let rssDate = aRSSItems[i][1].match(/<pubDate>(.*?)<\/pubDate>/)[1];
-        
-        const rssDateSort = await new Date(rssDate).toLocaleString(["fr-CA"], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"})
-        
-        const rssTitle = aRSSItems[i][1].match(/<title>(.*?)<\/title>/)[1];
-        const rssURL = aRSSItems[i][1].match(/<link>(.*?)<\/link>/)[1];
-        
-        let rssIMGURL = "none";
-        let rssIMGRegEx = aRSSItems[i][1].match(/\=\"(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)\"/i);
-        if (rssIMGRegEx && rssIMGRegEx.length == 3) {
-          let rssIMGPath = rssIMGRegEx[1];
-          let rssIMGExt = rssIMGRegEx[2];
-          
-          rssIMGURL = rssIMGPath+rssIMGExt;
-        } else {
-          rssIMGRegEx = aRSSItems[i][1].match(/\<image\>(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)\<\/image\>/i);
-          if (rssIMGRegEx && rssIMGRegEx.length == 3) {
-            let rssIMGPath = rssIMGRegEx[1];
-            let rssIMGExt = rssIMGRegEx[2];
-            rssIMGURL = rssIMGPath+rssIMGExt;
-          }
-        }
-        
-        aRSSData[i] = [rssDateSort, rssDate+"|||"+rssTitle+"|||"+rssURL+"|||"+rssIMGURL];
-      }
-    }
-    
-    // sort rss items
-    aRSSData.sort(function sortFunction(a, b) {
-      if (a[0] === b[0]) {
-        return 0;
-      } else {
-        return (a[0] < b[0]) ? -1 : 1;
-      }
-    })
-    // reverse sorting
-    aRSSData.reverse()
-    
-    const aRSSDates = await new Array(5);
-    const aRSSTitles = await new Array(5);
-    const aRSSURLs = await new Array(5);
-    const aRSSIMGURLs = await new Array(5);
-    const aRSSIMGPaths = await new Array(5);
-    const aRSSFileNames = await new Array(7);
-    
-    for (i = 0; i < aRSSData.length; i++) {
-      const aStrSplit = aRSSData[i][1].split("|||")
-      
-      aRSSDates[i] = await new Date(aStrSplit[0]);
-      
-      aRSSTitles[i] = aStrSplit[1];
-      aRSSTitles[i] = formatPostTitle(aRSSTitles[i]);
-      
-      aRSSURLs[i] = aStrSplit[2];
-      
-      if (SHOW_POST_IMAGES == "true") {
-        aRSSIMGURLs[i] = aStrSplit[3];
-        if (aRSSIMGURLs[i] != "none") {
-          let dateID = aRSSDates[i].toLocaleString(["fr-CA"], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-          dateID = dateID.replace(/[^a-zA-Z1-9]+/g, "");
-          
-          aRSSIMGPaths[i] = await getImagePath(dateID);
-          aRSSFileNames[i] = await getFileName(dateID);
-          
-          const addBGImage = (i == 0 ? true : false);
-          aRSSIMGURLs[i] = await encodeURI(aRSSIMGURLs[i]);
-          aRSSIMGURLs[i] = await aRSSIMGURLs[i].replaceAll("%25", "%"); // hack for some image URLs with %
-          
-          await downloadPostImage(aRSSIMGPaths[i], aRSSIMGURLs[i], addBGImage);
-        } else {
-          aRSSIMGPaths[i] = "none";
+  const fm = FileManager.iCloud();
+  const docDir = fm.documentsDirectory();
+  const filePath = fm.joinPath(docDir, textFile);
+
+  if (fm.fileExists(filePath) && fm.isFileStoredIniCloud(filePath)) {
+    await fm.downloadFileFromiCloud(filePath);
+    var strTextFile = await fm.readString(filePath);
+    strTextFile = strTextFile.split(/\r?\n/)
+    if (strTextFile.length >= 1) {
+      const aLinks = new Array();
+      for (iText = 0; iText < strTextFile.length; iText++) {
+        let aStrData = strTextFile[iText].split("|");
+        if (aStrData.length == 1) {
+          if (aStrData[0].substring(0, 4) == "http") {aLinks.push([aStrData[0], "News"]);}
+        } else if (aStrData.length > 1) {
+          if (aStrData[0].substring(0, 4) == "http") {aLinks.push([aStrData[0], aStrData[1]]);}
         }
       }
+      return aLinks;
+    } else {
+      return null;
     }
-    
-    if (SHOW_POST_IMAGES == "true") {
-      aRSSFileNames[5] = aRSSFileNames[0]+"-bg";
-      aRSSFileNames[6] = aRSSFileNames[0]+"-bg-blur";
-      await cleanUpImages(aRSSFileNames);
-    }
-    
-    const result = {
-    aPostDates: aRSSDates,
-    aPostTitles: aRSSTitles,
-    aPostURLs: aRSSURLs,
-    aPostIMGPaths: aRSSIMGPaths
-    };
-    
-    return result;
+  } else {
+    return null;
+  }
   } catch(err) {
-    logError("Error: "+err);
+    log(err);
     return null;
   }
 }
 
 // check if the url leads to a json file
-// parameter: url of the website
-// return: true or false
 async function isJSON(url) {
   try {
     await new Request(url).loadJSON();
@@ -429,9 +609,225 @@ async function isJSON(url) {
   return true;
 }
 
+// get the featuredMedia image URL
+async function getMediaURL(siteURL, featuredMedia, postID) {
+  let featuredMediaJSONURL = siteURL+"/wp-json/wp/v2/media/"+featuredMedia;
+  let loadedMediaJSON = await new Request(featuredMediaJSONURL).loadJSON();
+  let mediaURL = loadedMediaJSON.source_url;
+  
+  if (mediaURL == undefined || mediaURL == "undefined") {
+    // search for other images
+    featuredMediaJSONURL = siteURL+"/wp-json/wp/v2/posts/"+postID;
+    loadedMediaJSON = await new Request(featuredMediaJSONURL).loadJSON();
+    mediaURL = loadedMediaJSON.jetpack_featured_media_url;
+    if (mediaURL == undefined || mediaURL == "undefined") {
+      return "none";
+    } else {
+      mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
+      mediaURL = mediaURL[1]+""+mediaURL[2];
+      return await encodeURI(mediaURL);
+    }
+  } else {
+    mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
+    mediaURL = mediaURL[1]+""+mediaURL[2];
+    return await encodeURI(mediaURL);
+  }
+  return "none";
+}
+
+// set the filename of the post image (site name + image id)
+function getFileName(siteName, id) {
+  let widgetTitle = PARAM_WIDGET_TITLE.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
+  siteName = siteName.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
+  return widgetTitle+"-"+siteName+"-"+id;
+}
+
+// download the post image (if it doesn't already exist)
+async function downloadPostImage(fileName, url, addBGImage) {
+  const fm = await FileManager.local();
+  const cacheDir = await fm.cacheDirectory();
+  
+  const imgPath = await fm.joinPath(cacheDir+"/saudumm-news-widget-data/image-cache", fileName);
+  const tempDir = await fm.temporaryDirectory()
+  const tempPath = await fm.joinPath(tempDir, fileName);
+
+  // check if file already exists
+  if (!addBGImage && fm.fileExists(imgPath)) {
+    return imgPath;
+  } else if (!addBGImage && !fm.fileExists(imgPath)) {
+    // download, resize, crop and store image
+    let req = await new Request(url);
+    let loadedImage = await req.load();
+    // write image and read again (it's smaller that way???)
+    await fm.write(tempPath, loadedImage);
+    loadedImage = await fm.readImage(tempPath);
+    loadedImage = await resizeImage(loadedImage, 150);
+    loadedImage = await cropImageToSquare(loadedImage);
+    await fm.remove(tempPath);
+    await fm.writeImage(imgPath, loadedImage);
+    return imgPath;
+  }
+  
+  if (addBGImage) {
+    const imgPathBG = imgPath+"-bg"
+    const imgPathBGBlur = imgPath+"-bg-blur"
+    
+    if (fm.fileExists(imgPath) && fm.fileExists(imgPathBG) && fm.fileExists(imgPathBGBlur)) {
+      return imgPath;
+    } else {
+      // download image
+      let req = await new Request(url);
+      let loadedImage = await req.load();
+      // write image and read again (it's smaller that way???)
+      await fm.write(tempPath, loadedImage);
+      loadedImage = await fm.readImage(tempPath);
+      await fm.remove(tempPath);
+      
+      if (await Math.min(loadedImage.size.height, loadedImage.size.width) > 500) {
+        loadedImage = await resizeImage(loadedImage, 500);
+      }
+      
+      // resize, crop and store image
+      if(!fm.fileExists(imgPath)) {
+        let loadedSmallImage = await resizeImage(loadedImage, 150);
+        loadedSmallImage = await cropImageToSquare(loadedSmallImage);
+        await fm.writeImage(imgPath, loadedSmallImage);
+      }
+      
+      // store original image
+      if (!fm.fileExists(imgPathBG)) {
+        await fm.writeImage(imgPathBG, loadedImage);
+      }
+      
+      // store blurred resized original image
+      if (!fm.fileExists(imgPathBGBlur)) {
+        let loadedImageBlur = await blurImage(loadedImage)
+        await fm.writeImage(imgPathBGBlur, loadedImageBlur);
+      }
+      
+      return imgPath;
+    }
+  }
+  return "none";
+}
+
+// load post image from file path
+async function loadLocalImage(imgPath) {
+  const fm = FileManager.local();
+  
+  if (fm.fileExists(imgPath)) {
+    const imgFile = await fm.readImage(imgPath);
+    return imgFile;
+  }
+}
+
+// search for and load a local (or iCloud) background image
+async function loadBGImage(imageName, optBlur) {
+  const fm = FileManager.local();
+  let fmiCloud;
+  try {
+    fmiCloud = FileManager.iCloud();
+  } catch(err) {
+    // no iCloud, no BG Image
+    return "not found";
+  }
+  
+  const cacheDir = fm.cacheDirectory();
+  const iCloudDocDir = fmiCloud.documentsDirectory();
+  const bgIMGiCloudDocPath = fmiCloud.joinPath(iCloudDocDir, imageName);
+  const bgIMGiCloudWPPath = fmiCloud.joinPath(iCloudDocDir+"/wallpaper", imageName);
+  const bgIMGWPCachePath = fm.joinPath(cacheDir+"/saudumm-news-widget-data/wallpaper-cache", imageName);
+  
+  if (optBlur == "true" && fm.fileExists(bgIMGWPCachePath+"-blur")) {
+    return await fm.readImage(bgIMGWPCachePath+"-blur");
+  } else {
+    if (optBlur == "true") {
+      if (fmiCloud.fileExists(bgIMGiCloudDocPath)) {
+        if (fmiCloud.isFileStoredIniCloud(bgIMGiCloudDocPath)) {await fmiCloud.downloadFileFromiCloud(bgIMGiCloudDocPath);}
+        let imgToBlur = await fmiCloud.readImage(bgIMGiCloudDocPath);
+        imgToBlur = await resizeImage(imgToBlur, 300)
+        imgToBlur = await blurImage(imgToBlur);
+        await fm.writeImage(bgIMGWPCachePath+"-blur", imgToBlur);
+        return imgToBlur;
+      } else if (fmiCloud.fileExists(bgIMGiCloudWPPath)) {
+        if (fmiCloud.isFileStoredIniCloud(bgIMGiCloudWPPath)) {await fmiCloud.downloadFileFromiCloud(bgIMGiCloudWPPath);}
+        let imgToBlur = await fmiCloud.readImage(bgIMGiCloudWPPath);
+        imgToBlur = await resizeImage(imgToBlur, 300)
+        imgToBlur = await blurImage(imgToBlur);
+        await fm.writeImage(bgIMGWPCachePath+"-blur", imgToBlur);
+        return imgToBlur;
+      } else {
+        return "not found";
+      }
+    } else {
+      if (fmiCloud.fileExists(bgIMGiCloudDocPath)) {
+        return await fmiCloud.readImage(bgIMGiCloudDocPath);
+      } else if (fmiCloud.fileExists(bgIMGiCloudWPPath)) {
+        return await fmiCloud.readImage(bgIMGiCloudWPPath);
+      } else {
+        return "not found";
+      }
+    }
+  }
+}
+
+// check if all folders are available and create them if needed
+function checkFileDirs() {
+  // Create new FileManager and set data dir
+  const fm = FileManager.local();
+  const cacheDir = fm.cacheDirectory();
+  const imgCacheDir = cacheDir+"/saudumm-news-widget-data/image-cache";
+  const imgCacheDirWP = cacheDir+"/saudumm-news-widget-data/wallpaper-cache";
+  
+  if (!fm.fileExists(imgCacheDir)) {fm.createDirectory(imgCacheDir, true);}
+  if (!fm.fileExists(imgCacheDirWP)) {fm.createDirectory(imgCacheDirWP, true);}
+  
+  return;
+}
+
+// cleanup post image files (if older than 7 days)
+function cleanUpImages(aFileNames) {
+  const fm = FileManager.local();
+  const cacheDir = fm.cacheDirectory();
+  const imgCacheDir = cacheDir+"/saudumm-news-widget-data/image-cache";
+  
+  const aFiles = fm.listContents(imgCacheDir);
+  
+  const site_id = PARAM_WIDGET_TITLE.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
+  
+  let aFilesSite = new Array();
+  
+  for (i = 0; i < aFiles.length; i++) {
+    if (aFiles[i].substring(0, site_id.length) === site_id) {aFilesSite.push(aFiles[i]);}
+  }
+  
+  for (i = 0; i < aFilesSite.length; i++) {
+    if (!aFileNames.includes(aFilesSite[i])) {
+      let path = fm.joinPath(imgCacheDir, aFilesSite[i]);
+      let fileDate = fm.creationDate(path);
+      let dateNow = Date.now();
+      let dateDiffDays = Math.round((dateNow-fileDate)/1000/60/60/24);
+      if (Math.abs(dateDiffDays) > 7) {
+        fm.remove(path);
+      }
+    }
+  }
+  return;
+}
+
+// create a hash from a string
+function hashCode (str){
+  var hash = 0;
+  if (str.length == 0) return hash;
+  for (cHash = 0; cHash < str.length; cHash++) {
+    char = str.charCodeAt(cHash);
+    hash = ((hash<<5)-hash)+char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash;
+}
+
 // format the post title and replace all html entities with characters
-// parameter: string of the title
-// return: string with the title, readable by a human being
 function formatPostTitle(strHeadline) {
   strHeadline = strHeadline.replaceAll("&quot;", '"');
   strHeadline = strHeadline.replaceAll("&amp;", "&");
@@ -470,228 +866,62 @@ function formatPostTitle(strHeadline) {
   return strHeadline;
 }
 
-// get the featuredMedia image URL
-// parameter: featureMedia ID, id of the post
-// return: encoded URL to the image file on the server or none
-async function getMediaURL(featuredMedia, postID) {
-  let featuredMediaJSONURL = SITE_URL+"/wp-json/wp/v2/media/"+featuredMedia;
-  let loadedMediaJSON = await new Request(featuredMediaJSONURL).loadJSON();
-  let mediaURL = loadedMediaJSON.source_url;
-  
-  if (mediaURL == undefined || mediaURL == "undefined") {
-    // search for other images
-    featuredMediaJSONURL = SITE_URL+"/wp-json/wp/v2/posts/"+postID;
-    loadedMediaJSON = await new Request(featuredMediaJSONURL).loadJSON();
-    mediaURL = loadedMediaJSON.jetpack_featured_media_url;
-    if (mediaURL == undefined || mediaURL == "undefined") {
-      return "none";
-    } else {
-      mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
-      mediaURL = mediaURL[1]+""+mediaURL[2];
-      return await encodeURI(mediaURL);
+// get the chosen font for widget texts
+function loadFont(fontName, fontThickness, fontSize) {
+  let font = Font.boldSystemFont(fontSize);
+  if (fontName == "System") {
+    switch (fontThickness) {
+      case "ultralight":
+        font = Font.ultraLightSystemFont(fontSize);
+        break;
+      case "thin":
+        font = Font.thinSystemFont(fontSize);
+        break;
+      case "light":
+        font = Font.lightSystemFont(fontSize);
+        break;
+      case "regular":
+        font = Font.regularSystemFont(fontSize);
+        break;
+      case "medium":
+        font = Font.mediumSystemFont(fontSize);
+        break;
+      case "semibold":
+        font = Font.semiboldSystemFont(fontSize);
+        break;
+      case "bold":
+        font = Font.boldSystemFont(fontSize);
+        break;
+      case "heavy":
+        font = Font.heavySystemFont(fontSize);
+        break;
+      case "black":
+        font = Font.blackSystemFont(fontSize);
+        break;
     }
   } else {
-    mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
-    mediaURL = mediaURL[1]+""+mediaURL[2];
-    return await encodeURI(mediaURL);
+    font = new Font(fontName, fontSize);
   }
-  return "none";
+  return font;
 }
 
-// set the filename of the post image (site name + image id)
-// parameter: id of the image
-// return: filename of the image
-function getFileName(id) {
-  return SITE_NAME.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase()+"-"+id;
-}
-
-// set the complete file path for the image
-// parameter: id of the image
-// return: local filepath of the image
-function getImagePath(id) {
-  const fm = FileManager.local();
-  const docDir = fm.documentsDirectory();
-  const fileName = getFileName(id);
-  return fm.joinPath(docDir+"/saudumm-widget-news-data/image-cache", fileName);
-}
-
-// download the post image (if it doesn't already exist)
-// parameter: path to the image, url to the image, addBGImage (true/false)
-// return: nothing
-async function downloadPostImage(path, url, addBGImage) {
-  const fm = FileManager.local();
-  
-  // check if file already exists
-  if (!addBGImage && fm.fileExists(path)) {
-    return;
-  } else if (!addBGImage && !fm.fileExists(path)) {
-    // download, resize, crop and store image
-    let req = await new Request(url);
-    let loadedImage = await req.load();
-    // write image and read again (it's smaller that way???)
-    await fm.write(path, loadedImage);
-    loadedImage = await fm.readImage(path);
-    loadedImage = await resizeImage(loadedImage, 150);
-    loadedImage = await cropImageToSquare(loadedImage);
-    await fm.remove(path);
-    await fm.writeImage(path, loadedImage);
-    return;
-  }
-  
-  if (addBGImage) {
-    const pathBG = path+"-bg"
-    const pathBGBlur = path+"-bg-blur"
-    
-    if (fm.fileExists(path) && fm.fileExists(pathBG) && fm.fileExists(pathBGBlur)) {
-      return;
-    } else {
-      // download image
-      let req = await new Request(url);
-      let loadedImage = await req.load();
-      // write image and read again (it's smaller that way???)
-      await fm.write(path+"-temp", loadedImage);
-      loadedImage = await fm.readImage(path+"-temp");
-      
-      if (await Math.min(loadedImage.size.height, loadedImage.size.width) > 500) {
-        loadedImage = await resizeImage(loadedImage, 500);
-      }
-      
-      // resize, crop and store image
-      if(!fm.fileExists(path)) {
-        let loadedSmallImage = await resizeImage(loadedImage, 150);
-        loadedSmallImage = await cropImageToSquare(loadedSmallImage);
-        await fm.writeImage(path, loadedSmallImage);
-      }
-      
-      // store original image
-      if (!fm.fileExists(pathBG)) {
-        await fm.writeImage(pathBG, loadedImage);
-      }
-      
-      // store blurred resized original image
-      if (!fm.fileExists(pathBGBlur)) {
-        let loadedImageBlur = await blurImage(loadedImage)
-        await fm.writeImage(pathBGBlur, loadedImageBlur);
-      }
-      
-      await fm.remove(path+"-temp");
-    }
-  }
-  return;
-}
-
-// load post image from file path
-// parameter: path to the image
-// return: image
-async function loadLocalImage(imgPath) {
-  const fm = FileManager.local();
-  if (fm.fileExists(imgPath)) {return await fm.readImage(imgPath);}
-}
-
-// search for and load a local (or iCloud) background image
-// parameter: filename of the image (case sensitive!) and option to blur "true" / "false"
-// return: path to the image or "not found" if image doesn't exist
-async function loadBGImage(imageName, optBlur) {
-  const fm = FileManager.local();
-  let fmiCloud;
+// load the latest script version number from GitHub
+async function loadGitHubVersion() {
   try {
-    fmiCloud = FileManager.iCloud();
+    const latestVersion = await new Request("https://raw.githubusercontent.com/Saudumm/scriptable-News-Widget/main/version.txt").loadString();
+    return latestVersion;
   } catch(err) {
-    // no iCloud, no BG Image
-    return "not found";
+    return CURRENT_VERSION;
   }
-  
-  const docDir = fm.documentsDirectory();
-  const iCloudDocDir = fmiCloud.documentsDirectory();
-  const bgIMGiCloudDocPath = fmiCloud.joinPath(iCloudDocDir, imageName);
-  const bgIMGiCloudWPPath = fmiCloud.joinPath(iCloudDocDir+"/wallpaper", imageName);
-  const bgIMGWPCachePath = fm.joinPath(docDir+"/saudumm-widget-news-data/wallpaper-cache", imageName);
-  
-  if (optBlur == "true" && fm.fileExists(bgIMGWPCachePath+"-blur")) {
-    return await fm.readImage(bgIMGWPCachePath+"-blur");
-  } else {
-    if (optBlur == "true") {
-      if (fmiCloud.fileExists(bgIMGiCloudDocPath)) {
-        if (fmiCloud.isFileStoredIniCloud(bgIMGiCloudDocPath)) {fmiCloud.downloadFileFromiCloud(bgIMGiCloudDocPath);}
-        let imgToBlur = await fmiCloud.readImage(bgIMGiCloudDocPath);
-        imgToBlur = await resizeImage(imgToBlur, 300)
-        imgToBlur = await blurImage(imgToBlur);
-        await fm.writeImage(bgIMGWPCachePath+"-blur", imgToBlur);
-        return imgToBlur;
-      } else if (fmiCloud.fileExists(bgIMGiCloudWPPath)) {
-        if (fmiCloud.isFileStoredIniCloud(bgIMGiCloudWPPath)) {fmiCloud.downloadFileFromiCloud(bgIMGiCloudWPPath);}
-        let imgToBlur = await fmiCloud.readImage(bgIMGiCloudWPPath);
-        imgToBlur = await resizeImage(imgToBlur, 300)
-        imgToBlur = await blurImage(imgToBlur);
-        await fm.writeImage(bgIMGWPCachePath+"-blur", imgToBlur);
-        return imgToBlur;
-      } else {
-        return "not found";
-      }
-    } else {
-      if (fmiCloud.fileExists(bgIMGiCloudDocPath)) {
-        return await fmiCloud.readImage(bgIMGiCloudDocPath);
-      } else if (fmiCloud.fileExists(bgIMGiCloudWPPath)) {
-        return await fmiCloud.readImage(bgIMGiCloudWPPath);
-      } else {
-        return "not found";
-      }
-    }
-  }
-}
-
-// check if all folders are available and create them if needed
-// parameter: none
-// return: nothing
-function checkFileDirs() {
-  // Create new FileManager and set data dir
-  const fm = FileManager.local();
-  const docDir = fm.documentsDirectory();
-  const cacheDir = docDir+"/saudumm-widget-news-data/image-cache";
-  const cacheDirWP = docDir+"/saudumm-widget-news-data/wallpaper-cache";
-  
-  if (!fm.fileExists(cacheDir)) {fm.createDirectory(cacheDir, true);}
-  if (!fm.fileExists(cacheDirWP)) {fm.createDirectory(cacheDirWP, true);}
-  
-  return;
-}
-
-// cleanup post image files
-// parameter: array with image filenames that are needed at the moment
-// return: nothing
-function cleanUpImages(aFileNames) {
-  const fm = FileManager.local();
-  const docDir = fm.documentsDirectory();
-  const cacheDir = docDir+"/saudumm-widget-news-data/image-cache";
-  
-  const aFiles = fm.listContents(cacheDir);
-  
-  const site_id = SITE_NAME.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
-  
-  let aFilesSite = new Array();
-  
-  for (i = 0; i < aFiles.length; i++) {
-    if (aFiles[i].substring(0, site_id.length) === site_id) {aFilesSite.push(aFiles[i]);}
-  }
-  
-  for (i = 0; i < aFilesSite.length; i++) {
-    if (!aFileNames.includes(aFilesSite[i])) {
-      let path = fm.joinPath(cacheDir, aFilesSite[i]);
-      fm.remove(path);
-    }
-  }
-  return;
 }
 
 // blurs an image
-// parameter: image
-// return: blurry image (well, it's better than nothing)
 async function blurImage(img) {
   /*
-   A big THANK YOU to Mario Klingemann for the Blur Code and Max Zeryck for the WebView Code
-   code taken and modified from: https://github.com/mzeryck/Widget-Blur
-   Follow @mzeryck on Twitter: https://twitter.com/mzeryck
-  */
+   * A big THANK YOU to Mario Klingemann for the Blur Code and Max Zeryck for the WebView Code
+   * code taken and modified from: https://github.com/mzeryck/Widget-Blur
+   * Follow @mzeryck on Twitter: https://twitter.com/mzeryck
+   */
   
   // defines the blur strength in relation to the image resolution
   const blurStrength = Math.floor((img.size.height*img.size.width)/18000);
@@ -1014,8 +1244,6 @@ async function blurImage(img) {
 }
 
 // resize the background image
-// parameter: image, max short side pixels the image should be resized to
-// return: resized image (duh)
 async function resizeImage(img, maxShortSide) {
   let imgHeight = await img.size.height;
   let imgWidth = await img.size.width;
@@ -1065,9 +1293,7 @@ async function resizeImage(img, maxShortSide) {
   return imageFromData;
 }
 
-// crops an image to a square
-// parameter: image
-// return: square image
+// crop an image to a square
 async function cropImageToSquare(img) {
   const imgHeight = await img.size.height;
   const imgWidth = await img.size.width;
@@ -1098,4 +1324,4 @@ async function cropImageToSquare(img) {
   return img;
 }
 
-// end of script
+/* ========== END OF SCRIPT ========== */
