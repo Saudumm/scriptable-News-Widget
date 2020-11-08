@@ -1,6 +1,6 @@
 # scriptable-News-Widget
 
-iOS Scriptable News Widget (for websites using WordPress or RSS feeds)
+iOS Scriptable News Widget (for websites using WordPress and RSS feeds)
 Tap on a news in the widget to open it directly in your browser.
 
 ![widgets](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widgets.jpg)
@@ -12,7 +12,7 @@ Tap on a news in the widget to open it directly in your browser.
 
 ---
 
-__If someone would like to buy me a coffee 😊: https://ko-fi.com/saudumm__
+__If you'd like to support my work with a coffee 😊: https://ko-fi.com/saudumm__
 
 ---
 
@@ -24,17 +24,19 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
 
 ## Notes and known bugs
 
-- While most of the RSS feeds should work, pure Atom Feeds don't work at the moment.
+- Most WordPress websites, RSS and Atom feeds should work, but it's possible that not everything will work
 
 ## Changelog
 
 - v1.0.0 - Initial Upload
-- v1.0.1 - small bugfix loading images in RSS feed
-- v1.0.2 - support for iOS light and dark mode
+- v1.0.1 - Small bugfix loading images in RSS feed
+- v1.0.2 - Support for iOS light and dark mode
+- v1.1.1 - Multi URL support in the code or via text files, better RSS support, support for Atom feeds, more customization options
 
 ## Setup:
 
 First, you should add the __News-Widget.js__ Script to Scriptable. Either copy the content of the __News-Widget.js__ file and paste it into a new script in Scriptables or download the file and add it to your iCloud Drive Scriptables folder in iCloud Drive (Files App)
+You can also add the Widget directly via the Scriptable Gallery: https://scriptable.app/gallery/news-widget
 
 1. Enter "Wiggle Mode" on your homescreen and tap on the __+__ symbol
 2. Search for and/or tap on Scriptable
@@ -49,28 +51,80 @@ First, you should add the __News-Widget.js__ Script to Scriptable. Either copy t
 
 ### Widget Parameters
 
-- example:
-    - small|https://www.stadt-bremerhaven.de|Caschys Blog|true|background.jpg|false|true
-- parameter order has to be:
-    - widget size (small, large, medium)
-    - site url (url of the WordPress Website or RSS feed URL)
-    - site name (name of the website, displayed at the top of the widget)
-    - show post images (use true if you want to display the images of the posts or set to false if not)
-    - background image (name of an image file. The file has to be stored in the scriptables folder in iCloud Drive (Files App))
-    - blur background image (use true if you want the background image to be blurry. Use false if not)
-    - background image gradient (use true to create a color gradient over the background image (for better readbility), use false to turn off the gradient)
-- parameters have to be separated by |
-- you don't have to set all parameters, the following examples will work just fine:
+- Example:
+    - small|https://www.stadt-bremerhaven.de|Caschys Blog|true|background.jpg|false|true|MarkerFelt-Thin
+- Parameter order has to be:
+    - Widget size (small, large, medium)
+    - Site url (url of the WordPress Website or RSS feed URL)
+    - Site name (name of the website, displayed at the top of the widget)
+    - Show post images (use true if you want to display the images of the posts or set to false if not)
+    - Background image (name of an image file. The file has to be stored in the scriptables folder in iCloud Drive (Files App))
+    - Blur background image (use true if you want the background image to be blurry. Use false if not)
+    - Background image gradient (use true to create a color gradient over the background image (for better readbility), use false to turn off the gradient)
+    - Font Name (refer to http://iosfonts.com for available font names)
+- Parameters have to be separated by |
+- You don't have to set all parameters, the following examples will work just fine:
     - small|https://www.stadt-bremerhaven.de|Caschys Blog
     - large|https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml|NY Times RSS|true|background.jpg
-- parameters that are not set will be set by the standard widget config in the source code
-- you can change more things like background color, font color and more in the source code. Look at the comments in the code for explanations
+- Parameters that are not set will be set by the standard widget config in the source code
+- You can change more things like background color, font color and more in the source code. Look at the comments in the code for explanations
+
+### Widget Examples with parameters
+
+![example1](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example1.jpg)
+
+This medium widget uses a __medium__ layout, loads links via a file called __tech-news.txt__, has a widget title called __GERMAN TECH-NEWS__, loads images next to the posts with parameter __true__ and has a custom background image with the filename __circuit.jpg__
+- Parameter: medium|tech-news.txt|GERMAN TECH-NEWS|true|circuit.jpg
+
+![example2](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example2.jpg)
+
+This large widget uses a __large__ layout, loads links via a file called __world-news.txt__, has a widget title called __World News__, loads images next to the posts with parameter __true__ and has a custom background image with the filename __earth.jpg__
+- Parameter: large|world-news.txt|World News|true|earth.jpg
+
+![example3](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example3.jpg)
+
+This medium widget uses a __small__ layout, loads posts from the website __https://stadt-bremerhaven.de__ and has a widget title called __Caschys Blog__
+- Parameter: small|https://stadt-bremerhaven.de|Caschys Blog
+
+![example4](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example4.jpg)
+
+This large widget uses a __large__ layout, loads posts from the website __https://cretaweather.gr__ and has a widget title called __Creta Weather__
+- Parameter: large|https://cretaweather.gr|Creta Weather
+
+![example5](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example5.jpg)
+
+This small widget uses a __small__ layout, loads links via a file called __xbox-news.txt__ and has a widget title called __XBOX__
+
+![example6](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example6.jpg)
+
+This small widget uses a __small__ layout, loads links via a file called __apple-news.txt__, has a widget title called __APPLE NEWS__, loads images next to the posts with parameter __true__, doesn't have a custom background image - parameter __none__, blurs the background __true__ (if there is one), has a color gradient over the background - parameter __true__ and uses a custom font with the font name __MarkerFelt-Thin__
+- Parameter: small|apple-news.txt|APPLE NEWS|true|none|true|true|MarkerFelt-Thin
+
+![example7](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example7.jpg)
+
+This large widget uses a __large__ layout, loads links via a file called __ps-news.txt__, has a widget title called __PLAYSTATION__, loads images next to the posts with parameter __true__, has a custom background image with the filename __playstation.jpg__, blurs the background image with parameter __true__ and with parameter __false__ it doesn't use a background color gradient over the image
+- Parameter: large|ps-news.txt|PLAYSTATION|true|playstation.jpg|true|false
+
 
 ### News-Widget-Clear-Cache.js
 
-__News-Widget__ stores images and other data on your iPhone for faster loading and to save mobile data. You can't access those files directly. If there are problems or you want to delete all the cache files, just add __News-Widget-Clear-Cache.js__ to Scriptables and run the script in the app. It'll delete all cache files from News-Widget.
+__News-Widget__ stores images and other data on your iPhone for faster loading and to save mobile data. You can't access those files directly. If there are problems or you want to delete all the cache files, just add __News-Widget-Clear-Cache.js__ to Scriptables and run the script in the app. It'll delete all cache files from News-Widget. Because the files are in a cache folder, iOS can delete thos files automatically, if there's not enough free space on your phone.
 
 # Links:
+
+You can configure one or multiple Links to WordPress website and/or RSS feeds (at the same time!) directly in the script code (section STANDARD WIDGET CONFIG) or via a plain text file to use in widget parameters, if you want to set up different News Widgets.
+The text file has to be plain text (no .doc, .rtf, etc...) and it has to be stored in the Scriptables folder in the Files App (iCloud Drive).
+
+Every line has to contain a link to a WordPress website or RSS feed and the name of the site. Both values have to be separated by | (like widget parameters)
+
+![icloud-drive-example](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/icloud-drive-example.jpg)
+
+Examples:
+
+![link-examples](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/link-examples.jpg)
+
+- https://stadt-bremerhaven.de|Caschys Blog
+- https://www.heise.de/rss/heise-atom.xml|Heise Online
 
 In case you're not sure if a website is using WordPress, just add _/wp-json/wp/v2/posts_ at the end of the url (https://stadt-bremerhaven.de/wp-json/wp/v2/posts). If you see a lot of text in your browser, the site should work.
 If not, you can search for an RSS feed (if the site has one) and use the link of the RSS feed (for example: )
@@ -121,3 +175,5 @@ Heise (German): https://https://www.heise.de/rss/heise.rdf
 ## Thanks
 
 A big THANK YOU to [Mario Klingemann](http://quasimondo.com/StackBlurForCanvas/StackBlurDemo.html) for the blur code and [Max Zeryck](https://github.com/mzeryck) for the WebView code.
+
+Also a big THANK YOU to Simon B. Støvring [@simonbs](https://www.twitter.com/simonbs) for his awesome Scriptable App!
