@@ -24,14 +24,15 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
 
 ## Notes and known bugs
 
-- Most WordPress websites, RSS and Atom feeds should work, but it's possible that not everything will work
+- Most WordPress websites, RSS and Atom feeds should work, but it's possible that not everything will work. Please feel free to contact me, if there are any problems.
 
 ## Changelog
 
 - v1.0.0 - Initial Upload
 - v1.0.1 - Small bugfix loading images in RSS feed
 - v1.0.2 - Support for iOS light and dark mode
-- v1.1.1 - Multi URL support in the code or via text files, better RSS support, support for Atom feeds, more customization options
+- v1.1.0 - Multi URL support in the code or via text files, better RSS support, support for Atom feeds, more customization options
+- v1.1.1 - Fix for links that don't start with http:// or https://
 
 ## Setup:
 
@@ -130,6 +131,7 @@ You can configure one or multiple Links to WordPress website and/or RSS feeds (a
 The text file has to be plain text (no .doc, .rtf, etc...) and it has to be stored in the Scriptables folder in the Files App (iCloud Drive).
 
 Every line has to contain a link to a WordPress website or RSS feed and the name of the site. Both values have to be separated by | (like widget parameters)
+Links should start with either http:// or https://
 
 ![icloud-drive-example](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/icloud-drive-example.jpg)
 
