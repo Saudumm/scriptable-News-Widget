@@ -25,6 +25,7 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
 ## Notes and known bugs
 
 - Most WordPress websites, RSS and Atom feeds should work, but it's possible that not everything will work. Please feel free to contact me, if there are any problems.
+- Fetching images from RSS feeds is very unreliable at the moment. If the script can't fetch an image, then there will be no image next to the news in the widget
 
 ## Changelog
 
