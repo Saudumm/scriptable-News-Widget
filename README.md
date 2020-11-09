@@ -5,6 +5,8 @@ Tap on a news in the widget to open it directly in your browser.
 
 ![widgets](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widgets.jpg)
 
+# List of contents
+
 - [Requirements](#requirements)
 - [Support](#support)
 - [Notes and known bugs](#notes-and-bugs)
