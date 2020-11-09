@@ -34,6 +34,8 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
 - v1.0.2 - Support for iOS light and dark mode
 - v1.1.0 - Multi URL support in the code or via text files, better RSS support, support for Atom feeds, more customization options
 - v1.1.1 - Fix for links that don't start with http:// or https://
+- v1.1.2 - Fix for fetching images from RSS feeds
+- v1.1.3 - Added instructions for Script Updates and Widget Setup
 
 ## Setup:
 
@@ -122,9 +124,15 @@ This large widget uses a __large__ layout, loads links via a file called __ps-ne
 - Parameter: large|ps-news.txt|PLAYSTATION|true|playstation.jpg|true|false
 
 ---
-### News-Widget-Clear-Cache.js
+### News Widget Clear Cache.js
 
 __News-Widget__ stores images and other data on your iPhone for faster loading and to save mobile data. You can't access those files directly. If there are problems or you want to delete all the cache files, just add __News-Widget-Clear-Cache.js__ to Scriptables and run the script in the app. It'll delete all cache files from News-Widget. Because the files are in a cache folder, iOS can delete thos files automatically, if there's not enough free space on your phone.
+
+# News Widget Update.js
+
+To install or update News Widget hassle-free, please add __News Widget Update.js__ from this Repo to your Scriptable App and run the script in Scriptable. It'll save a backup of your existing News Widget Code and download the latest version of News Widget to your Scriptable App.
+
+![update-example](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/update-example.jpg)
 
 # Links:
 
