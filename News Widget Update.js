@@ -5,7 +5,7 @@
  *                                          *
  *       UPDATE OR INSTALL NEWS WIDGET      *
  *                                          *
- *        v1.0.0 - made by @saudumm         *
+ *        v1.0.1 - made by @saudumm         *
  *       https://twitter.com/saudumm        *
  *                                          *
  *******************************************/
@@ -28,26 +28,26 @@ let alertMsg = "No Message"
 try {
   const latestVersion = await new Request("https://raw.githubusercontent.com/Saudumm/scriptable-News-Widget/main/News%20Widget.js").loadString();
   
-  if (await fm.fileExists(pathBackup2)) {await fm.remove(pathBackup2);}
+  if (fm.fileExists(pathBackup2)) {await fm.remove(pathBackup2);}
 
-  if (await fm.fileExists(pathBackup)) {await fm.move(pathBackup, pathBackup2);}
+  if (fm.fileExists(pathBackup)) {await fm.move(pathBackup, pathBackup2);}
 
-  if (await fm.fileExists(pathAlt)) {
+  if (fm.fileExists(pathAlt)) {
     await fm.move(pathAlt, pathBackup);
   } else if (fm.fileExists(path)) {
     await fm.move(path, pathBackup);
   }
 
-  if (await fm.fileExists(path) || await fm.fileExists(pathAlt)) {
+  if (fm.fileExists(path) || await fm.fileExists(pathAlt)) {
     await fm.remove(path);
     await fm.remove(pathAlt);
   }
   
   await fm.writeString(path, latestVersion);
   
-  await fm.remove(pathBackup2);
+  if (fm.fileExists(pathBackup2)) {await fm.remove(pathBackup2);}
   
-  alertMsg = "News Widget successfully updated!\n\nOld Script has been as\n'News Widget Backup'"
+  alertMsg = "News Widget successfully updated!\n\nOld Script has been saved as\n'News Widget Backup'"
 } catch(err) {
   alertMsg = "Error while updateing News Widget\n\n"+err+"\n\nPlease Check 'News Widget' \nor\n'News Widget Backup'"
 }
