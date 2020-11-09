@@ -5,7 +5,7 @@
  *                                          *
  *         DELETE NEWS WIDGET CACHE         *
  *                                          *
- *        v1.1.1 - made by @saudumm         *
+ *        v1.1.2 - made by @saudumm         *
  *       https://twitter.com/saudumm        *
  *                                          *
  *******************************************/
@@ -17,16 +17,17 @@ let fm = FileManager.local();
 let dir = fm.cacheDirectory();
 let alertMsg = "No files to delete";
 
-if (fm.fileExists(dir+"/saudumm-news-widget-data")) {
+if (await fm.fileExists(dir+"/saudumm-news-widget-data")) {
   try {
-    fm.remove(dir+"/saudumm-news-widget-data");
+    await fm.remove(dir+"/saudumm-news-widget-data");
     alertMsg = "All cache files deleted!";
   } catch(err) {
-    alertMsg = "ERROR while deleting cache files";
+    alertMsg = "Error while deleting cache files\n\n"+err;
   }
 }
 
 let alert = new Alert();
 alert.message = "\n"+alertMsg;
 alert.title = "Clear News Widget Cache";
+alert.addAction("OK");
 alert.presentAlert();
