@@ -5,7 +5,7 @@
  *                                          *
  *      NEWS WIDGET (WORDPRESS AND RSS)     *
  *                                          *
- *        v1.1.2 - made by @saudumm         *
+ *        v1.1.3 - made by @saudumm         *
  *       https://twitter.com/saudumm        *
  *                                          *
  ********************************************
@@ -13,11 +13,26 @@
  Feel free to contact me on Twitter or
  GitHub, if you have any questions or issues.           
 
- To download the newest version and
- instructions on how to set up the widget
- please visit:
+ GitHub Repo:
  https://github.com/Saudumm/scriptable-News-Widget
-
+ 
+ ********************************************
+ *                                          *
+ *          INSTRUCTIONS / MANUAL           *
+ *   For instructions on how to set up the  *
+ *    widget please check the GitHub Repo   *
+ *                                          *
+ *             DOWNLOAD UPDATES             *
+ *    To update News Widget  or download    *
+ *     the latest version of the script     *
+ *    check out  "News Widget Update.js"    *
+ *            in my GitHub Repo             *
+ *    Just add "News Widget Update.js" to   *
+ *   Scriptable and run it to download the  *
+ *      latest version of News Widget!      *
+ *                                          *
+ ********************************************
+ 
  WIDGET PARAMETERS: you can long press on the
  widget on your homescreen and edit
  parameters
