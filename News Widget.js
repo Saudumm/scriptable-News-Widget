@@ -304,7 +304,7 @@ var POST_COUNT = (WIDGET_SIZE == "small") ? 1 : (WIDGET_SIZE == "medium") ? 2 : 
 // check for updates
 var UPDATE_AVAILABLE = false;
 if (CHECK_FOR_SCRIPT_UPDATE) {
-  const CURRENT_VERSION = "v1.1.2"
+  const CURRENT_VERSION = "v1.1.3"
   const LATEST_VERSION = await loadGitHubVersion();
   if (CURRENT_VERSION.replace(/[^1-9]+/g, "") < LATEST_VERSION.replace(/[^1-9]+/g, "")) {
     UPDATE_AVAILABLE = true;
