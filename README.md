@@ -5,7 +5,19 @@ Tap on a news in the widget to open it directly in your browser.
 
 ![widgets](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widgets.jpg)
 
-## Requirements:
+- [Requirements](#requirements)
+- [Support](#support)
+- [Notes and known bugs](#notes-and-bugs)
+- [Changelog](#changelog)
+- [Setup](#setup)
+    - [Widget Parameters](#widget-parameters)
+    - [Widget Examples](#widget-examples)
+    - [News Widget Clear Cache.js](#clear-cache)
+- [Update News Widget](#widget-update)
+- [Links](#links)
+
+<a name="requirements"></a>
+# Requirements:
 
 - iOS14
 - Latest version of Scriptable for iOS: [Link](https://apps.apple.com/de/app/scriptable/id1405459188)
@@ -16,18 +28,20 @@ __If you'd like to support my work with a coffee 😊: https://ko-fi.com/saudumm
 
 ---
 
-## Support
+<a name="support"></a>
+# Support
 
 I just started learning JavaScript, so there will be bugs.
 If there are any issues or questions, feel free to open an issue here on GitHub or contact me via Twitter: [@saudumm](https://www.twitter.com/saudumm)
 __Please mention the URL of the website or RSS feed, so I can help you faster.__
 
-## Notes and known bugs
+<a name="notes-and-bugs"></a>
+# Notes and known bugs
 
 - Most WordPress websites, RSS and Atom feeds should work, but it's possible that not everything will work. Please feel free to contact me, if there are any problems.
-- Fetching images from RSS feeds is very unreliable at the moment. If the script can't fetch an image, then there will be no image next to the news in the widget
 
-## Changelog
+<a name="changelog"></a>
+# Changelog
 
 - v1.0.0 - Initial Upload
 - v1.0.1 - Small bugfix loading images in RSS feed
@@ -37,7 +51,8 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
 - v1.1.2 - Fix for fetching images from RSS feeds
 - v1.1.3 - Added instructions for Script Updates and Widget Setup
 
-## Setup:
+<a name="setup"></a>
+# Setup:
 
 First, you should add the __News-Widget.js__ Script to Scriptable. Either copy the content of the __News-Widget.js__ file and paste it into a new script in Scriptables or download the file and add it to your iCloud Drive Scriptables folder in iCloud Drive (Files App)
 You can also add the Widget directly via the Scriptable Gallery: https://scriptable.app/gallery/news-widget
@@ -53,7 +68,8 @@ You can also add the Widget directly via the Scriptable Gallery: https://scripta
 
 ![widget-config](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widget-config.jpg)
 
-### Widget Parameters
+<a name="widget-parameters"></a>
+## Widget Parameters
 
 - Example:
     - small|https://www.stadt-bremerhaven.de|Caschys Blog|true|background.jpg|false|true|MarkerFelt-Thin
@@ -73,7 +89,8 @@ You can also add the Widget directly via the Scriptable Gallery: https://scripta
 - Parameters that are not set will be set by the standard widget config in the source code
 - You can change more things like background color, font color and more in the source code. Look at the comments in the code for explanations
 
-### Widget Examples with parameters
+<a name="widget-examples"></a>
+## Widget Examples
 
 ### Example 1
 ![example1](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example1.jpg)
@@ -124,17 +141,20 @@ This large widget uses a __large__ layout, loads links via a file called __ps-ne
 - Parameter: large|ps-news.txt|PLAYSTATION|true|playstation.jpg|true|false
 
 ---
-### News Widget Clear Cache.js
+<a name="clear-cache"></a>
+## News Widget Clear Cache.js
 
 __News-Widget__ stores images and other data on your iPhone for faster loading and to save mobile data. You can't access those files directly. If there are problems or you want to delete all the cache files, just add __News-Widget-Clear-Cache.js__ to Scriptables and run the script in the app. It'll delete all cache files from News-Widget. Because the files are in a cache folder, iOS can delete thos files automatically, if there's not enough free space on your phone.
 
-# News Widget Update.js
+<a name="widget-update"></a>
+# Update News Widget
 
 To install or update News Widget hassle-free, please add __News Widget Update.js__ from this Repo to your Scriptable App and run the script in Scriptable. It'll save a backup of your existing News Widget Code and download the latest version of News Widget to your Scriptable App.
 
 ![update-example](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/update-example.jpg)
 
-# Links:
+<a name="links"></a>
+# Links
 
 You can configure one or multiple Links to WordPress website and/or RSS feeds (at the same time!) directly in the script code (section STANDARD WIDGET CONFIG) or via a plain text file to use in widget parameters, if you want to set up different News Widgets.
 The text file has to be plain text (no .doc, .rtf, etc...) and it has to be stored in the Scriptables folder in the Files App (iCloud Drive).
