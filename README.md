@@ -17,6 +17,7 @@ Tap on a news in the widget to open it directly in your browser.
     - [News Widget Clear Cache.js](#clear-cache)
 - [Update News Widget](#widget-update)
 - [Links](#links)
+- [Thanks](#thanks)
 
 <a name="requirements"></a>
 # Requirements:
@@ -237,6 +238,7 @@ Here are a few links to help you get started:
 - Tom's Hardware: https://www.tomshardware.com/feeds/all
 - Heise (German): https://https://www.heise.de/rss/heise.rdf
 
+<a name="thanks"></a>
 ## Thanks
 
 A big THANK YOU to [Mario Klingemann](http://quasimondo.com/StackBlurForCanvas/StackBlurDemo.html) for the blur code and [Max Zeryck](https://github.com/mzeryck) for the WebView code.
