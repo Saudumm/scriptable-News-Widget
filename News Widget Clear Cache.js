@@ -5,7 +5,7 @@
  *                                          *
  *         DELETE NEWS WIDGET CACHE         *
  *                                          *
- *        v1.1.2 - made by @saudumm         *
+ *        v1.1.3 - made by @saudumm         *
  *       https://twitter.com/saudumm        *
  *                                          *
  *******************************************/
@@ -14,12 +14,12 @@
 // https://github.com/Saudumm/scriptable-News-Widget
 
 let fm = FileManager.local();
-let dir = fm.cacheDirectory();
+let docDir = fm.documentsDirectory();
 let alertMsg = "No files to delete";
 
-if (await fm.fileExists(dir+"/saudumm-news-widget-data")) {
+if (await fm.fileExists(docDir+"/saudumm-news-widget-data")) {
   try {
-    await fm.remove(dir+"/saudumm-news-widget-data");
+    await fm.remove(docDir+"/saudumm-news-widget-data");
     alertMsg = "All cache files deleted!";
   } catch(err) {
     alertMsg = "Error while deleting cache files\n\n"+err;
