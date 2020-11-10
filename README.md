@@ -1,4 +1,4 @@
-# scriptable-News-Widget
+# iOS News Widget for Scriptable
 
 iOS Scriptable News Widget (for websites using WordPress and RSS feeds)
 Tap on a news in the widget to open it directly in your browser.
@@ -231,6 +231,7 @@ Here are a few links to help you get started:
 - IGN: http://feeds.feedburner.com/ign/all
 - Eurogamer: https://www.eurogamer.net/?format=rss
     - more feeds: https://www.eurogamer.net/rss/eurogamer_frontpage_feed.rss
+- Digital Foundry: https://www.eurogamer.net/?format=rss&topic=digital_foundry
 
 ### Tech:
 - MacStories: https://www.macstories.net/feed
