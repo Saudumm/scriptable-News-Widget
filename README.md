@@ -22,7 +22,7 @@ Tap on a news in the widget to open it directly in your browser.
 # Requirements:
 
 - iOS14
-- Latest version of Scriptable for iOS: [Link](https://apps.apple.com/de/app/scriptable/id1405459188)
+- Latest version of [Scriptable for iOS](https://apps.apple.com/de/app/scriptable/id1405459188)
 
 ---
 
@@ -98,49 +98,49 @@ You can also add the Widget directly via the Scriptable Gallery: https://scripta
 ![example1](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example1.jpg)
 
 This medium widget uses a __medium__ layout, loads links via a file called __tech-news.txt__, has a widget title called __GERMAN TECH-NEWS__, loads images next to the posts with parameter __true__ and has a custom background image with the filename __circuit.jpg__
-- Parameter: medium|tech-news.txt|GERMAN TECH-NEWS|true|circuit.jpg
+- __Parameter:__ medium|tech-news.txt|GERMAN TECH-NEWS|true|circuit.jpg
 
 ---
 ### Example 2
 ![example2](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example2.jpg)
 
 This large widget uses a __large__ layout, loads links via a file called __world-news.txt__, has a widget title called __World News__, loads images next to the posts with parameter __true__ and has a custom background image with the filename __earth.jpg__
-- Parameter: large|world-news.txt|World News|true|earth.jpg
+- __Parameter:__ large|world-news.txt|World News|true|earth.jpg
 
 ---
 ### Example 3
 ![example3](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example3.jpg)
 
 This medium widget uses a __small__ layout, loads posts from the website __https://stadt-bremerhaven.de__ and has a widget title called __Caschys Blog__
-- Parameter: small|https://stadt-bremerhaven.de|Caschys Blog
+- __Parameter:__ small|https://stadt-bremerhaven.de|Caschys Blog
 
 ---
 ### Example 4
 ![example4](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example4.jpg)
 
 This large widget uses a __large__ layout, loads posts from the website __https://cretaweather.gr__ and has a widget title called __Creta Weather__
-- Parameter: large|https://cretaweather.gr|Creta Weather
+- __Parameter:__ large|https://cretaweather.gr|Creta Weather
 
 ---
 ### Example 5
 ![example5](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example5.jpg)
 
 This small widget uses a __small__ layout, loads links via a file called __xbox-news.txt__ and has a widget title called __XBOX__
-- Parameter: small|xbox-news.txt|XBOX
+- __Parameter:__ small|xbox-news.txt|XBOX
 
 ---
 ### Example 6
 ![example6](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example6.jpg)
 
 This small widget uses a __small__ layout, loads links via a file called __apple-news.txt__, has a widget title called __APPLE NEWS__, loads images next to the posts with parameter __true__, doesn't have a custom background image - parameter __none__, blurs the background __true__ (if there is one), has a color gradient over the background - parameter __true__ and uses a custom font with the font name __MarkerFelt-Thin__
-- Parameter: small|apple-news.txt|APPLE NEWS|true|none|true|true|MarkerFelt-Thin
+- __Parameter:__ small|apple-news.txt|APPLE NEWS|true|none|true|true|MarkerFelt-Thin
 
 ---
 ### Example 7
 ![example7](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example7.jpg)
 
 This large widget uses a __large__ layout, loads links via a file called __ps-news.txt__, has a widget title called __PLAYSTATION__, loads images next to the posts with parameter __true__, has a custom background image with the filename __playstation.jpg__, blurs the background image with parameter __true__ and with parameter __false__ it doesn't use a background color gradient over the image
-- Parameter: large|ps-news.txt|PLAYSTATION|true|playstation.jpg|true|false
+- __Parameter:__ large|ps-news.txt|PLAYSTATION|true|playstation.jpg|true|false
 
 ---
 <a name="clear-cache"></a>
@@ -166,7 +166,7 @@ Links should start with either http:// or https://
 
 ![icloud-drive-example](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/icloud-drive-example.jpg)
 
-Examples:
+Example:
 
 ![link-examples](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/link-examples.jpg)
 
@@ -208,10 +208,13 @@ New York Times (World News): https://rss.nytimes.com/services/xml/rss/nyt/HomePa
 CNBC Top News: https://www.cnbc.com/id/100003114/device/rss/rss.html
 CNN (World News): http://rss.cnn.com/rss/edition_world.rss
 - more  feeds: https://edition.cnn.com/services/rss/
+ABC News World: https://abcnews.go.com/abcnews/internationalheadlines
 
 ### Gaming:
 PC Gamer: https://www.pcgamer.com/rss/
 IGN: http://feeds.feedburner.com/ign/all
+Eurogamer: https://www.eurogamer.net/?format=rss
+- more feeds: https://www.eurogamer.net/rss/eurogamer_frontpage_feed.rss
 
 ### Tech:
 MacStories: https://www.macstories.net/feed
