@@ -120,8 +120,8 @@ This medium widget uses a __medium__ layout, loads links via a file called __tec
 ### Example 2
 ![example2](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example2.jpg)
 
-This large widget uses a __large__ layout, loads links via a file called __world-news.txt__, has a widget title called __World News__, loads images next to the posts with parameter __true__ and has a custom background image with the filename __earth.jpg__
-- __Parameter:__ large|world-news.txt|World News|true|earth.jpg
+This large widget uses a __large__ layout, loads links via a file called __world-news.txt__, has a widget title called __World News__, doesn't load images next to the posts with parameter __false__ and has a custom background image with the filename __earth.jpg__
+- __Parameter:__ large|world-news.txt|World News|false|earth.jpg
 
 ---
 ### Example 3
@@ -148,8 +148,8 @@ This small widget uses a __small__ layout, loads links via a file called __xbox-
 ### Example 6
 ![example6](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example6.jpg)
 
-This small widget uses a __small__ layout, loads links via a file called __apple-news.txt__, has a widget title called __APPLE NEWS__, loads images next to the posts with parameter __true__, doesn't have a custom background image - parameter __none__, blurs the background __true__ (if there is one), has a color gradient over the background - parameter __true__ and uses a custom font with the font name __MarkerFelt-Thin__
-- __Parameter:__ small|apple-news.txt|APPLE NEWS|true|none|true|true|MarkerFelt-Thin
+This small widget uses a __small__ layout, loads links via a file called __apple-news.txt__, has a widget title called __APPLE NEWS__, doesn't load images next to the posts with parameter __false__, doesn't have a custom background image - parameter __none__, blurs the background __true__ (if there is one), has a color gradient over the background - parameter __true__ and uses a custom font with the font name __MarkerFelt-Thin__
+- __Parameter:__ small|apple-news.txt|APPLE NEWS|false|none|true|true|MarkerFelt-Thin
 
 ---
 ### Example 7
