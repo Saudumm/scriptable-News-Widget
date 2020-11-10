@@ -5,7 +5,7 @@
  *                                          *
  *      NEWS WIDGET (WORDPRESS AND RSS)     *
  *                                          *
- *        v1.1.3 - made by @saudumm         *
+ *        v1.1.4 - made by @saudumm         *
  *       https://twitter.com/saudumm        *
  *                                          *
  ********************************************
@@ -18,9 +18,11 @@
  
  ********************************************
  *                                          *
- *          INSTRUCTIONS / MANUAL           *
+ *     INSTRUCTIONS / MANUAL / CHANGELOG    *
  *   For instructions on how to set up the  *
- *    widget please check the GitHub Repo   *
+ *     widget and the latest changes to     *
+ *        the script please check the       *
+ *               GitHub Repo                *
  *                                          *
  *             DOWNLOAD UPDATES             *
  *    To update News Widget  or download    *
@@ -89,7 +91,7 @@ const CHECK_FOR_SCRIPT_UPDATE = true
 var PARAM_LINKS =
 [
  ["https://venturebeat.com", "VentureBeat"],
- ["http://rss.cnn.com/rss/edition_world.rss", "CNN"],
+ ["http://rss.cnn.com/rss/edition.rss", "CNN"],
 ]
 
 // Name of the website/feed to display in the
@@ -141,6 +143,15 @@ var PARAM_SHOW_POST_IMAGES = "true";
 /*      to find hex values for colors      */
 /*                                         */
 /*******************************************/
+
+// Configure your preferred region to format
+// how date and time values will be displayed
+// "default" = uses your system region
+// Use locales shortcodes like "en-US",
+// "en-GB", "ko", "fr-CA" or "de-DE"
+// For a list of possible iOS locales, see:
+// https://gist.github.com/jacobbubu/1836273
+const CONF_DATE_TIME_LOCALE = "default"
 
 // Configure which time format to use
 // true = 12h time format
@@ -200,13 +211,16 @@ const CONF_BG_GRADIENT_OVERLAY_BTM =
 /*          TEXT FONTS  AND SIZES          */
 /*                                         */
 /*             NOTE ON FONTS:              */
-/*  Use System if you want to use the iOS  */
-/*  system font (SF Pro) and choose your   */
-/*               font weight               */
+/*   Use "System" if you want to use the   */
+/*     system font (SF Pro), "Rounded"     */
+/*       for a rounded system font,        */
+/*  "Monospaced" for a monosopaced system  */
+/*    font and choose your font weight.    */
 /*                                         */
 /*        Font weight options are:         */
 /*    ultralight, thin, light, regular,    */
 /*  medium, semibold, bold, heavy, black   */
+/*                                         */
 /*                                         */
 /*   Refer to http://iosfonts.com if you   */
 /*   want to use other fonts and replace   */
@@ -254,21 +268,28 @@ const CONF_FONT_COLOR_TITLE =
 /*******************************************/
 /*                                         */
 /*      DO NOT CHANGE ANYTHING BELOW!      */
+/*       (or do so at your own risk)       */
 /*                                         */
 /*******************************************/
 
-var SINGLE_SITE_MODE = false
+// check for updates
+var UPDATE_AVAILABLE = false;
+if (CHECK_FOR_SCRIPT_UPDATE === true) {UPDATE_AVAILABLE = await checkForUpdate("v1.1.4");}
 
+var SINGLE_SITE_MODE = false
 var WIDGET_SIZE = (config.runsInWidget ? config.widgetFamily : "small");
 
 // process widget parameters
 if (args.widgetParameter) {
   let param = args.widgetParameter.split("|");
+  
   if (param.length == 1) {
     SINGLE_SITE_MODE = (PARAM_LINKS.length == 1 ? true : false);
     if (SINGLE_SITE_MODE) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
   }
+  
   if (param.length >= 1) {WIDGET_SIZE = param[0];}
+  
   if (param.length >= 2) {
     if (param[1].substring(0, 4) == "http") {
       PARAM_LINKS = [[param[1], ""]];
@@ -281,38 +302,23 @@ if (args.widgetParameter) {
       }
     }
   }
-  if (param.length >= 3) {
-    PARAM_WIDGET_TITLE = param[2];
-  }
+  
+  if (param.length >= 3) {PARAM_WIDGET_TITLE = param[2];}
   if (param.length >= 4) {PARAM_SHOW_POST_IMAGES = param[3];}
   if (param.length >= 5) {PARAM_BG_IMAGE_NAME = param[4];}
   if (param.length >= 6) {PARAM_BG_IMAGE_BLUR = param[5];}
   if (param.length >= 7) {PARAM_BG_IMAGE_GRADIENT = param[6];}
-  if (param.length >= 8) {
-    CONF_FONT_SITENAME = param[7];
-    CONF_FONT_DATE = param[7];
-    CONF_FONT_TITLE = param[7];
-  }
+  if (param.length >= 8) {CONF_FONT_SITENAME = CONF_FONT_DATE = CONF_FONT_TITLE = param[7];}
 } else {
   SINGLE_SITE_MODE = (PARAM_LINKS.length == 1 ? true : false);
-  if (SINGLE_SITE_MODE) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
+  if (SINGLE_SITE_MODE === true) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
 }
 
 // set the number of posts depending on WIDGET_SIZE
 var POST_COUNT = (WIDGET_SIZE == "small") ? 1 : (WIDGET_SIZE == "medium") ? 2 : 5;
 
-// check for updates
-var UPDATE_AVAILABLE = false;
-if (CHECK_FOR_SCRIPT_UPDATE) {
-  const CURRENT_VERSION = "v1.1.3"
-  const LATEST_VERSION = await loadGitHubVersion();
-  if (CURRENT_VERSION.replace(/[^1-9]+/g, "") < LATEST_VERSION.replace(/[^1-9]+/g, "")) {
-    UPDATE_AVAILABLE = true;
-  }
-}
-
 // check directories
-checkFileDirs()
+await checkFileDirs()
 
 // create widget
 const widget = await createWidget();
@@ -337,7 +343,7 @@ Script.setWidget(widget);
 Script.complete();
 
 
-/* ============ FUNCTIONS ============ */
+/* ============== FUNCTIONS ============== */
 
 // create the widget
 async function createWidget() {
@@ -352,7 +358,7 @@ async function createWidget() {
   // display name of the website
   const siteName = list.addText(PARAM_WIDGET_TITLE);
     
-  siteName.font = fontSiteName
+  siteName.font = fontSiteName;
   siteName.textColor = CONF_FONT_COLOR_SITENAME;
   siteName.lineLimit = 1;
   siteName.minimumScaleFactor = 0.5;
@@ -387,7 +393,7 @@ async function createWidget() {
         labelSiteName.minimumScaleFactor = 0.5;
       }
       
-      const labelDateTime = postStack.addText(await new Date(postData.aPostDates[0]).toLocaleString([], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: (CONF_12_HOUR ? true : false)}));
+      const labelDateTime = postStack.addText(await formatDateTimeString(postData.aPostDates[0]));
       labelDateTime.font = fontDate;
       labelDateTime.textColor = CONF_FONT_COLOR_DATE;
       labelDateTime.lineLimit = 1;
@@ -418,7 +424,7 @@ async function createWidget() {
         aStackCol[i] = aStackRow[i].addStack();
         aStackCol[i].layoutVertically();
 
-        aLblPostDate[i] = aStackCol[i].addText((SINGLE_SITE_MODE ? "" : postData.aPostSiteNames[i]+" - ")+await new Date(postData.aPostDates[i]).toLocaleString([], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: (CONF_12_HOUR ? true : false)}));
+        aLblPostDate[i] = aStackCol[i].addText((SINGLE_SITE_MODE ? "" : postData.aPostSiteNames[i]+" - ")+await formatDateTimeString(postData.aPostDates[i]));
         aLblPostDate[i].font = fontDate;
         aLblPostDate[i].textColor = CONF_FONT_COLOR_DATE;
         aLblPostDate[i].lineLimit = 1;
@@ -519,17 +525,17 @@ async function getData() {
                     
           let iPost;
           for (iPost = 0; iPost < loadPosts; iPost++) {
-            let postDate = loadedJSON[iPost].date;
+            let postDate = loadedJSON[iPost].date_gmt;
+            if (postDate == undefined) {postDate = loadedJSON[iPost].date;} else {(postDate.slice(-1) == "Z") ? postDate : postDate += "Z";}
             let postDateSort = await new Date(postDate).toLocaleString(["fr-CA"], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"});
             
-            let postTitle = loadedJSON[iPost].title.rendered;
-            postTitle = formatPostTitle(postTitle);
+            let postTitle = await formatPostTitle(loadedJSON[iPost].title.rendered);
             
             let postURL = loadedJSON[iPost].guid.rendered;
             
             let postIMGURL = await getMediaURL(PARAM_LINKS[iLink][0], loadedJSON[iPost].featured_media, loadedJSON[iPost].id);
                         
-            aData.push([postDateSort, postDate+"|||"+postTitle+"|||"+postURL+"|||"+postIMGURL+"|||"+PARAM_LINKS[iLink][1]]);
+            await aData.push([postDateSort, postDate+"|||"+postTitle+"|||"+postURL+"|||"+postIMGURL+"|||"+PARAM_LINKS[iLink][1]]);
           }
         } catch(err) {
          log(err);
@@ -544,6 +550,7 @@ async function getData() {
           let currentItem = null;
           let searchForImage = true;
           let xmlParser = new XMLParser(loadRSSFeed);
+          // start of element
           xmlParser.didStartElement = (name, elementContent) => {
             itemValue = "";
             if (name == "entry" || name == "item") {
@@ -551,9 +558,9 @@ async function getData() {
               searchForImage = true;
             }
             
-            // possibel image values in element name
+            // possible image values in element name
             if ((name.substring(0, 6) == "media:" || name == "enclosure") && searchForImage) {
-              if (elementContent.url != null && currentItem != null) {
+              if (elementContent.url !== null && elementContent.url !== undefined && currentItem !== null && currentItem !== undefined) {
                 let imgLink = elementContent.url.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
                 if (imgLink && imgLink.length == 3) {
                   imgLink = imgLink[1]+imgLink[2];
@@ -563,31 +570,34 @@ async function getData() {
               }
             }
           }
+          // end of element
           xmlParser.didEndElement = name => {
             const hasItem = currentItem != null;
             
             // possible url location
-            if (hasItem && name == "id") {
-              currentItem["id"] = itemValue;
-            }
+            if (hasItem && name == "id") {currentItem["id"] = itemValue;}
             
             // possible url location
-            if (hasItem && name == "link") {
-              currentItem["link"] = itemValue;
-            }
+            if (hasItem && name == "link") {currentItem["link"] = itemValue;}
             
             // title value
-            if (hasItem && name == "title") {
-              currentItem["title"] = itemValue;
-            }
+            if (hasItem && name == "title") {currentItem["title"] = itemValue;}
             
             // published date
-            if (hasItem && (name == "published" || name == "pubDate")) {
-              currentItem["published"] = itemValue;
-            }
+            if (hasItem && (name == "published" || name == "pubDate")) {currentItem["published"] = itemValue;}
             
             // possible image link location
             if (hasItem && name == "image" && searchForImage) {
+              let imgLink = itemValue.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
+              if (imgLink && imgLink.length == 3) {
+                imgLink = imgLink[1]+imgLink[2];
+                currentItem["image"] = imgLink;
+                searchForImage = false;
+              }
+            }
+            
+            // possible image link location
+            if (hasItem && name == "thumb" && searchForImage) {
               let imgLink = itemValue.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
               if (imgLink && imgLink.length == 3) {
                 imgLink = imgLink[1]+imgLink[2];
@@ -622,12 +632,13 @@ async function getData() {
               currentItem = null;
             }
           }
-          xmlParser.foundCharacters = str => {
-            itemValue += str;
-          }
+          // found characters between element start and end
+          xmlParser.foundCharacters = str => {itemValue += str;}
+          // end of document
           xmlParser.didEndDocument = () => {}
+          // parse xml string
           await xmlParser.parse();
-                    
+          
           let loadPosts = (aRSSItems.length >= 5) ? 5 : aRSSItems.length
           
           for (iRSS = 0; iRSS < loadPosts; iRSS++) {
@@ -637,7 +648,7 @@ async function getData() {
             let rssURL = "none";
             let rssIMGURL = "none";
 
-            if (aRSSItems[iRSS].published != null) {
+            if (aRSSItems[iRSS].published !== null) {
               rssDate = aRSSItems[iRSS].published;
               rssDateSort = await new Date(rssDate).toLocaleString(["fr-CA"], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"});
             }
@@ -691,8 +702,8 @@ async function getData() {
       
       for (iNewPost = 0; iNewPost < POSTS_TO_LOAD; iNewPost++) {
         const aStrSplit = aData[iNewPost][1].split("|||")
-                
-        if (aStrSplit[0] != "none") {
+        
+        if (aStrSplit[0] != "none" && aStrSplit[0] != "undefined") {
           aDates[iNewPost] = await new Date(aStrSplit[0]);
         } else {
           aDates[iNewPost] = await Date.now();
@@ -709,7 +720,6 @@ async function getData() {
           aIMGURLs[iNewPost] = aStrSplit[3];
           if (aIMGURLs[iNewPost] != "none") {
             let fileID = await hashCode(aIMGURLs[iNewPost])
-            fileID = Math.abs(fileID)
 
             aFileNames[iNewPost] = await getFileName(aSiteNames[iNewPost], fileID);
             
@@ -741,7 +751,7 @@ async function getData() {
       return null;
     }
   } catch(err) {
-    logError(err);
+    logError("getData: "+err);
     return null;
   }
 }
@@ -749,31 +759,31 @@ async function getData() {
 // load a text file with links and convert to a PARAM_LINKS array
 async function loadTextFileToArray(textFile) {
   try {
-  const fm = FileManager.iCloud();
-  const docDir = fm.documentsDirectory();
-  const filePath = fm.joinPath(docDir, textFile);
-
-  if (fm.fileExists(filePath) && fm.isFileStoredIniCloud(filePath)) {
-    await fm.downloadFileFromiCloud(filePath);
-    var strTextFile = await fm.readString(filePath);
-    strTextFile = strTextFile.split(/\r?\n/)
-    if (strTextFile.length >= 1) {
-      const aLinks = new Array();
-      for (iText = 0; iText < strTextFile.length; iText++) {
-        let aStrData = strTextFile[iText].split("|");
-        if (aStrData.length == 1) {
-          if (aStrData[0].substring(0, 4) == "http") {aLinks.push([aStrData[0], "News"]);}
-        } else if (aStrData.length > 1) {
-          if (aStrData[0].substring(0, 4) == "http") {aLinks.push([aStrData[0], aStrData[1]]);}
+    const fm = FileManager.iCloud();
+    const docDir = fm.documentsDirectory();
+    const filePath = fm.joinPath(docDir, textFile);
+    
+    if (fm.fileExists(filePath) && fm.isFileStoredIniCloud(filePath)) {
+      await fm.downloadFileFromiCloud(filePath);
+      var strTextFile = await fm.readString(filePath);
+      strTextFile = strTextFile.split(/\r?\n/)
+      if (strTextFile.length >= 1) {
+        const aLinks = await new Array();
+        for (iText = 0; iText < strTextFile.length; iText++) {
+          let aStrData = strTextFile[iText].split("|");
+          if (aStrData.length == 1) {
+            if (aStrData[0].substring(0, 4) == "http") {await aLinks.push([aStrData[0], "News"]);}
+          } else if (aStrData.length > 1) {
+            if (aStrData[0].substring(0, 4) == "http") {await aLinks.push([aStrData[0], aStrData[1]]);}
+          }
         }
+        return aLinks;
+      } else {
+        return null;
       }
-      return aLinks;
     } else {
       return null;
     }
-  } else {
-    return null;
-  }
   } catch(err) {
     log(err);
     return null;
@@ -810,7 +820,7 @@ async function getMediaURL(siteURL, featuredMedia, postID) {
       return await encodeURI(mediaURL);
     }
   } else {
-    mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
+    mediaURL = await mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
     mediaURL = mediaURL[1]+""+mediaURL[2];
     return await encodeURI(mediaURL);
   }
@@ -818,28 +828,27 @@ async function getMediaURL(siteURL, featuredMedia, postID) {
 }
 
 // set the filename of the post image (site name + image id)
-function getFileName(siteName, id) {
-  let widgetTitle = PARAM_WIDGET_TITLE.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
-  siteName = siteName.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
+async function getFileName(siteName, id) {
+  let widgetTitle = await PARAM_WIDGET_TITLE.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
+  siteName = await siteName.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
   return widgetTitle+"-"+siteName+"-"+id;
 }
 
 // download the post image (if it doesn't already exist)
 async function downloadPostImage(fileName, url, addBGImage) {
-  const fm = await FileManager.local();
-  const cacheDir = await fm.cacheDirectory();
+  const fm = FileManager.local();
+  const docDir = fm.documentsDirectory();
   
-  const imgPath = await fm.joinPath(cacheDir+"/saudumm-news-widget-data/image-cache", fileName);
-  const tempDir = await fm.temporaryDirectory()
-  const tempPath = await fm.joinPath(tempDir, fileName);
+  const imgPath = fm.joinPath(docDir+"/saudumm-news-widget-data/image-cache", fileName);
+  const tempDir = fm.temporaryDirectory()
+  const tempPath = fm.joinPath(tempDir, fileName);
 
   // check if file already exists
   if (!addBGImage && fm.fileExists(imgPath)) {
     return imgPath;
   } else if (!addBGImage && !fm.fileExists(imgPath)) {
     // download, resize, crop and store image
-    let req = await new Request(url);
-    let loadedImage = await req.load();
+    let loadedImage = await new Request(url).load();
     // write image and read again (it's smaller that way???)
     await fm.write(tempPath, loadedImage);
     loadedImage = await fm.readImage(tempPath);
@@ -847,6 +856,7 @@ async function downloadPostImage(fileName, url, addBGImage) {
     loadedImage = await cropImageToSquare(loadedImage);
     await fm.writeImage(imgPath, loadedImage);
     await fm.remove(tempPath);
+    // loadedImage = null;
     return imgPath;
   }
   
@@ -858,8 +868,7 @@ async function downloadPostImage(fileName, url, addBGImage) {
       return imgPath;
     } else {
       // download image
-      let req = await new Request(url);
-      let loadedImage = await req.load();
+      let loadedImage = await new Request(url).load();
       // write image and read again (it's smaller that way???)
       await fm.write(tempPath, loadedImage);
       loadedImage = await fm.readImage(tempPath);
@@ -873,6 +882,7 @@ async function downloadPostImage(fileName, url, addBGImage) {
         let loadedSmallImage = await resizeImage(loadedImage, 150);
         loadedSmallImage = await cropImageToSquare(loadedSmallImage);
         await fm.writeImage(imgPath, loadedSmallImage);
+        //loadedSmallImage = null;
       }
       
       // store original image
@@ -888,6 +898,8 @@ async function downloadPostImage(fileName, url, addBGImage) {
       
       await fm.remove(tempPath);
       
+      //loadedImage = null;
+      
       return imgPath;
     }
   }
@@ -898,10 +910,7 @@ async function downloadPostImage(fileName, url, addBGImage) {
 async function loadLocalImage(imgPath) {
   const fm = FileManager.local();
   
-  if (fm.fileExists(imgPath)) {
-    const imgFile = await fm.readImage(imgPath);
-    return imgFile;
-  }
+  if (fm.fileExists(imgPath)) {return await fm.readImage(imgPath);}
 }
 
 // search for and load a local (or iCloud) background image
@@ -915,11 +924,11 @@ async function loadBGImage(imageName, optBlur) {
     return "not found";
   }
   
-  const cacheDir = fm.cacheDirectory();
+  const docDir = fm.documentsDirectory();
   const iCloudDocDir = fmiCloud.documentsDirectory();
   const bgIMGiCloudDocPath = fmiCloud.joinPath(iCloudDocDir, imageName);
   const bgIMGiCloudWPPath = fmiCloud.joinPath(iCloudDocDir+"/wallpaper", imageName);
-  const bgIMGWPCachePath = fm.joinPath(cacheDir+"/saudumm-news-widget-data/wallpaper-cache", imageName);
+  const bgIMGWPCachePath = fm.joinPath(docDir+"/saudumm-news-widget-data/wallpaper-cache", imageName);
   
   if (optBlur == "true" && fm.fileExists(bgIMGWPCachePath+"-blur")) {
     return await fm.readImage(bgIMGWPCachePath+"-blur");
@@ -958,9 +967,9 @@ async function loadBGImage(imageName, optBlur) {
 function checkFileDirs() {
   // Create new FileManager and set data dir
   const fm = FileManager.local();
-  const cacheDir = fm.cacheDirectory();
-  const imgCacheDir = cacheDir+"/saudumm-news-widget-data/image-cache";
-  const imgCacheDirWP = cacheDir+"/saudumm-news-widget-data/wallpaper-cache";
+  const docDir = fm.documentsDirectory();
+  const imgCacheDir = docDir+"/saudumm-news-widget-data/image-cache";
+  const imgCacheDirWP = docDir+"/saudumm-news-widget-data/wallpaper-cache";
   
   if (!fm.fileExists(imgCacheDir)) {fm.createDirectory(imgCacheDir, true);}
   if (!fm.fileExists(imgCacheDirWP)) {fm.createDirectory(imgCacheDirWP, true);}
@@ -971,8 +980,8 @@ function checkFileDirs() {
 // cleanup post image files (if older than 7 days)
 function cleanUpImages(aFileNames) {
   const fm = FileManager.local();
-  const cacheDir = fm.cacheDirectory();
-  const imgCacheDir = cacheDir+"/saudumm-news-widget-data/image-cache";
+  const docDir = fm.documentsDirectory();
+  const imgCacheDir = docDir+"/saudumm-news-widget-data/image-cache";
   
   const aFiles = fm.listContents(imgCacheDir);
   
@@ -990,9 +999,7 @@ function cleanUpImages(aFileNames) {
       let fileDate = fm.creationDate(path);
       let dateNow = Date.now();
       let dateDiffDays = Math.round((dateNow-fileDate)/1000/60/60/24);
-      if (Math.abs(dateDiffDays) > 7) {
-        fm.remove(path);
-      }
+      if (Math.abs(dateDiffDays) > 7) {fm.remove(path);}
     }
   }
   return;
@@ -1007,95 +1014,80 @@ function hashCode (str){
     hash = ((hash<<5)-hash)+char;
     hash = hash & hash; // Convert to 32bit integer
   }
+  hash = Math.abs(hash);
   return hash;
+}
+
+// format the date and time string to a locale date/time
+function formatDateTimeString(strDateTime) {
+  return new Date(strDateTime).toLocaleString((CONF_DATE_TIME_LOCALE == "default" ? [] : [CONF_DATE_TIME_LOCALE]), {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: (CONF_12_HOUR ? true : false)})
 }
 
 // format the post title and replace all html entities with characters
 function formatPostTitle(strHeadline) {
   strHeadline = strHeadline.trim();
-  strHeadline = strHeadline.replaceAll("&quot;", '"');
-  strHeadline = strHeadline.replaceAll("&amp;", "&");
-  strHeadline = strHeadline.replaceAll("&lt;", "<");
-  strHeadline = strHeadline.replaceAll("&gt;", ">");
-  strHeadline = strHeadline.replaceAll("&apos;", "'");
-  strHeadline = strHeadline.replaceAll("&#034;", '"');
-  strHeadline = strHeadline.replaceAll("&#038;", "&");
-  strHeadline = strHeadline.replaceAll("&#039;", "'");
-  strHeadline = strHeadline.replaceAll("&#060;", "<");
-  strHeadline = strHeadline.replaceAll("&#062;", ">");
-  strHeadline = strHeadline.replaceAll("&#338;", "Œ");
-  strHeadline = strHeadline.replaceAll("&#339;", "œ");
-  strHeadline = strHeadline.replaceAll("&#352;", "Š");
-  strHeadline = strHeadline.replaceAll("&#353;", "š");
-  strHeadline = strHeadline.replaceAll("&#376;", "Ÿ");
-  strHeadline = strHeadline.replaceAll("&#710;", "ˆ");
-  strHeadline = strHeadline.replaceAll("&#732;", "˜");
-  strHeadline = strHeadline.replaceAll("&#8211;", "–");
-  strHeadline = strHeadline.replaceAll("&#8212;", "—");
-  strHeadline = strHeadline.replaceAll("&#8216;", "‘");
-  strHeadline = strHeadline.replaceAll("&#8217;", "’");
-  strHeadline = strHeadline.replaceAll("&#8218;", "‚");
-  strHeadline = strHeadline.replaceAll("&#8220;", "“");
-  strHeadline = strHeadline.replaceAll("&#8221;", "”");
-  strHeadline = strHeadline.replaceAll("&#8222;", "„");
-  strHeadline = strHeadline.replaceAll("&#8224;", "†");
-  strHeadline = strHeadline.replaceAll("&#8225;", "‡");
-  strHeadline = strHeadline.replaceAll("&#8230;", "…");
-  strHeadline = strHeadline.replaceAll("&#8240;", "‰");
-  strHeadline = strHeadline.replaceAll("&#8249;", "‹");
-  strHeadline = strHeadline.replaceAll("&#8250;", "›");
-  strHeadline = strHeadline.replaceAll("&#8364;", "€");
-  strHeadline = strHeadline.replaceAll("<![CDATA[", "");
-  strHeadline = strHeadline.replaceAll("]]>", "");
+  strHeadline = strHeadline.replaceAll("&quot;", '"')
+  .replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+  .replaceAll("&apos;", "'").replaceAll("&#034;", '"').replaceAll("&#038;", "&")
+  .replaceAll("&#039;", "'").replaceAll("&#060;", "<").replaceAll("&#062;", ">")
+  .replaceAll("&#338;", "Œ").replaceAll("&#339;", "œ").replaceAll("&#352;", "Š")
+  .replaceAll("&#353;", "š").replaceAll("&#376;", "Ÿ").replaceAll("&#710;", "ˆ")
+  .replaceAll("&#732;", "˜").replaceAll("&#8211;", "–").replaceAll("&#8212;", "—")
+  .replaceAll("&#8216;", "‘").replaceAll("&#8217;", "’").replaceAll("&#8218;", "‚")
+  .replaceAll("&#8220;", "“").replaceAll("&#8221;", "”").replaceAll("&#8222;", "„")
+  .replaceAll("&#8224;", "†").replaceAll("&#8225;", "‡").replaceAll("&#8230;", "…")
+  .replaceAll("&#8240;", "‰").replaceAll("&#8249;", "‹").replaceAll("&#8250;", "›")
+  .replaceAll("&#8364;", "€").replaceAll("<![CDATA[", "").replaceAll("]]>", "");
   return strHeadline;
 }
 
 // get the chosen font for widget texts
 function loadFont(fontName, fontThickness, fontSize) {
   let font = Font.boldSystemFont(fontSize);
-  if (fontName == "System") {
-    switch (fontThickness) {
-      case "ultralight":
-        font = Font.ultraLightSystemFont(fontSize);
-        break;
-      case "thin":
-        font = Font.thinSystemFont(fontSize);
-        break;
-      case "light":
-        font = Font.lightSystemFont(fontSize);
-        break;
-      case "regular":
-        font = Font.regularSystemFont(fontSize);
-        break;
-      case "medium":
-        font = Font.mediumSystemFont(fontSize);
-        break;
-      case "semibold":
-        font = Font.semiboldSystemFont(fontSize);
-        break;
-      case "bold":
-        font = Font.boldSystemFont(fontSize);
-        break;
-      case "heavy":
-        font = Font.heavySystemFont(fontSize);
-        break;
-      case "black":
-        font = Font.blackSystemFont(fontSize);
-        break;
+  
+  if (fontName == "System" || fontName == "Rounded" || fontName == "Monospaced") {
+    if (fontThickness == "ultralight") {
+      font = (fontName == "Rounded") ? Font.ultraLightRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.ultraLightMonospacedSystemFont(fontSize) : Font.ultraLightSystemFont(fontSize);
+    } else if (fontThickness == "thin") {
+      font = (fontName == "Rounded") ? Font.thinRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.thinMonospacedSystemFont(fontSize) : Font.thinSystemFont(fontSize);
+    } else if (fontThickness == "light") {
+      font = (fontName == "Rounded") ? Font.lightRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.lightMonospacedSystemFont(fontSize) : Font.lightSystemFont(fontSize);
+    } else if (fontThickness == "regular") {
+      font = (fontName == "Rounded") ? Font.regularRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.regularMonospacedSystemFont(fontSize) : Font.regularSystemFont(fontSize);
+    } else if (fontThickness == "medium") {
+      font = (fontName == "Rounded") ? Font.mediumRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.mediumMonospacedSystemFont(fontSize) : Font.mediumSystemFont(fontSize);
+    } else if (fontThickness == "semibold") {
+      font = (fontName == "Rounded") ? Font.semiboldRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.semiboldMonospacedSystemFont(fontSize) : Font.semiboldSystemFont(fontSize);
+    } else if (fontThickness == "bold") {
+      font = (fontName == "Rounded") ? Font.boldRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.boldMonospacedSystemFont(fontSize) : Font.boldSystemFont(fontSize);
+    } else if (fontThickness == "heavy") {
+      font = (fontName == "Rounded") ? Font.heavyRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.heavyMonospacedSystemFont(fontSize) : Font.heavySystemFont(fontSize);
+    } else if (fontThickness == "black") {
+      font = (fontName == "Rounded") ? Font.blackRoundedSystemFont(fontSize) :
+             (fontName == "Monospaced") ? Font.blackMonospacedSystemFont(fontSize) : Font.blackSystemFont(fontSize);
     }
   } else {
     font = new Font(fontName, fontSize);
   }
+
   return font;
 }
 
-// load the latest script version number from GitHub
-async function loadGitHubVersion() {
+// check if there's a script update available on GitHub
+async function checkForUpdate(currentVersion) {
   try {
     const latestVersion = await new Request("https://raw.githubusercontent.com/Saudumm/scriptable-News-Widget/main/version.txt").loadString();
-    return latestVersion;
+    return (currentVersion.replace(/[^1-9]+/g, "") < latestVersion.replace(/[^1-9]+/g, "")) ? true : false
   } catch(err) {
-    return CURRENT_VERSION;
+    return false;
   }
 }
 
@@ -1108,7 +1100,7 @@ async function blurImage(img) {
    */
   
   // defines the blur strength in relation to the image resolution
-  const blurStrength = Math.floor((img.size.height*img.size.width)/18000);
+  const blurStrength = await Math.floor((img.size.height*img.size.width)/18000/1);
   if (blurStrength == 0) {blurStrength = 1;}
   
   const js = `
@@ -1205,7 +1197,7 @@ async function blurImage(img) {
       var widthMinus1  = width - 1;
       var heightMinus1 = height - 1;
       var radiusPlus1  = radius + 1;
-      var sumFactor = radiusPlus1 * (radiusPlus1 + 1) / 2;
+      var sumFactor = radiusPlus1 * (radiusPlus1 + 1) / 2 / 1;
       
       var stackStart = new BlurStack();
       var stack = stackStart;
@@ -1414,7 +1406,7 @@ async function blurImage(img) {
   let html = `<img id="blurImg" src="data:image/png;base64,${blurImgData}" /><canvas id="mainCanvas" />`;
   
   // Make the web view and get its return value
-  let view = new WebView();
+  let view = await new WebView();
   await view.loadHTML(html);
   let returnValue = await view.evaluateJavaScript(js);
   
@@ -1432,7 +1424,7 @@ async function resizeImage(img, maxShortSide) {
   let imgHeight = await img.size.height;
   let imgWidth = await img.size.width;
   let imgShortSide = await Math.min(imgHeight, imgWidth);
-  let resizeFactor = await Math.round(imgShortSide/maxShortSide);
+  let resizeFactor = await Math.round(imgShortSide/maxShortSide/1);
   
   const js = `
     // Set up the canvas
@@ -1440,8 +1432,8 @@ async function resizeImage(img, maxShortSide) {
     const canvas = document.getElementById("mainCanvas");
     const w = img.width;
     const h = img.height;
-    const maxW = Math.round(w / ${resizeFactor});
-    const maxH = Math.round(h / ${resizeFactor});
+    const maxW = Math.round(w / ${resizeFactor} / 1);
+    const maxH = Math.round(h / ${resizeFactor} / 1);
     canvas.style.width  = w + "px";
     canvas.style.height = h + "px";
     canvas.width = maxW;
@@ -1463,7 +1455,7 @@ async function resizeImage(img, maxShortSide) {
   let html = `<img id="resImg" src="data:image/png;base64,${resImgData}" /><canvas id="mainCanvas" />`;
   
   // Make the web view and get its return value
-  let view = new WebView();
+  let view = await new WebView();
   await view.loadHTML(html);
   let returnValue = await view.evaluateJavaScript(js);
   
@@ -1487,25 +1479,25 @@ async function cropImageToSquare(img) {
   
   if (imgShortSide != imgLongSide) {
     let imgCropTotal = await (imgLongSide - imgShortSide);
-    let imgCropSide = await Math.floor(imgCropTotal / 2);
+    let imgCropSide = await Math.floor(imgCropTotal / 2 / 1);
 
     let rect;
     switch (imgShortSide) {
       case imgHeight:
-        rect = new Rect(imgCropSide, 0, imgShortSide, imgShortSide);
+        rect = await new Rect(imgCropSide, 0, imgShortSide, imgShortSide);
         break;
       case imgWidth:
-        rect = new Rect(0, imgCropSide, imgShortSide, imgShortSide);
+        rect = await new Rect(0, imgCropSide, imgShortSide, imgShortSide);
         break;
     }
     
-    let draw = new DrawContext();
-    draw.size = new Size(rect.width, rect.height);
+    let draw = await new DrawContext();
+    draw.size = await new Size(rect.width, rect.height);
     
-    draw.drawImageAtPoint(img, new Point(-rect.x, -rect.y));
-    img = draw.getImage();
+    await draw.drawImageAtPoint(img, new Point(-rect.x, -rect.y));
+    img = await draw.getImage();
   }
   return img;
 }
 
-/* ========== END OF SCRIPT ========== */
+/* ============ END OF SCRIPT ============ */
