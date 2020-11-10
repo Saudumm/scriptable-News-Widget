@@ -19,17 +19,17 @@ Tap on a news in the widget to open it directly in your browser.
 - [Links](#links)
 - [Thanks](#thanks)
 
-<a name="requirements"></a>
-# Requirements:
-
-- iOS14
-- Latest version of [Scriptable for iOS](https://apps.apple.com/de/app/scriptable/id1405459188)
-
 ---
 
 __If you'd like to support my work with a coffee 😊: https://ko-fi.com/saudumm__
 
 ---
+
+<a name="requirements"></a>
+# Requirements:
+
+- iOS14
+- Latest version of [Scriptable for iOS](https://apps.apple.com/de/app/scriptable/id1405459188)
 
 <a name="support"></a>
 # Support
