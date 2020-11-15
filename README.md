@@ -245,20 +245,7 @@ To install or update News Widget hassle-free, please add __News Widget Update.js
 <a name="links"></a>
 # Links
 
-You can configure one or multiple Links to WordPress website and/or RSS feeds (at the same time!) directly in the script code (section STANDARD WIDGET CONFIG) or via a plain text file to use in widget parameters, if you want to set up different News Widgets.
-The text file has to be plain text (no .doc, .rtf, etc...) and it has to be stored in the Scriptables folder in the Files App (iCloud Drive).
-
-Every line has to contain a link to a WordPress website or RSS feed and the name of the site. Both values have to be separated by | (like widget parameters)
-Links should start with either http:// or https://
-
-![icloud-drive-example](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/icloud-drive-example.jpg)
-
-Example:
-
-![link-examples](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/link-examples.jpg)
-
-- https://stadt-bremerhaven.de|Caschys Blog
-- https://www.heise.de/rss/heise-atom.xml|Heise Online
+You can configure one or multiple Links to WordPress website and/or RSS feeds (at the same time!) directly in the script code (section STANDARD WIDGET CONFIG) or via Settings Files, if you want to set up different News Widgets.
 
 In case you're not sure if a website is using WordPress, just add _/wp-json/wp/v2/posts_ at the end of the url (https://stadt-bremerhaven.de/wp-json/wp/v2/posts). If you see a lot of text in your browser, the site should work.
 If not, you can search for an RSS feed (if the site has one) and use the link of the RSS feed (for example: )
