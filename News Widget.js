@@ -5,13 +5,13 @@
  *                                          *
  *      NEWS WIDGET (WORDPRESS AND RSS)     *
  *                                          *
- *        v1.1.4 - made by @saudumm         *
+ *        v1.2.0 - made by @saudumm         *
  *       https://twitter.com/saudumm        *
  *                                          *
  ********************************************
  
  Feel free to contact me on Twitter or
- GitHub, if you have any questions or issues.           
+ GitHub, if you have any questions or issues.
 
  GitHub Repo:
  https://github.com/Saudumm/scriptable-News-Widget
@@ -34,38 +34,56 @@
  *      latest version of News Widget!      *
  *                                          *
  ********************************************
- 
+
  WIDGET PARAMETERS: you can long press on the
  widget on your homescreen and edit
  parameters
 
- - Example:
-   small|https://www.stadt-bremerhaven.de|Caschys Blog|true|background.jpg|false|true|Avenir-Heavy
-   (displays a small layout widget for
-   Caschys Blog with post images, a custom
-   background image, no blur, a gradient over
-   the image and with the font Avenir-Heavy)
- - Parameter order has to be: widget size,
-   site url, site name, show post images,
-   background image, blur background image,
-   background image gradient, font name
- - Parameters have to be separated by |
- - You can omit all subsequent parameters,
-   for example background image:
-   small|https://www.stadt-bremerhaven.de|Caschys Blog
- - You can just set "small", "medium" or
-   "large" as a parameter
- - Parameters that are not set will be set
-   by the standard widget config
+ Please run Settings Wizard, configure
+ everything to your liking and then set the
+ name of the Settings File as a
+ Widget Parameter.
 */
+
+/* ============ CONFIG  START ============ */
+
+/*******************************************/
+/*                                         */
+/*               CONFIG FILE               */
+/*                                         */
+/*  You can store your preferred settings  */
+/*   in a config file in the Scriptables   */
+/*    directory in your Files App. This    */
+/*   config file can then be loaded and    */
+/*      used to overwrite the various      */
+/*   settings below, so you don't have to  */
+/*  constantly change them when the widget */
+/*    code is updated. You can even use    */
+/*     different config files as widget    */
+/*      parameter to create different      */
+/*              widget styles!             */
+/*                                         */
+/*   Check the GitHub Repo for more info   */
+/*           and an example file           */
+/*                                         */
+/*******************************************/
+
+// set to "none" if you don't want to use a
+// settings file or if you want to use a
+// settings file via widget parameter
+var SETTINGS_FILE = "none";
+
+/*******************************************/
+/*                                         */
+/*         CHECK FOR SCRIPT UDPATE         */
+/*                                         */
+/*******************************************/
 
 // Check for script updates and get notified
 // as soon as a new version is released
 // true = check for script updates
 // false = don't check for updates
-const CHECK_FOR_SCRIPT_UPDATE = true
-
-/* ============ CONFIG  START ============ */
+var CHECK_FOR_SCRIPT_UPDATE = true;
 
 /*******************************************/
 /*                                         */
@@ -90,16 +108,19 @@ const CHECK_FOR_SCRIPT_UPDATE = true
 // very long time if you add too many links.
 var PARAM_LINKS =
 [
- ["https://venturebeat.com", "VentureBeat"],
+ ["https://venturebeat.com", "VENTUREBEAT"],
  ["http://rss.cnn.com/rss/edition.rss", "CNN"],
-]
+ ["https://news.google.com/rss", "GOOGLE NEWS"],
+ ["https://stadt-bremerhaven.de", "CASCHYS BLOG"],
+ ["https://insidexbox.de", "INSIDEXBOX"],
+];
 
 // Name of the website/feed to display in the
 // widget (at the top).
 // If only one site is configured (in the
 // code or parameters), the name of the site
 // is used.
-var PARAM_WIDGET_TITLE = "NEWS WIDGET";
+var PARAM_WIDGET_TITLE = "News Widget";
 
 // Note: custom background image files have
 // to be in the Scriptable (iCloud) Files
@@ -120,13 +141,12 @@ var PARAM_BG_IMAGE_BLUR = "true";
 var PARAM_BG_IMAGE_GRADIENT = "true";
 
 // Note: combining
-// PARAM_SHOW_POST_IMAGES = true + small
+// PARAM_SHOW_NEWS_IMAGES = true + small
 // widget will ignore CONF_BG_GRADIENT_COLOR
 // values in small config widgets.
 // "true" = display images next to headlines
 // "false" = no images next to posts
-var PARAM_SHOW_POST_IMAGES = "true";
-
+var PARAM_SHOW_NEWS_IMAGES = "true";
 
 /*******************************************/
 /*                                         */
@@ -144,6 +164,26 @@ var PARAM_SHOW_POST_IMAGES = "true";
 /*                                         */
 /*******************************************/
 
+// Configure if you want a maximum of four or
+// five News displayed in the LARGE Widget.
+// Please only set 4 or 5. Other values will
+// default to 4. If you have exactly
+// four websites configured in PARAM_LINKS,
+// this Setting will always default to 4.
+var CONF_LARGE_WIDGET_MAX_NEWS = 4;
+
+// Configure how posts should be displayed
+// in the widget.
+// Set to "websites" if you want to
+// prioritize seeing news from all your
+// configured websites. This will more
+// closely resemble the iOS News Widget.
+// Set to "date" if you want to
+// prioritize just sorting by date. This will
+// more closely resemble a timeline or feed
+// of all configured websites combined.
+var CONF_DISPLAY_NEWS = "websites";
+
 // Configure your preferred region to format
 // how date and time values will be displayed
 // "default" = uses your system region
@@ -151,18 +191,18 @@ var PARAM_SHOW_POST_IMAGES = "true";
 // "en-GB", "ko", "fr-CA" or "de-DE"
 // For a list of possible iOS locales, see:
 // https://gist.github.com/jacobbubu/1836273
-const CONF_DATE_TIME_LOCALE = "default"
+var CONF_DATE_TIME_LOCALE = "default";
 
 // Configure which time format to use
 // true = 12h time format
 // false = 24h time format
-const CONF_12_HOUR = false
+var CONF_12_HOUR = false;
 
 // Set the background color of your widget
 var CONF_BG_COLOR =
     Color.dynamic(
       new Color("#fefefe"),
-      new Color("#1c1c1e")
+      new Color("#2c2c2e")
     );
 
 // Configure to use a color gradient instead
@@ -176,35 +216,34 @@ var CONF_BG_GRADIENT = false;
 // gradient color from the top of the widget
 var CONF_BG_GRADIENT_COLOR_TOP =
     Color.dynamic(
-      new Color("#dddddd"),
-      new Color("#222222")
+      new Color("#fefefe"),
+      new Color("#000000")
     );
 // gradient color to the bottom of the widget
 var CONF_BG_GRADIENT_COLOR_BTM =
     Color.dynamic(
-      new Color("#bbbbbb"),
-      new Color("#444444")
+      new Color("#cccccc"),
+      new Color("#2c2c2e")
     );
 
 // gradient color image overlay from the top
 // of the widget
 // used if a background image is displayed
 // and PARAM_BG_IMAGE_GRADIENT = "true"
-const CONF_BG_GRADIENT_OVERLAY_TOP =
+var CONF_BG_GRADIENT_OVERLAY_TOP =
       Color.dynamic(
         new Color("#fefefe", 0.3),
-        new Color("#1c1c1e", 0.3)
+        new Color("#2c2c2e", 0.3)
       );
 // gradient color image overlay to the bottom
 // of the widget
 // used if a background image is displayed
 // and PARAM_BG_IMAGE_GRADIENT = "true"
-const CONF_BG_GRADIENT_OVERLAY_BTM =
+var CONF_BG_GRADIENT_OVERLAY_BTM =
       Color.dynamic(
         new Color("#fefefe", 1.0),
-        new Color("#1c1c1e", 1.0)
+        new Color("#2c2c2e", 1.0)
       );
-
 
 /*******************************************/
 /*                                         */
@@ -230,40 +269,39 @@ const CONF_BG_GRADIENT_OVERLAY_BTM =
 /*******************************************/
 
 // Set the font, size and text color of the
-// name at the top of the widget
-var CONF_FONT_SITENAME = "System"
-const CONF_FONT_WEIGHT_SITENAME = "bold";
-const CONF_FONT_SIZE_SITENAME = 16;
-const CONF_FONT_COLOR_SITENAME =
+// widget title at the top of the widget
+var CONF_FONT_WIDGET_TITLE = "System";
+var CONF_FONT_WEIGHT_WIDGET_TITLE = "heavy";
+var CONF_FONT_SIZE_WIDGET_TITLE = 16;
+var CONF_FONT_COLOR_WIDGET_TITLE =
       Color.dynamic(
-        new Color("#1c1c1e"),
+        new Color("#000000"),
         new Color("#fefefe")
       );
 
 // Set the font, size and text color of the
 // date and time line(s) in the widget
-var CONF_FONT_DATE = "System"
-const CONF_FONT_WEIGHT_DATE = "bold";
-const CONF_FONT_SIZE_DATE = 12;
-const CONF_FONT_COLOR_DATE =
+var CONF_FONT_DATE = "System";
+var CONF_FONT_WEIGHT_DATE = "heavy";
+var CONF_FONT_SIZE_DATE = 12;
+var CONF_FONT_COLOR_DATE =
       Color.dynamic(
-        Color.darkGray(),
-        Color.gray()
+        new Color("#8a8a8d"),
+        new Color("#9f9fa4")
       );
 
 // Set the font, size and text color of the
-// news titles in the widget
-var CONF_FONT_TITLE = "System"
-const CONF_FONT_WEIGHT_TITLE = "bold";
-const CONF_FONT_SIZE_TITLE = 12;
-const CONF_FONT_COLOR_TITLE =
+// news headlines in the widget
+var CONF_FONT_HEADLINE = "System";
+var CONF_FONT_WEIGHT_HEADLINE = "semibold";
+var CONF_FONT_SIZE_HEADLINE = 13;
+var CONF_FONT_COLOR_HEADLINE =
       Color.dynamic(
-        new Color("#1c1c1e"),
+        new Color("#000000"),
         new Color("#fefefe")
       );
 
 /* ============= CONFIG  END ============= */
-
 
 /*******************************************/
 /*                                         */
@@ -272,53 +310,44 @@ const CONF_FONT_COLOR_TITLE =
 /*                                         */
 /*******************************************/
 
+const ONLINE = await isOnline();
+
 // check for updates
 var UPDATE_AVAILABLE = false;
-if (CHECK_FOR_SCRIPT_UPDATE === true) {UPDATE_AVAILABLE = await checkForUpdate("v1.1.4");}
+if (ONLINE && CHECK_FOR_SCRIPT_UPDATE === true) {UPDATE_AVAILABLE = await checkForUpdate("v1.2.0");}
 
-var SINGLE_SITE_MODE = false
-var WIDGET_SIZE = (config.runsInWidget ? config.widgetFamily : "small");
+// define default size of widget
+var WIDGET_SIZE = (config.runsInWidget ? config.widgetFamily : "large");
 
 // process widget parameters
-if (args.widgetParameter) {
-  let param = args.widgetParameter.split("|");
-  
-  if (param.length == 1) {
-    SINGLE_SITE_MODE = (PARAM_LINKS.length == 1 ? true : false);
-    if (SINGLE_SITE_MODE) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
-  }
-  
-  if (param.length >= 1) {WIDGET_SIZE = param[0];}
-  
-  if (param.length >= 2) {
-    if (param[1].substring(0, 4) == "http") {
-      PARAM_LINKS = [[param[1], ""]];
-      SINGLE_SITE_MODE = true;
-    } else {
-      PARAM_LINKS = await loadTextFileToArray(param[1])
-      if (PARAM_LINKS) {
-        SINGLE_SITE_MODE = (PARAM_LINKS.length == 1 ? true : false);
-        if (SINGLE_SITE_MODE) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
-      }
-    }
-  }
-  
-  if (param.length >= 3) {PARAM_WIDGET_TITLE = param[2];}
-  if (param.length >= 4) {PARAM_SHOW_POST_IMAGES = param[3];}
-  if (param.length >= 5) {PARAM_BG_IMAGE_NAME = param[4];}
-  if (param.length >= 6) {PARAM_BG_IMAGE_BLUR = param[5];}
-  if (param.length >= 7) {PARAM_BG_IMAGE_GRADIENT = param[6];}
-  if (param.length >= 8) {CONF_FONT_SITENAME = CONF_FONT_DATE = CONF_FONT_TITLE = param[7];}
-} else {
-  SINGLE_SITE_MODE = (PARAM_LINKS.length == 1 ? true : false);
-  if (SINGLE_SITE_MODE === true) {PARAM_WIDGET_TITLE = PARAM_LINKS[0][1];}
-}
+await checkWidgetParameter();
+
+// load settings if a file is configured
+if (SETTINGS_FILE != "none") {await loadSettingsFromFile(SETTINGS_FILE);}
 
 // set the number of posts depending on WIDGET_SIZE
-var POST_COUNT = (WIDGET_SIZE == "small") ? 1 : (WIDGET_SIZE == "medium") ? 2 : 5;
+var WIDGET_NEWS_COUNT = (WIDGET_SIZE == "small") ? 1 : (WIDGET_SIZE == "medium") ? 2 : 5;
+if (CONF_LARGE_WIDGET_MAX_NEWS < 4 || CONF_LARGE_WIDGET_MAX_NEWS > 5) {CONF_LARGE_WIDGET_MAX_NEWS = 4;}
 
 // check directories
-await checkFileDirs()
+await checkFileDirs();
+
+await cleanUpCache();
+
+if (config.runsInApp) {
+  let welcomeAlert = await new Alert();
+  welcomeAlert.title = "News Widget";
+  welcomeAlert.message = "Welcome and THANK YOU for using News Widget!\nDo you want to run the Settings Wizard or Preview the Widget?";
+  welcomeAlert.addAction("Run Settings Wizard");
+  welcomeAlert.addAction("Preview Widget");
+  welcomeAlert.addCancelAction("Cancel");
+  
+  switch (await welcomeAlert.presentSheet()) {
+      case 0: await settingsWizard(); return;
+      case 1: break;
+      case -1: return;
+  }
+}
 
 // create widget
 const widget = await createWidget();
@@ -326,15 +355,9 @@ const widget = await createWidget();
 // show widget if run in app
 if (!config.runsInWidget) {
   switch (WIDGET_SIZE) {
-    case "small":
-      await widget.presentSmall();
-      break;
-    case "medium":
-      await widget.presentMedium();
-      break;
-    case "large":
-      await widget.presentLarge();
-      break;
+    case "small": await widget.presentSmall(); break;
+    case "medium": await widget.presentMedium(); break;
+    case "large": await widget.presentLarge(); break;
   }
 }
 
@@ -347,119 +370,145 @@ Script.complete();
 
 // create the widget
 async function createWidget() {
-  const postData = await getData();
-
+  const fontWidgetTitle = await loadFont(CONF_FONT_WIDGET_TITLE, CONF_FONT_WEIGHT_WIDGET_TITLE, CONF_FONT_SIZE_WIDGET_TITLE);
+  const fontDate = await loadFont(CONF_FONT_DATE, CONF_FONT_WEIGHT_DATE, CONF_FONT_SIZE_DATE);
+  const fontHeadline = await loadFont(CONF_FONT_HEADLINE, CONF_FONT_WEIGHT_HEADLINE, CONF_FONT_SIZE_HEADLINE);
+  
+  const singleSiteMode = (PARAM_LINKS.length == 1 ? true : false);
+  
   const list = new ListWidget();
   
-  const fontSiteName = await loadFont(CONF_FONT_SITENAME, CONF_FONT_WEIGHT_SITENAME, CONF_FONT_SIZE_SITENAME);
-  const fontDate = await loadFont(CONF_FONT_DATE, CONF_FONT_WEIGHT_DATE, CONF_FONT_SIZE_DATE);
-  const fontTitle = await loadFont(CONF_FONT_TITLE, CONF_FONT_WEIGHT_TITLE, CONF_FONT_SIZE_TITLE);
+  const widgetNewsData = await getData();
   
-  // display name of the website
-  const siteName = list.addText(PARAM_WIDGET_TITLE);
+  // Display the title of the widget
+  const titleStack = list.addStack();
+  titleStack.layoutHorizontally();
+
+  const widgetTitle = titleStack.addText(PARAM_WIDGET_TITLE);
+  widgetTitle.font = fontWidgetTitle;
+  widgetTitle.textColor = CONF_FONT_COLOR_WIDGET_TITLE;
+  widgetTitle.lineLimit = 1;
+  widgetTitle.minimumScaleFactor = 0.5;
+  
+  if (!ONLINE) {
+    titleStack.addSpacer();
+    const sym = SFSymbol.named("icloud.slash");
+    sym.applyFont(fontWidgetTitle);
+    const symbolOffline = titleStack.addImage(sym.image);
+    symbolOffline.rightAlignImage();
+    symbolOffline.tintColor = CONF_FONT_COLOR_WIDGET_TITLE;
+    symbolOffline.imageSize = new Size(19, 19)
+  }
     
-  siteName.font = fontSiteName;
-  siteName.textColor = CONF_FONT_COLOR_SITENAME;
-  siteName.lineLimit = 1;
-  siteName.minimumScaleFactor = 0.5;
-  
-  list.addSpacer();
-  
-  if (postData) {
-    if (POST_COUNT == 1 || postData.length == 1) {
-      // load widget background image (if PARAM_SHOW_POST_IMAGES = true or PARAM_BG_IMAGE_NAME is set)
-      if (PARAM_SHOW_POST_IMAGES == "true" && PARAM_BG_IMAGE_NAME == "none") {
-        if (postData.aPostIMGPaths[0] != "none") {
-          list.backgroundImage = await loadLocalImage(postData.aPostIMGPaths[0]+(PARAM_BG_IMAGE_BLUR == "true" ? "-bg-blur" : "-bg"));
+  if (widgetNewsData) {
+    if (WIDGET_SIZE == "large" && CONF_LARGE_WIDGET_MAX_NEWS == 4) {WIDGET_NEWS_COUNT = 4;}
+    if (WIDGET_NEWS_COUNT >= widgetNewsData.aNewsHeadlines.length) {WIDGET_NEWS_COUNT = widgetNewsData.aNewsHeadlines.length;}
+    if (WIDGET_SIZE == "medium" && WIDGET_NEWS_COUNT == 2) {list.addSpacer(3);} else if (WIDGET_SIZE == "large" && WIDGET_NEWS_COUNT == 5) {list.addSpacer(10);} else {list.addSpacer();}
+
+    if (WIDGET_NEWS_COUNT == 1 || widgetNewsData.aNewsHeadlines.length == 1) {
+      // use default padding
+      list.useDefaultPadding();
+      // load widget background image (if PARAM_SHOW_NEWS_IMAGES = true or PARAM_BG_IMAGE_NAME is set)
+      if (PARAM_SHOW_NEWS_IMAGES == "true" && PARAM_BG_IMAGE_NAME == "none") {
+        if (widgetNewsData.aNewsIMGPaths[0] != "none") {
+          list.backgroundImage = await loadLocalImage(widgetNewsData.aNewsIMGPaths[0]+(PARAM_BG_IMAGE_BLUR == "true" ? "-bg-blur" : "-bg"));
+          // draw gradient over background image for better legibility
+          CONF_BG_GRADIENT = true;
+          CONF_BG_GRADIENT_COLOR_TOP = CONF_BG_GRADIENT_OVERLAY_TOP;
+          CONF_BG_GRADIENT_COLOR_BTM = CONF_BG_GRADIENT_OVERLAY_BTM;
         }
-        // draw gradient over background image for better readability
-        CONF_BG_GRADIENT = true;
-        CONF_BG_GRADIENT_COLOR_TOP = CONF_BG_GRADIENT_OVERLAY_TOP;
-        CONF_BG_GRADIENT_COLOR_BTM = CONF_BG_GRADIENT_OVERLAY_BTM;
-        
-        // small shadow outline on PARAM_WIDGET_TITLE for better readability
-        //siteName.shadowRadius = 1;
-        //siteName.shadowColor = Color.dynamic(new Color("#ffffff", 0), new Color("#000000", 0));
       }
       
       const postStack = list.addStack();
       postStack.layoutVertically();
       
-      if (!SINGLE_SITE_MODE) {
-        const labelSiteName = postStack.addText(postData.aPostSiteNames[0]);
-        labelSiteName.font = fontTitle;
-        labelSiteName.textColor = CONF_FONT_COLOR_DATE;;
-        labelSiteName.lineLimit = 1;
-        labelSiteName.minimumScaleFactor = 0.5;
-      }
-      
-      const labelDateTime = postStack.addText(await formatDateTimeString(postData.aPostDates[0]));
-      labelDateTime.font = fontDate;
-      labelDateTime.textColor = CONF_FONT_COLOR_DATE;
-      labelDateTime.lineLimit = 1;
-      labelDateTime.minimumScaleFactor = 0.5;
-      
-      const labelHeadline = postStack.addText(postData.aPostTitles[0]);
-      labelHeadline.font = fontTitle;
-      labelHeadline.textColor = CONF_FONT_COLOR_TITLE;
-      labelHeadline.lineLimit = 3;
-      
-      list.url = postData.aPostURLs[0];
-    } else {
-      if (POST_COUNT < postData.length) {POST_COUNT = postData.length;}
-      
-      const aStackRow = await new Array(POST_COUNT);
-      const aStackCol = await new Array(POST_COUNT);
-      const aLblSiteName = await new Array(POST_COUNT);
-      const aLblPostDate = await new Array(POST_COUNT);
-      const aLblPostTitle = await new Array(POST_COUNT);
-      const aLblPostIMG = await new Array(POST_COUNT);
-      
-      let i;
-      for (i = 0; i < POST_COUNT; i++) {
-        aStackRow[i] = list.addStack();
-        aStackRow[i].layoutHorizontally();
-        aStackRow[i].url = postData.aPostURLs[i];
-        
-        aStackCol[i] = aStackRow[i].addStack();
-        aStackCol[i].layoutVertically();
-
-        aLblPostDate[i] = aStackCol[i].addText((SINGLE_SITE_MODE ? "" : postData.aPostSiteNames[i]+" - ")+await formatDateTimeString(postData.aPostDates[i]));
-        aLblPostDate[i].font = fontDate;
-        aLblPostDate[i].textColor = CONF_FONT_COLOR_DATE;
-        aLblPostDate[i].lineLimit = 1;
-        aLblPostDate[i].minimumScaleFactor = 0.5;
-        
-        aLblPostTitle[i] = aStackCol[i].addText(postData.aPostTitles[i]);
-        aLblPostTitle[i].font = fontTitle;
-        aLblPostTitle[i].textColor = CONF_FONT_COLOR_TITLE;
-        aLblPostTitle[i].lineLimit = 2;
-        
-        if (PARAM_SHOW_POST_IMAGES == "true" && postData.aPostIMGPaths[i] != "none") {
-          aStackRow[i].addSpacer();
-          aLblPostIMG[i] = aStackRow[i].addImage(await loadLocalImage(postData.aPostIMGPaths[i]));
-          aLblPostIMG[i].imageSize = new Size(45,45);
-          aLblPostIMG[i].cornerRadius = 8;
-          aLblPostIMG[i].rightAlignImage();
+      if (config.widgetFamily === "medium" || config.widgetFamily === "large") {
+          const labelDateTime = postStack.addText((singleSiteMode ? "" : widgetNewsData.aNewsSiteNames[0]+" - ")+widgetNewsData.aNewsDateTimes[0]);
+          labelDateTime.font = fontDate;
+          labelDateTime.textColor = CONF_FONT_COLOR_DATE;
+          labelDateTime.lineLimit = 1;
+          labelDateTime.minimumScaleFactor = 0.5;
+      } else {
+        if (!singleSiteMode) {
+          const labelWidgetTitle = postStack.addText(widgetNewsData.aNewsSiteNames[0]);
+          labelWidgetTitle.font = fontDate;
+          labelWidgetTitle.textColor = CONF_FONT_COLOR_DATE;;
+          labelWidgetTitle.lineLimit = 1;
+          labelWidgetTitle.minimumScaleFactor = 0.5;
         }
         
-        if (i < POST_COUNT-1) {list.addSpacer();}
+        const labelDateTime = postStack.addText(widgetNewsData.aNewsDateTimes[0]);
+        labelDateTime.font = fontDate;
+        labelDateTime.textColor = CONF_FONT_COLOR_DATE;
+        labelDateTime.lineLimit = 1;
+        labelDateTime.minimumScaleFactor = 0.5;
+      }
+
+      const labelHeadline = postStack.addText(widgetNewsData.aNewsHeadlines[0]);
+      labelHeadline.font = fontHeadline;
+      labelHeadline.textColor = CONF_FONT_COLOR_HEADLINE;
+      labelHeadline.lineLimit = 3;
+      
+      list.url = widgetNewsData.aNewsURLs[0];
+    } else {
+      list.setPadding(16, 16, 16, 16);
+      
+      const aStackRow = await new Array(WIDGET_NEWS_COUNT);
+      const aStackCol = await new Array(WIDGET_NEWS_COUNT);
+      const aLblNewsDateTime = await new Array(WIDGET_NEWS_COUNT);
+      const aLblNewsHeadline = await new Array(WIDGET_NEWS_COUNT);
+      const aLblNewsImage = await new Array(WIDGET_NEWS_COUNT);
+      
+      let i;
+      for (i = 0; i < WIDGET_NEWS_COUNT; i++) {
+        aStackRow[i] = list.addStack();
+        aStackRow[i].layoutHorizontally();
+        aStackRow[i].url = widgetNewsData.aNewsURLs[i];
+
+        aStackCol[i] = aStackRow[i].addStack();
+        aStackCol[i].layoutVertically();
+        
+        aLblNewsDateTime[i] = aStackCol[i].addText((singleSiteMode ? "" : widgetNewsData.aNewsSiteNames[i]+" - ")+widgetNewsData.aNewsDateTimes[i]);
+        aLblNewsDateTime[i].font = fontDate;
+        aLblNewsDateTime[i].textColor = CONF_FONT_COLOR_DATE;
+        aLblNewsDateTime[i].lineLimit = 1;
+        aLblNewsDateTime[i].minimumScaleFactor = 0.5;
+        
+        aLblNewsHeadline[i] = aStackCol[i].addText(widgetNewsData.aNewsHeadlines[i]);
+        aLblNewsHeadline[i].font = fontHeadline;
+        aLblNewsHeadline[i].textColor = CONF_FONT_COLOR_HEADLINE;
+        aLblNewsHeadline[i].lineLimit = 2;
+
+        if (PARAM_SHOW_NEWS_IMAGES == "true") {
+          aStackRow[i].addSpacer();
+          aLblNewsImage[i] = aStackRow[i].addImage(await loadLocalImage(widgetNewsData.aNewsIMGPaths[i]));
+          if (WIDGET_SIZE == "large" && WIDGET_NEWS_COUNT == 4) {
+            aLblNewsImage[i].imageSize = new Size(63,63);
+            aLblNewsHeadline[i].lineLimit = 3;
+          } else {
+            aLblNewsImage[i].imageSize = new Size(45.66,45.66);
+          }
+          aLblNewsImage[i].cornerRadius = 8;
+          if (widgetNewsData.aNewsIMGPaths[i] === "none") {aLblNewsImage[i].tintColor = CONF_FONT_COLOR_HEADLINE; aLblNewsImage[i].imageOpacity = 0.5;}
+          aLblNewsImage[i].rightAlignImage();
+        }
+        if (i < WIDGET_NEWS_COUNT-1) {list.addSpacer();}
       }
     }
   } else {
-    siteName.textColor = Color.white();
-    
-    const sad_face = list.addText(":(")
-    sad_face.font = Font.regularSystemFont(config.widgetFamily === "large" ? 190 : 60);
-    sad_face.textColor = Color.white();
-    sad_face.lineLimit = 1;
-    sad_face.minimumScaleFactor = 0.1;
+    widgetTitle.textColor = Color.white();
+    list.addSpacer();
+    const sadFace = list.addText(":(");
+    sadFace.font = Font.regularSystemFont((WIDGET_SIZE === "large") ? 190 : 60);
+    sadFace.textColor = Color.white();
+    sadFace.lineLimit = 1;
+    sadFace.minimumScaleFactor = 0.1;
     
     list.addSpacer();
     
-    const err_msg = list.addText("Couldn't load data");
-    err_msg.font = Font.regularSystemFont(12);
-    err_msg.textColor = Color.white();
+    const errMsg = list.addText("Couldn't load data");
+    errMsg.font = Font.regularSystemFont(12);
+    errMsg.textColor = Color.white();
     
     CONF_BG_COLOR = new Color("#1f67b1");
     CONF_BG_GRADIENT = false;
@@ -467,11 +516,14 @@ async function createWidget() {
   }
   
   if (UPDATE_AVAILABLE) {
+    list.addSpacer(4);
+    list.setPadding(16, 16, 0, 16);
     const updateMsg = list.addText("Script Update available on GitHub");
     updateMsg.font = Font.lightSystemFont(9);
     updateMsg.textColor = Color.white();
     updateMsg.lineLimit = 1;
-    updateMsg.minimumScaleFactor = 0.1;
+    updateMsg.minimumScaleFactor = 0.2;
+    updateMsg.centerAlignText()
     updateMsg.url = "https://github.com/Saudumm/scriptable-News-Widget"
   }
   
@@ -480,18 +532,13 @@ async function createWidget() {
     const customBGImage = await loadBGImage(PARAM_BG_IMAGE_NAME, PARAM_BG_IMAGE_BLUR);
     if (customBGImage != "not found") {
       list.backgroundImage = customBGImage;
-      
       if (PARAM_BG_IMAGE_GRADIENT == "true") {
-        // draw gradient over background image for better readability
+        // draw gradient over background image for better legibility
         const gradient = new LinearGradient();
         gradient.locations = [0, 1];
         gradient.colors = [CONF_BG_GRADIENT_OVERLAY_TOP, CONF_BG_GRADIENT_OVERLAY_BTM];
         list.backgroundGradient = gradient;
       }
-      
-      // small shadow outline on PARAM_WIDGET_TITLE for better readability
-      //siteName.shadowRadius = 1;
-      //siteName.shadowColor = Color.dynamic(new Color("#ffffff", 0), new Color("#000000", 0));
     } else {
       list.backgroundColor = CONF_BG_COLOR;
     }
@@ -503,47 +550,76 @@ async function createWidget() {
   } else {
     list.backgroundColor = CONF_BG_COLOR;
   }
-  
   return list;
 }
 
 // get data from all websites and extract necessary data
 async function getData() {
   try {
+    const localFM = FileManager.local();
+    
     const aData = await new Array();
+    
     for (iLink = 0; iLink < PARAM_LINKS.length; iLink++) {
+      // add https:// to the link if it's missing
       if (PARAM_LINKS[iLink][0].substring(0, 7) != "http://" && PARAM_LINKS[iLink][0].substring(0, 8) != "https://") {
         PARAM_LINKS[iLink][0] = "https://"+PARAM_LINKS[iLink][0]
       }
+      // remove last / from link
       if (PARAM_LINKS[iLink][0].slice(-1) == "/") {PARAM_LINKS[iLink][0] = PARAM_LINKS[iLink][0].slice(0, -1);}
-      if (await isJSON(PARAM_LINKS[iLink][0]+"/wp-json/wp/v2/posts?per_page=1")) {
+
+      const whatToLoad = await _whatShouldILoad(PARAM_LINKS[iLink][0], PARAM_LINKS[iLink][1])
+
+      if (whatToLoad.loadFormat == "WP-JSON") {
         // WordPress JSON
         try {
-          const loadedJSON = await new Request(PARAM_LINKS[iLink][0]+"/wp-json/wp/v2/posts?per_page=5").loadJSON();
-                      
-          let loadPosts = (loadedJSON.length >= 5) ? 5 : loadedJSON.length
-                    
+          let loadedJSON
+          if (ONLINE) {
+            loadedJSON = await new Request(PARAM_LINKS[iLink][0]+"/wp-json/wp/v2/posts?per_page=5").loadJSON();
+            // Save data to file
+            await localFM.writeString(whatToLoad.loadFilePath, JSON.stringify(loadedJSON));
+          } else {
+            loadedJSON = await JSON.parse(localFM.readString(whatToLoad.loadFilePath));
+          }
+          
+          // Define how many news should be processed
+          let calcLoadPosts = 5;
+          let maxPostsForWidgetSize = (WIDGET_SIZE == "small") ? 1 : (WIDGET_SIZE == "medium") ? 2 : 5
+          if (WIDGET_SIZE == "large" && CONF_LARGE_WIDGET_MAX_NEWS == 4) {maxPostsForWidgetSize = 4;}
+          if (CONF_DISPLAY_NEWS == "websites") {
+            calcLoadPosts = await Math.round(maxPostsForWidgetSize / PARAM_LINKS.length / 1);
+            calcLoadPosts = (calcLoadPosts <= 1) ? 1 : calcLoadPosts;
+          } else if (CONF_DISPLAY_NEWS == "date") {
+            calcLoadPosts = maxPostsForWidgetSize
+          }
+          
+
+          const loadPosts = (loadedJSON.length >= calcLoadPosts) ? calcLoadPosts : loadedJSON.length
           let iPost;
           for (iPost = 0; iPost < loadPosts; iPost++) {
             let postDate = loadedJSON[iPost].date_gmt;
-            if (postDate == undefined) {postDate = loadedJSON[iPost].date;} else {(postDate.slice(-1) == "Z") ? postDate : postDate += "Z";}
-            let postDateSort = await new Date(postDate).toLocaleString(["fr-CA"], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"});
-            
-            let postTitle = await formatPostTitle(loadedJSON[iPost].title.rendered);
-            
-            let postURL = loadedJSON[iPost].guid.rendered;
-            
-            let postIMGURL = await getMediaURL(PARAM_LINKS[iLink][0], loadedJSON[iPost].featured_media, loadedJSON[iPost].id);
+            if (postDate === undefined) {postDate = loadedJSON[iPost].date;} else {(postDate.slice(-1) == "Z") ? postDate : postDate += "Z";}
+            const postDateSort = await new Date(postDate).toLocaleString(["fr-CA"], {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"});
+            const postTitle = await _formatPostTitle(loadedJSON[iPost].title.rendered);
+            const postURL = loadedJSON[iPost].guid.rendered;
+            const postIMGURL = await _getMediaURL(PARAM_LINKS[iLink][0], loadedJSON[iPost].featured_media, loadedJSON[iPost].id, PARAM_LINKS[iLink][1]);
                         
             await aData.push([postDateSort, postDate+"|||"+postTitle+"|||"+postURL+"|||"+postIMGURL+"|||"+PARAM_LINKS[iLink][1]]);
           }
         } catch(err) {
-         log(err);
+         log("try processing WP-JSON: "+err);
         }
-      } else {
+      } else if (whatToLoad.loadFormat == "RSS") {
         // RSS Feeds
         try {
-          const loadRSSFeed = await new Request(PARAM_LINKS[iLink][0]).loadString();
+          let loadRSSFeed = null;
+          if (ONLINE) {
+            loadRSSFeed = await new Request(PARAM_LINKS[iLink][0]).loadString();
+            // Save data to file
+            await localFM.writeString(whatToLoad.loadFilePath, loadRSSFeed);
+          } else {
+            loadRSSFeed = await localFM.readString(whatToLoad.loadFilePath);
+          }
 
           const aRSSItems = await new Array();
           let itemValue = null;
@@ -613,6 +689,20 @@ async function getData() {
                 imgLink = imgLink[1]+imgLink[2];
                 currentItem["image"] = imgLink;
                 searchForImage = false;
+              } else {
+                imgLink = itemValue.match(/src="(.*?\.)(jpe?g|png|bmp).*?"/i);
+                if (imgLink && imgLink.length == 3) {
+                  let urlFromParam = PARAM_LINKS[iLink][0].match(/(https?\:\/\/.*?)\//i);
+                  if (urlFromParam && urlFromParam.length == 2) {
+                    imgLink = urlFromParam[1]+imgLink[1]+imgLink[2];
+                    imgLink = imgLink.match(/(https?\:\/\/.*?\.)(jpe?g|png|bmp).*?/i);
+                    if (imgLink && imgLink.length == 3) {
+                      imgLink = imgLink[1]+imgLink[2];
+                      currentItem["image"] = imgLink;
+                      searchForImage = false;
+                    }
+                  }
+                }
               }
             }
             
@@ -623,6 +713,20 @@ async function getData() {
                 imgLink = imgLink[1]+imgLink[2];
                 currentItem["image"] = imgLink;
                 searchForImage = false;
+              } else {
+                imgLink = itemValue.match(/src="(.*?\.)(jpe?g|png|bmp).*?"/i);
+                if (imgLink && imgLink.length == 3) {
+                  let urlFromParam = PARAM_LINKS[iLink][0].match(/(https?\:\/\/.*?)\//i);
+                  if (urlFromParam && urlFromParam.length == 2) {
+                    imgLink = urlFromParam[1]+imgLink[1]+imgLink[2];
+                    imgLink = imgLink.match(/(https?\:\/\/.*?\.)(jpe?g|png|bmp).*?/i);
+                    if (imgLink && imgLink.length == 3) {
+                      imgLink = imgLink[1]+imgLink[2];
+                      currentItem["image"] = imgLink;
+                      searchForImage = false;
+                    }
+                  }
+                }
               }
             }
             
@@ -639,9 +743,11 @@ async function getData() {
           // parse xml string
           await xmlParser.parse();
           
-          let loadPosts = (aRSSItems.length >= 5) ? 5 : aRSSItems.length
+          //const loadPosts = (aRSSItems.length >= 5) ? 5 : aRSSItems.length
           
-          for (iRSS = 0; iRSS < loadPosts; iRSS++) {
+          const aRSSData = await new Array();
+          
+          for (iRSS = 0; iRSS < aRSSItems.length; iRSS++) {
             let rssDate = "none";
             let rssDateSort = "none";
             let rssTitle = "none";
@@ -654,26 +760,59 @@ async function getData() {
             }
             
             if (aRSSItems[iRSS].title) {rssTitle = aRSSItems[iRSS].title;}
-                        
+            
             if (aRSSItems[iRSS].id) {
               rssURL = aRSSItems[iRSS].id;
             } else if (aRSSItems[iRSS].link) {
               rssURL = aRSSItems[iRSS].link;
             }
-                        
+            
             if (aRSSItems[iRSS].image) {
               // double check if link is image link
-              let rssIMGRegEx = await aRSSItems[iRSS].image.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
+              const rssIMGRegEx = await aRSSItems[iRSS].image.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
               if (rssIMGRegEx && rssIMGRegEx.length == 3) {
                 rssIMGURL = rssIMGRegEx[1]+rssIMGRegEx[2];
               }
             }
-                          
-            aData.push([rssDateSort, rssDate+"|||"+rssTitle+"|||"+rssURL+"|||"+rssIMGURL+"|||"+PARAM_LINKS[iLink][1]]);
+            
+            if (rssDateSort !== "Invalid Date") {
+              await aRSSData.push([rssDateSort, rssDate+"|||"+rssTitle+"|||"+rssURL+"|||"+rssIMGURL+"|||"+PARAM_LINKS[iLink][1]]);
+            }
           }
+          
+          if (aRSSData && aRSSData.length >= 1) {
+            
+            // sort all post according to date
+            aRSSData.sort(function sortFunction(a, b) {
+              if (a[0] === b[0]) {
+                return 0;
+              } else {
+                return (a[0] < b[0]) ? -1 : 1;
+              }
+            })
+            // reverse sorting - new to old date
+            aRSSData.reverse()
+            
+            // Define how many news should be processed
+            let calcLoadPosts = 5;
+            let maxPostsForWidgetSize = (WIDGET_SIZE == "small") ? 1 : (WIDGET_SIZE == "medium") ? 2 : 5
+            if (WIDGET_SIZE == "large" && CONF_LARGE_WIDGET_MAX_NEWS == 4) {maxPostsForWidgetSize = 4;}
+            if (CONF_DISPLAY_NEWS == "websites") {
+              calcLoadPosts = await Math.round(maxPostsForWidgetSize / PARAM_LINKS.length / 1);
+              calcLoadPosts = (calcLoadPosts <= 1) ? 1 : calcLoadPosts;
+            } else if (CONF_DISPLAY_NEWS == "date") {
+              calcLoadPosts = maxPostsForWidgetSize
+            }
 
+            const loadPosts = (aRSSData.length >= calcLoadPosts) ? calcLoadPosts : aRSSData.length
+            
+            let iRSSNews;
+            for (iRSSNews = 0; iRSSNews < loadPosts; iRSSNews++) {
+              await aData.push([aRSSData[iRSSNews][0], aRSSData[iRSSNews][1]]);
+            }
+          }
         } catch(err) {
-          log(err);
+          log("try processing RSS feed: "+err);
         }
       }
     }
@@ -692,8 +831,8 @@ async function getData() {
             
       const POSTS_TO_LOAD = (aData.length >= 5) ? 5 : aData.length;
       
-      const aDates = await new Array(POSTS_TO_LOAD);
-      const aTitles = await new Array(POSTS_TO_LOAD);
+      const aDateTimes = await new Array(POSTS_TO_LOAD);
+      const aHeadlines = await new Array(POSTS_TO_LOAD);
       const aURLs = await new Array(POSTS_TO_LOAD);
       const aIMGURLs = await new Array(POSTS_TO_LOAD);
       const aIMGPaths = await new Array(POSTS_TO_LOAD);
@@ -703,23 +842,24 @@ async function getData() {
       for (iNewPost = 0; iNewPost < POSTS_TO_LOAD; iNewPost++) {
         const aStrSplit = aData[iNewPost][1].split("|||")
         
-        if (aStrSplit[0] != "none" && aStrSplit[0] != "undefined") {
-          aDates[iNewPost] = await new Date(aStrSplit[0]);
+        if (aStrSplit[0] != "none" && aStrSplit[0] != "undefined" && aStrSplit[0] != undefined) {
+          aDateTimes[iNewPost] = await new Date(aStrSplit[0]);
         } else {
-          aDates[iNewPost] = await Date.now();
+          aDateTimes[iNewPost] = await Date.now();
         }
+        aDateTimes[iNewPost] = await _formatDateTimeString(aDateTimes[iNewPost]);
         
-        aTitles[iNewPost] = aStrSplit[1];
-        aTitles[iNewPost] = formatPostTitle(aTitles[iNewPost]);
+        aHeadlines[iNewPost] = aStrSplit[1];
+        aHeadlines[iNewPost] = await _formatPostTitle(aHeadlines[iNewPost]);
         
         aURLs[iNewPost] = aStrSplit[2];
 
         aSiteNames[iNewPost] = aStrSplit[4];
         
-        if (PARAM_SHOW_POST_IMAGES == "true") {
+        if (PARAM_SHOW_NEWS_IMAGES == "true") {
           aIMGURLs[iNewPost] = aStrSplit[3];
           if (aIMGURLs[iNewPost] != "none") {
-            let fileID = await hashCode(aIMGURLs[iNewPost])
+            const fileID = await _hashCode(aIMGURLs[iNewPost])
 
             aFileNames[iNewPost] = await getFileName(aSiteNames[iNewPost], fileID);
             
@@ -727,235 +867,370 @@ async function getData() {
             aIMGURLs[iNewPost] = await encodeURI(aIMGURLs[iNewPost]);
             aIMGURLs[iNewPost] = await aIMGURLs[iNewPost].replaceAll("%25", "%"); // hack for some image URLs with %
 
-            aIMGPaths[iNewPost] = await downloadPostImage(aFileNames[iNewPost], aIMGURLs[iNewPost], addBGImage);
+            aIMGPaths[iNewPost] = await _downloadPostImage(aFileNames[iNewPost], aIMGURLs[iNewPost], addBGImage);
           } else {
             aIMGPaths[iNewPost] = "none";
           }
         }
       }
       
-      if (PARAM_SHOW_POST_IMAGES == "true") {
-        aFileNames.push(aFileNames[0]+"-bg");
-        aFileNames.push(aFileNames[0]+"-bg-blur");
-        await cleanUpImages(aFileNames);
-      }
-      
       return {
-        aPostDates: aDates,
-        aPostTitles: aTitles,
-        aPostURLs: aURLs,
-        aPostIMGPaths: aIMGPaths,
-        aPostSiteNames: aSiteNames
+        aNewsDateTimes: aDateTimes,
+        aNewsHeadlines: aHeadlines,
+        aNewsURLs: aURLs,
+        aNewsIMGPaths: aIMGPaths,
+        aNewsSiteNames: aSiteNames
       };
     } else {
       return null;
     }
   } catch(err) {
-    logError("getData: "+err);
+    logError("try getData: "+err);
     return null;
+  }
+  
+  // define what sould be loaded depending on link and online status
+  async function _whatShouldILoad(link, strSiteName) {
+    let loadFormat = "none";
+    let loadFilePath = "none";
+    
+    const localFM = FileManager.local();
+    const docDir = localFM.documentsDirectory();
+    const backupFilename = await getFileName(strSiteName, "0");
+    const pathBackupJSON = localFM.joinPath(docDir+"/saudumm-news-widget-data", backupFilename+".json");
+    const pathBackupXML = localFM.joinPath(docDir+"/saudumm-news-widget-data", backupFilename+".xml");
+    
+    if (ONLINE) {
+      if (await isJSON(link+"/wp-json/wp/v2/posts?per_page=1")) {
+        loadFormat = "WP-JSON";
+        loadFilePath = pathBackupJSON;
+      } else {
+        loadFormat = "RSS";
+        loadFilePath = pathBackupXML;
+      }
+    } else {
+      if (localFM.fileExists(pathBackupJSON)) {
+        loadFormat = "WP-JSON";
+        loadFilePath = pathBackupJSON;
+      } else if (localFM.fileExists(pathBackupXML)) {
+        loadFormat = "RSS";
+        loadFilePath = pathBackupXML;
+      }
+    }
+    
+    return {
+      loadFormat: loadFormat,
+      loadFilePath: loadFilePath
+    };
+    
+    // check if the url leads to a json file
+    async function isJSON(strURL) {
+      try {
+        const testJSON = await new Request(strURL).loadJSON();
+        if (testJSON.reason == "Not Found") {return false;}
+      } catch(err) {
+        return false;
+      }
+      return true;
+    }
+  }
+  
+  // format the date and time string to a locale date/time
+  function _formatDateTimeString(strDateTime) {
+    return new Date(strDateTime).toLocaleString((CONF_DATE_TIME_LOCALE == "default" ? [] : [CONF_DATE_TIME_LOCALE]), {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: (CONF_12_HOUR ? true : false)})
+  }
+  
+  // format the post title and replace all html entities with characters
+  function _formatPostTitle(strHeadline) {
+    strHeadline = strHeadline.trim().replaceAll("&quot;", '"')
+    .replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+    .replaceAll("&apos;", "'").replaceAll("&#034;", '"').replaceAll("&#038;", "&")
+    .replaceAll("&#039;", "'").replaceAll("&#060;", "<").replaceAll("&#062;", ">")
+    .replaceAll("&#338;", "Œ").replaceAll("&#339;", "œ").replaceAll("&#352;", "Š")
+    .replaceAll("&#353;", "š").replaceAll("&#376;", "Ÿ").replaceAll("&#710;", "ˆ")
+    .replaceAll("&#732;", "˜").replaceAll("&#8211;", "–").replaceAll("&#8212;", "—")
+    .replaceAll("&#8216;", "‘").replaceAll("&#8217;", "’").replaceAll("&#8218;", "‚")
+    .replaceAll("&#8220;", "“").replaceAll("&#8221;", "”").replaceAll("&#8222;", "„")
+    .replaceAll("&#8224;", "†").replaceAll("&#8225;", "‡").replaceAll("&#8230;", "…")
+    .replaceAll("&#8240;", "‰").replaceAll("&#8249;", "‹").replaceAll("&#8250;", "›")
+    .replaceAll("&#8364;", "€").replaceAll("<![CDATA[", "").replaceAll("]]>", "");
+    return strHeadline;
+  }
+  
+  // get the featuredMedia image URL
+  async function _getMediaURL(strURL, strFeatMediaID, strPostID, strSiteName) {
+    const localFM = FileManager.local();
+    const docDir = localFM.documentsDirectory();
+    const backupFilename = await getFileName(strSiteName, strPostID);
+    const pathBackupMedia = localFM.joinPath(docDir+"/saudumm-news-widget-data", backupFilename+"-media.json");
+    const pathBackupPosts = localFM.joinPath(docDir+"/saudumm-news-widget-data", backupFilename+"-posts.json");
+    
+    let featuredMediaJSONURL = strURL+"/wp-json/wp/v2/media/"+strFeatMediaID;
+    let loadedMediaJSON
+    if (ONLINE) {
+      loadedMediaJSON = await new Request(featuredMediaJSONURL).loadJSON();
+      // Save data to file
+      await localFM.writeString(pathBackupMedia, JSON.stringify(loadedMediaJSON));
+    } else {
+      loadedMediaJSON = await JSON.parse(localFM.readString(pathBackupMedia));
+    }
+    let mediaURL = loadedMediaJSON.source_url;
+    if (mediaURL === undefined || mediaURL == "undefined") {
+      // search for other images
+      featuredMediaJSONURL = strURL+"/wp-json/wp/v2/posts/"+strPostID;
+      if (ONLINE) {
+        loadedMediaJSON = await new Request(featuredMediaJSONURL).loadJSON();
+        // Save data to file
+        await localFM.writeString(pathBackupPosts, JSON.stringify(loadedMediaJSON));
+      } else {
+        loadedMediaJSON = await JSON.parse(localFM.readString(pathBackupPosts));
+      }
+      mediaURL = loadedMediaJSON.jetpack_featured_media_url;
+      if (mediaURL === undefined || mediaURL == "undefined") {
+        return "none";
+      } else {
+        mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
+        mediaURL = mediaURL[1]+""+mediaURL[2];
+        return await encodeURI(mediaURL);
+      }
+    } else {
+      mediaURL = await mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
+      mediaURL = mediaURL[1]+""+mediaURL[2];
+      return await encodeURI(mediaURL);
+    }
+    return "none";
+  }
+
+  // create a hash from a string
+  function _hashCode(str) {
+    var hash = 0;
+    if (str.length == 0) return hash;
+    for (cHash = 0; cHash < str.length; cHash++) {
+      char = str.charCodeAt(cHash);
+      hash = ((hash<<5)-hash)+char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    hash = Math.abs(hash);
+    return hash;
+  }
+
+  // download the post image (if it doesn't already exist)
+  async function _downloadPostImage(strFileName, strURL, boolAddBGImage) {
+    const localFM = FileManager.local();
+    var imgPath = localFM.documentsDirectory();
+    imgPath = localFM.joinPath(imgPath+"/saudumm-news-widget-data/image-cache", strFileName);
+    var tempPath = localFM.temporaryDirectory()
+    tempPath = localFM.joinPath(tempPath, strFileName);
+
+    // check if file already exists
+    if (!boolAddBGImage && localFM.fileExists(imgPath)) {
+      return imgPath;
+    } else if (!boolAddBGImage && !localFM.fileExists(imgPath)) {
+      if (ONLINE) {
+      // download image
+      let loadedImage = await new Request(strURL).load();
+      // write image and read again (it's smaller that way???)
+      await localFM.write(tempPath, loadedImage);
+      loadedImage = await localFM.readImage(tempPath);
+      
+      // resize, crop and store image
+      loadedImage = await resizeImage(loadedImage, 200);
+      loadedImage = await cropImageToSquare(loadedImage);
+      await localFM.writeImage(imgPath, loadedImage);
+      
+      await localFM.remove(tempPath);
+      return imgPath;
+      } else {
+        return "none";
+      }
+    }
+    
+    if (boolAddBGImage) {
+      const imgPathBG = imgPath+"-bg"
+      const imgPathBGBlur = imgPath+"-bg-blur"
+      
+      if (localFM.fileExists(imgPath) && localFM.fileExists(imgPathBG) && localFM.fileExists(imgPathBGBlur)) {
+        return imgPath;
+      } else {
+        if (ONLINE) {
+        // download image
+        let loadedImage = await new Request(strURL).load();
+        // write image and read again (it's smaller that way???)
+        await localFM.write(tempPath, loadedImage);
+        loadedImage = await localFM.readImage(tempPath);
+
+        if (await Math.min(loadedImage.size.height, loadedImage.size.width) > 500) {
+          loadedImage = await resizeImage(loadedImage, 500);
+        }
+
+        // resize, crop and store image
+        if(!localFM.fileExists(imgPath)) {
+          let loadedSmallImage = await resizeImage(loadedImage, 200);
+          loadedSmallImage = await cropImageToSquare(loadedSmallImage);
+          await localFM.writeImage(imgPath, loadedSmallImage);
+        }
+        
+        // store original image
+        if (!localFM.fileExists(imgPathBG)) {
+          await localFM.writeImage(imgPathBG, loadedImage);
+        }
+        
+        // store blurred resized original image
+        if (!localFM.fileExists(imgPathBGBlur)) {
+          let loadedImageBlur = await blurImage(loadedImage)
+          await localFM.writeImage(imgPathBGBlur, loadedImageBlur);
+        }
+        
+        await localFM.remove(tempPath);
+        return imgPath;
+        } else {
+          return "none";
+        }
+      }
+    }
+    return "none";
   }
 }
 
-// load a text file with links and convert to a PARAM_LINKS array
-async function loadTextFileToArray(textFile) {
+// load all settings from a file
+async function loadSettingsFromFile(strFileName) {
   try {
-    const fm = FileManager.iCloud();
-    const docDir = fm.documentsDirectory();
-    const filePath = fm.joinPath(docDir, textFile);
+    let fmSettings;
+    try {fmSettings = FileManager.iCloud()} catch (e) {fmSettings = FileManager.local()}
+    try {fmSettings.documentsDirectory()} catch(e) {fmSettings = FileManager.local()}
     
-    if (fm.fileExists(filePath) && fm.isFileStoredIniCloud(filePath)) {
-      await fm.downloadFileFromiCloud(filePath);
-      var strTextFile = await fm.readString(filePath);
-      strTextFile = strTextFile.split(/\r?\n/)
-      if (strTextFile.length >= 1) {
-        const aLinks = await new Array();
-        for (iText = 0; iText < strTextFile.length; iText++) {
-          let aStrData = strTextFile[iText].split("|");
-          if (aStrData.length == 1) {
-            if (aStrData[0].substring(0, 4) == "http") {await aLinks.push([aStrData[0], "News"]);}
-          } else if (aStrData.length > 1) {
-            if (aStrData[0].substring(0, 4) == "http") {await aLinks.push([aStrData[0], aStrData[1]]);}
-          }
-        }
-        return aLinks;
-      } else {
-        return null;
+    let filePath = fmSettings.documentsDirectory();
+    filePath = fmSettings.joinPath(filePath, "News-Widget-Settings");
+    filePath = fmSettings.joinPath(filePath, strFileName);
+    
+    if (fmSettings.fileExists(filePath) && fmSettings.isFileStoredIniCloud(filePath)) {
+      await fmSettings.downloadFileFromiCloud(filePath);
+      
+      const jsonConfig = await JSON.parse(fmSettings.readString(filePath));
+
+      if (jsonConfig.CHECK_FOR_SCRIPT_UPDATE !== undefined) {CHECK_FOR_SCRIPT_UPDATE = jsonConfig.CHECK_FOR_SCRIPT_UPDATE;}
+      if (jsonConfig.PARAM_LINKS !== undefined) {PARAM_LINKS = jsonConfig.PARAM_LINKS;}
+      if (jsonConfig.PARAM_WIDGET_TITLE !== undefined) {PARAM_WIDGET_TITLE = jsonConfig.PARAM_WIDGET_TITLE;}
+      if (jsonConfig.PARAM_BG_IMAGE_NAME !== undefined) {PARAM_BG_IMAGE_NAME = jsonConfig.PARAM_BG_IMAGE_NAME;}
+      if (jsonConfig.PARAM_BG_IMAGE_BLUR !== undefined) {PARAM_BG_IMAGE_BLUR = jsonConfig.PARAM_BG_IMAGE_BLUR;}
+      if (jsonConfig.PARAM_BG_IMAGE_GRADIENT !== undefined) {PARAM_BG_IMAGE_GRADIENT = jsonConfig.PARAM_BG_IMAGE_GRADIENT;}
+      if (jsonConfig.PARAM_SHOW_NEWS_IMAGES !== undefined) {PARAM_SHOW_NEWS_IMAGES = jsonConfig.PARAM_SHOW_NEWS_IMAGES;}
+      if (jsonConfig.CONF_LARGE_WIDGET_MAX_NEWS !== undefined) {CONF_LARGE_WIDGET_MAX_NEWS = jsonConfig.CONF_LARGE_WIDGET_MAX_NEWS;}
+      if (jsonConfig.CONF_POSTS_PER_LINK !== undefined) {CONF_POSTS_PER_LINK = jsonConfig.CONF_POSTS_PER_LINK;}
+      if (jsonConfig.CONF_DATE_TIME_LOCALE !== undefined) {CONF_DATE_TIME_LOCALE = jsonConfig.CONF_DATE_TIME_LOCALE;}
+      if (jsonConfig.CONF_12_HOUR !== undefined) {CONF_12_HOUR = jsonConfig.CONF_12_HOUR;}
+      
+      if (jsonConfig.CONF_BG_COLOR.lightMode !== undefined && jsonConfig.CONF_BG_COLOR.darkMode !== undefined) {
+        CONF_BG_COLOR = Color.dynamic(new Color(jsonConfig.CONF_BG_COLOR.lightMode), new Color(jsonConfig.CONF_BG_COLOR.darkMode));
+      }
+      
+      if (jsonConfig.CONF_BG_GRADIENT !== undefined) {CONF_BG_GRADIENT = jsonConfig.CONF_BG_GRADIENT;}
+      if (jsonConfig.CONF_BG_GRADIENT_COLOR_TOP.lightMode !== undefined && jsonConfig.CONF_BG_GRADIENT_COLOR_TOP.darkMode !== undefined) {
+        CONF_BG_GRADIENT_COLOR_TOP = Color.dynamic(new Color(jsonConfig.CONF_BG_GRADIENT_COLOR_TOP.lightMode), new Color(jsonConfig.CONF_BG_GRADIENT_COLOR_TOP.darkMode));
+      }
+      if (jsonConfig.CONF_BG_GRADIENT_COLOR_BTM.lightMode !== undefined && jsonConfig.CONF_BG_GRADIENT_COLOR_BTM.darkMode !== undefined) {
+        CONF_BG_GRADIENT_COLOR_BTM = Color.dynamic(new Color(jsonConfig.CONF_BG_GRADIENT_COLOR_BTM.lightMode), new Color(jsonConfig.CONF_BG_GRADIENT_COLOR_BTM.darkMode));
+      }
+      
+      if (jsonConfig.CONF_BG_GRADIENT_OVERLAY_TOP.lightMode !== undefined && jsonConfig.CONF_BG_GRADIENT_OVERLAY_TOP.darkMode !== undefined) {
+        if (jsonConfig.CONF_BG_GRADIENT_OVERLAY_TOP.lightModeAlpha !== undefined && jsonConfig.CONF_BG_GRADIENT_OVERLAY_TOP.darkModeAlpha !== undefined) {
+          CONF_BG_GRADIENT_OVERLAY_TOP = Color.dynamic(new Color(jsonConfig.CONF_BG_GRADIENT_OVERLAY_TOP.lightMode, jsonConfig.CONF_BG_GRADIENT_OVERLAY_TOP.lightModeAlpha),
+                                                       new Color(jsonConfig.CONF_BG_GRADIENT_OVERLAY_TOP.darkMode, jsonConfig.CONF_BG_GRADIENT_OVERLAY_TOP.darkModeAlpha));}
+      }
+      if (jsonConfig.CONF_BG_GRADIENT_OVERLAY_BTM.lightMode !== undefined && jsonConfig.CONF_BG_GRADIENT_OVERLAY_BTM.darkMode !== undefined) {
+        if (jsonConfig.CONF_BG_GRADIENT_OVERLAY_BTM.lightModeAlpha !== undefined && jsonConfig.CONF_BG_GRADIENT_OVERLAY_BTM.darkModeAlpha !== undefined) {
+          CONF_BG_GRADIENT_OVERLAY_BTM = Color.dynamic(new Color(jsonConfig.CONF_BG_GRADIENT_OVERLAY_BTM.lightMode, jsonConfig.CONF_BG_GRADIENT_OVERLAY_BTM.lightModeAlpha),
+                                                       new Color(jsonConfig.CONF_BG_GRADIENT_OVERLAY_BTM.darkMode, jsonConfig.CONF_BG_GRADIENT_OVERLAY_BTM.darkModeAlpha));}
+      }
+      
+      if (jsonConfig.CONF_FONT_WIDGET_TITLE !== undefined) {CONF_FONT_WIDGET_TITLE = jsonConfig.CONF_FONT_WIDGET_TITLE;}
+      if (jsonConfig.CONF_FONT_WEIGHT_WIDGET_TITLE !== undefined) {CONF_FONT_WEIGHT_WIDGET_TITLE = jsonConfig.CONF_FONT_WEIGHT_WIDGET_TITLE;}
+      if (jsonConfig.CONF_FONT_SIZE_WIDGET_TITLE !== undefined) {CONF_FONT_SIZE_WIDGET_TITLE = jsonConfig.CONF_FONT_SIZE_WIDGET_TITLE;}
+      if (jsonConfig.CONF_FONT_COLOR_WIDGET_TITLE.lightMode !== undefined && jsonConfig.CONF_FONT_COLOR_WIDGET_TITLE.darkMode !== undefined) {
+        CONF_FONT_COLOR_WIDGET_TITLE = Color.dynamic(new Color(jsonConfig.CONF_FONT_COLOR_WIDGET_TITLE.lightMode), new Color(jsonConfig.CONF_FONT_COLOR_WIDGET_TITLE.darkMode));
+      }
+      
+      if (jsonConfig.CONF_FONT_DATE !== undefined) {CONF_FONT_DATE = jsonConfig.CONF_FONT_DATE;}
+      if (jsonConfig.CONF_FONT_WEIGHT_DATE !== undefined) {CONF_FONT_WEIGHT_DATE = jsonConfig.CONF_FONT_WEIGHT_DATE;}
+      if (jsonConfig.CONF_FONT_SIZE_DATE !== undefined) {CONF_FONT_SIZE_DATE = jsonConfig.CONF_FONT_SIZE_DATE;}
+      if (jsonConfig.CONF_FONT_COLOR_DATE.lightMode !== undefined && jsonConfig.CONF_FONT_COLOR_DATE.darkMode !== undefined) {
+        CONF_FONT_COLOR_DATE = Color.dynamic(new Color(jsonConfig.CONF_FONT_COLOR_DATE.lightMode), new Color(jsonConfig.CONF_FONT_COLOR_DATE.darkMode));
+      }
+      
+      if (jsonConfig.CONF_FONT_HEADLINE !== undefined) {CONF_FONT_HEADLINE = jsonConfig.CONF_FONT_HEADLINE;}
+      if (jsonConfig.CONF_FONT_WEIGHT_HEADLINE !== undefined) {CONF_FONT_WEIGHT_HEADLINE = jsonConfig.CONF_FONT_WEIGHT_HEADLINE;}
+      if (jsonConfig.CONF_FONT_SIZE_HEADLINE !== undefined) {CONF_FONT_SIZE_HEADLINE = jsonConfig.CONF_FONT_SIZE_HEADLINE;}
+      if (jsonConfig.CONF_FONT_COLOR_HEADLINE.lightMode !== undefined && jsonConfig.CONF_FONT_COLOR_HEADLINE.darkMode !== undefined) {
+        CONF_FONT_COLOR_HEADLINE = Color.dynamic(new Color(jsonConfig.CONF_FONT_COLOR_HEADLINE.lightMode), new Color(jsonConfig.CONF_FONT_COLOR_HEADLINE.darkMode));
       }
     } else {
       return null;
     }
   } catch(err) {
-    log(err);
+    log("try loadSettingsFromFile: "+err);
     return null;
   }
 }
 
-// check if the url leads to a json file
-async function isJSON(url) {
-  try {
-    let testJSON = await new Request(url).loadJSON();
-    if (testJSON.reason == "Not Found") {return false;}
-  } catch(err) {
-    return false;
-  }
-  return true;
-}
-
-// get the featuredMedia image URL
-async function getMediaURL(siteURL, featuredMedia, postID) {
-  let featuredMediaJSONURL = siteURL+"/wp-json/wp/v2/media/"+featuredMedia;
-  let loadedMediaJSON = await new Request(featuredMediaJSONURL).loadJSON();
-  let mediaURL = loadedMediaJSON.source_url;
-  
-  if (mediaURL == undefined || mediaURL == "undefined") {
-    // search for other images
-    featuredMediaJSONURL = siteURL+"/wp-json/wp/v2/posts/"+postID;
-    loadedMediaJSON = await new Request(featuredMediaJSONURL).loadJSON();
-    mediaURL = loadedMediaJSON.jetpack_featured_media_url;
-    if (mediaURL == undefined || mediaURL == "undefined") {
-      return "none";
-    } else {
-      mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
-      mediaURL = mediaURL[1]+""+mediaURL[2];
-      return await encodeURI(mediaURL);
-    }
-  } else {
-    mediaURL = await mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
-    mediaURL = mediaURL[1]+""+mediaURL[2];
-    return await encodeURI(mediaURL);
-  }
-  return "none";
-}
-
 // set the filename of the post image (site name + image id)
-async function getFileName(siteName, id) {
-  let widgetTitle = await PARAM_WIDGET_TITLE.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
-  siteName = await siteName.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
-  return widgetTitle+"-"+siteName+"-"+id;
-}
-
-// download the post image (if it doesn't already exist)
-async function downloadPostImage(fileName, url, addBGImage) {
-  const fm = FileManager.local();
-  const docDir = fm.documentsDirectory();
-  
-  const imgPath = fm.joinPath(docDir+"/saudumm-news-widget-data/image-cache", fileName);
-  const tempDir = fm.temporaryDirectory()
-  const tempPath = fm.joinPath(tempDir, fileName);
-
-  // check if file already exists
-  if (!addBGImage && fm.fileExists(imgPath)) {
-    return imgPath;
-  } else if (!addBGImage && !fm.fileExists(imgPath)) {
-    // download, resize, crop and store image
-    let loadedImage = await new Request(url).load();
-    // write image and read again (it's smaller that way???)
-    await fm.write(tempPath, loadedImage);
-    loadedImage = await fm.readImage(tempPath);
-    loadedImage = await resizeImage(loadedImage, 150);
-    loadedImage = await cropImageToSquare(loadedImage);
-    await fm.writeImage(imgPath, loadedImage);
-    await fm.remove(tempPath);
-    // loadedImage = null;
-    return imgPath;
-  }
-  
-  if (addBGImage) {
-    const imgPathBG = imgPath+"-bg"
-    const imgPathBGBlur = imgPath+"-bg-blur"
-    
-    if (fm.fileExists(imgPath) && fm.fileExists(imgPathBG) && fm.fileExists(imgPathBGBlur)) {
-      return imgPath;
-    } else {
-      // download image
-      let loadedImage = await new Request(url).load();
-      // write image and read again (it's smaller that way???)
-      await fm.write(tempPath, loadedImage);
-      loadedImage = await fm.readImage(tempPath);
-
-      if (await Math.min(loadedImage.size.height, loadedImage.size.width) > 500) {
-        loadedImage = await resizeImage(loadedImage, 500);
-      }
-
-      // resize, crop and store image
-      if(!fm.fileExists(imgPath)) {
-        let loadedSmallImage = await resizeImage(loadedImage, 150);
-        loadedSmallImage = await cropImageToSquare(loadedSmallImage);
-        await fm.writeImage(imgPath, loadedSmallImage);
-        //loadedSmallImage = null;
-      }
-      
-      // store original image
-      if (!fm.fileExists(imgPathBG)) {
-        await fm.writeImage(imgPathBG, loadedImage);
-      }
-      
-      // store blurred resized original image
-      if (!fm.fileExists(imgPathBGBlur)) {
-        let loadedImageBlur = await blurImage(loadedImage)
-        await fm.writeImage(imgPathBGBlur, loadedImageBlur);
-      }
-      
-      await fm.remove(tempPath);
-      
-      //loadedImage = null;
-      
-      return imgPath;
-    }
-  }
-  return "none";
+async function getFileName(strSiteName, strID) {
+  const strWidgetTitle = await PARAM_WIDGET_TITLE.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
+  strSiteName = await strSiteName.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
+  return strWidgetTitle+"-"+strSiteName+"-"+strID;
 }
 
 // load post image from file path
 async function loadLocalImage(imgPath) {
-  const fm = FileManager.local();
+  const localFM = FileManager.local();
   
-  if (fm.fileExists(imgPath)) {return await fm.readImage(imgPath);}
+  if (localFM.fileExists(imgPath)) {
+    return await localFM.readImage(imgPath);
+  } else {
+    const fontSym = await loadFont(CONF_FONT_HEADLINE, "regular", 60);
+    const sym = SFSymbol.named("square.slash");
+    sym.applyFont(fontSym);
+    return sym.image;
+  }
 }
 
 // search for and load a local (or iCloud) background image
 async function loadBGImage(imageName, optBlur) {
-  const fm = FileManager.local();
-  let fmiCloud;
-  try {
-    fmiCloud = FileManager.iCloud();
-  } catch(err) {
-    // no iCloud, no BG Image
-    return "not found";
-  }
+  const localFM = FileManager.local();
+  let iCloudFM;
+  try {iCloudFM = FileManager.iCloud();} catch(err) {log("try loadBGImage iCloudFM: "+err); return "not found";}
   
-  const docDir = fm.documentsDirectory();
-  const iCloudDocDir = fmiCloud.documentsDirectory();
-  const bgIMGiCloudDocPath = fmiCloud.joinPath(iCloudDocDir, imageName);
-  const bgIMGiCloudWPPath = fmiCloud.joinPath(iCloudDocDir+"/wallpaper", imageName);
-  const bgIMGWPCachePath = fm.joinPath(docDir+"/saudumm-news-widget-data/wallpaper-cache", imageName);
+  const docDir = localFM.documentsDirectory();
+  const iCloudDocDir = iCloudFM.documentsDirectory();
+  const bgIMGiCloudDocPath = iCloudFM.joinPath(iCloudDocDir, imageName);
+  const bgIMGiCloudWPPath = iCloudFM.joinPath(iCloudDocDir+"/wallpaper", imageName);
+  const bgIMGWPCachePath = localFM.joinPath(docDir+"/saudumm-news-widget-data/wallpaper-cache", imageName);
   
-  if (optBlur == "true" && fm.fileExists(bgIMGWPCachePath+"-blur")) {
-    return await fm.readImage(bgIMGWPCachePath+"-blur");
+  if (optBlur == "true" && localFM.fileExists(bgIMGWPCachePath+"-blur")) {
+    return await localFM.readImage(bgIMGWPCachePath+"-blur");
   } else {
     if (optBlur == "true") {
-      if (fmiCloud.fileExists(bgIMGiCloudDocPath)) {
-        if (fmiCloud.isFileStoredIniCloud(bgIMGiCloudDocPath)) {await fmiCloud.downloadFileFromiCloud(bgIMGiCloudDocPath);}
-        let imgToBlur = await fmiCloud.readImage(bgIMGiCloudDocPath);
+      if (iCloudFM.fileExists(bgIMGiCloudDocPath)) {
+        if (iCloudFM.isFileStoredIniCloud(bgIMGiCloudDocPath)) {await iCloudFM.downloadFileFromiCloud(bgIMGiCloudDocPath);}
+        let imgToBlur = await iCloudFM.readImage(bgIMGiCloudDocPath);
         imgToBlur = await resizeImage(imgToBlur, 300)
         imgToBlur = await blurImage(imgToBlur);
-        await fm.writeImage(bgIMGWPCachePath+"-blur", imgToBlur);
+        await localFM.writeImage(bgIMGWPCachePath+"-blur", imgToBlur);
         return imgToBlur;
-      } else if (fmiCloud.fileExists(bgIMGiCloudWPPath)) {
-        if (fmiCloud.isFileStoredIniCloud(bgIMGiCloudWPPath)) {await fmiCloud.downloadFileFromiCloud(bgIMGiCloudWPPath);}
-        let imgToBlur = await fmiCloud.readImage(bgIMGiCloudWPPath);
+      } else if (iCloudFM.fileExists(bgIMGiCloudWPPath)) {
+        if (iCloudFM.isFileStoredIniCloud(bgIMGiCloudWPPath)) {await iCloudFM.downloadFileFromiCloud(bgIMGiCloudWPPath);}
+        let imgToBlur = await iCloudFM.readImage(bgIMGiCloudWPPath);
         imgToBlur = await resizeImage(imgToBlur, 300)
         imgToBlur = await blurImage(imgToBlur);
-        await fm.writeImage(bgIMGWPCachePath+"-blur", imgToBlur);
+        await localFM.writeImage(bgIMGWPCachePath+"-blur", imgToBlur);
         return imgToBlur;
       } else {
         return "not found";
       }
     } else {
-      if (fmiCloud.fileExists(bgIMGiCloudDocPath)) {
-        return await fmiCloud.readImage(bgIMGiCloudDocPath);
-      } else if (fmiCloud.fileExists(bgIMGiCloudWPPath)) {
-        return await fmiCloud.readImage(bgIMGiCloudWPPath);
+      if (iCloudFM.fileExists(bgIMGiCloudDocPath)) {
+        return await iCloudFM.readImage(bgIMGiCloudDocPath);
+      } else if (iCloudFM.fileExists(bgIMGiCloudWPPath)) {
+        return await iCloudFM.readImage(bgIMGiCloudWPPath);
       } else {
         return "not found";
       }
@@ -966,128 +1241,135 @@ async function loadBGImage(imageName, optBlur) {
 // check if all folders are available and create them if needed
 function checkFileDirs() {
   // Create new FileManager and set data dir
-  const fm = FileManager.local();
-  const docDir = fm.documentsDirectory();
-  const imgCacheDir = docDir+"/saudumm-news-widget-data/image-cache";
-  const imgCacheDirWP = docDir+"/saudumm-news-widget-data/wallpaper-cache";
+  const localFM = FileManager.local();
+  const docDir = localFM.documentsDirectory();
+  const imgCacheDir = localFM.joinPath(docDir, "saudumm-news-widget-data/image-cache");
+  const imgCacheDirWP = localFM.joinPath(docDir, "saudumm-news-widget-data/wallpaper-cache");
   
-  if (!fm.fileExists(imgCacheDir)) {fm.createDirectory(imgCacheDir, true);}
-  if (!fm.fileExists(imgCacheDirWP)) {fm.createDirectory(imgCacheDirWP, true);}
+  if (!localFM.fileExists(imgCacheDir)) {localFM.createDirectory(imgCacheDir, true);}
+  if (!localFM.fileExists(imgCacheDirWP)) {localFM.createDirectory(imgCacheDirWP, true);}
+  
+  let fmSettings;
+  try {fmSettings = FileManager.iCloud()} catch (e) {fmSettings = FileManager.local()}
+  try {fmSettings.documentsDirectory()} catch(e) {fmSettings = FileManager.local()}
+  let filePathSettings = fmSettings.documentsDirectory();
+  filePathSettings = fmSettings.joinPath(filePathSettings, "News-Widget-Settings");
+  if (!fmSettings.fileExists(filePathSettings)) {fmSettings.createDirectory(filePathSettings, true);}
   
   return;
 }
 
 // cleanup post image files (if older than 7 days)
-function cleanUpImages(aFileNames) {
-  const fm = FileManager.local();
-  const docDir = fm.documentsDirectory();
-  const imgCacheDir = docDir+"/saudumm-news-widget-data/image-cache";
+function cleanUpCache() {
+  const localFM = FileManager.local();
+  const docDir = localFM.documentsDirectory();
+  const widgetDir = localFM.joinPath(docDir, "saudumm-news-widget-data");
+  const content = localFM.listContents(widgetDir);
   
-  const aFiles = fm.listContents(imgCacheDir);
-  
-  const site_id = PARAM_WIDGET_TITLE.replace(/[^a-zA-Z1-9]+/g, "").toLowerCase();
-  
-  let aFilesSite = new Array();
-  
-  for (i = 0; i < aFiles.length; i++) {
-    if (aFiles[i].substring(0, site_id.length) === site_id) {aFilesSite.push(aFiles[i]);}
-  }
-  
-  for (i = 0; i < aFilesSite.length; i++) {
-    if (!aFileNames.includes(aFilesSite[i])) {
-      let path = fm.joinPath(imgCacheDir, aFilesSite[i]);
-      let fileDate = fm.creationDate(path);
-      let dateNow = Date.now();
-      let dateDiffDays = Math.round((dateNow-fileDate)/1000/60/60/24);
-      if (Math.abs(dateDiffDays) > 7) {fm.remove(path);}
+  if (content && content.length >= 1) {
+    for (i = 0; i < content.length; i++) {
+      if (!localFM.isDirectory(localFM.joinPath(widgetDir, content[i]))) {
+        const filePath = localFM.joinPath(widgetDir, content[i]);
+        const fileDate = localFM.creationDate(filePath);
+        const dateDiffHours = Math.round((Date.now()-fileDate)/1000/60/60/1);
+        // delete cache files older than 24 hours
+        if (Math.abs(dateDiffHours) > 24) {localFM.remove(filePath);}
+      } else if (localFM.isDirectory(localFM.joinPath(widgetDir, content[i]))) {
+        const subDir = localFM.joinPath(widgetDir, content[i]);
+        const contentSub = localFM.listContents(subDir);
+        for (c = 0; c < contentSub.length; c++) {
+          const filePath = localFM.joinPath(subDir, contentSub[c]);
+          const fileDate = localFM.creationDate(filePath);
+          const dateDiffHours = Math.round((Date.now()-fileDate)/1000/60/60/1);
+          if (content[i] == "image-cache") {
+            // delete image cache files older than 24 hours
+            if (Math.abs(dateDiffHours) > 24) {localFM.remove(filePath);}
+          }
+          else if (content[i] == "wallpaper-cache") {
+            // delete wallpaper cache files older than 2 days
+            if (Math.abs(dateDiffHours) > 48) {localFM.remove(filePath);}
+          }
+        }
+      }
     }
   }
   return;
 }
 
-// create a hash from a string
-function hashCode (str){
-  var hash = 0;
-  if (str.length == 0) return hash;
-  for (cHash = 0; cHash < str.length; cHash++) {
-    char = str.charCodeAt(cHash);
-    hash = ((hash<<5)-hash)+char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  hash = Math.abs(hash);
-  return hash;
-}
-
-// format the date and time string to a locale date/time
-function formatDateTimeString(strDateTime) {
-  return new Date(strDateTime).toLocaleString((CONF_DATE_TIME_LOCALE == "default" ? [] : [CONF_DATE_TIME_LOCALE]), {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: (CONF_12_HOUR ? true : false)})
-}
-
-// format the post title and replace all html entities with characters
-function formatPostTitle(strHeadline) {
-  strHeadline = strHeadline.trim();
-  strHeadline = strHeadline.replaceAll("&quot;", '"')
-  .replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-  .replaceAll("&apos;", "'").replaceAll("&#034;", '"').replaceAll("&#038;", "&")
-  .replaceAll("&#039;", "'").replaceAll("&#060;", "<").replaceAll("&#062;", ">")
-  .replaceAll("&#338;", "Œ").replaceAll("&#339;", "œ").replaceAll("&#352;", "Š")
-  .replaceAll("&#353;", "š").replaceAll("&#376;", "Ÿ").replaceAll("&#710;", "ˆ")
-  .replaceAll("&#732;", "˜").replaceAll("&#8211;", "–").replaceAll("&#8212;", "—")
-  .replaceAll("&#8216;", "‘").replaceAll("&#8217;", "’").replaceAll("&#8218;", "‚")
-  .replaceAll("&#8220;", "“").replaceAll("&#8221;", "”").replaceAll("&#8222;", "„")
-  .replaceAll("&#8224;", "†").replaceAll("&#8225;", "‡").replaceAll("&#8230;", "…")
-  .replaceAll("&#8240;", "‰").replaceAll("&#8249;", "‹").replaceAll("&#8250;", "›")
-  .replaceAll("&#8364;", "€").replaceAll("<![CDATA[", "").replaceAll("]]>", "");
-  return strHeadline;
-}
-
 // get the chosen font for widget texts
 function loadFont(fontName, fontThickness, fontSize) {
   let font = Font.boldSystemFont(fontSize);
-  
   if (fontName == "System" || fontName == "Rounded" || fontName == "Monospaced") {
-    if (fontThickness == "ultralight") {
-      font = (fontName == "Rounded") ? Font.ultraLightRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.ultraLightMonospacedSystemFont(fontSize) : Font.ultraLightSystemFont(fontSize);
-    } else if (fontThickness == "thin") {
-      font = (fontName == "Rounded") ? Font.thinRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.thinMonospacedSystemFont(fontSize) : Font.thinSystemFont(fontSize);
-    } else if (fontThickness == "light") {
-      font = (fontName == "Rounded") ? Font.lightRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.lightMonospacedSystemFont(fontSize) : Font.lightSystemFont(fontSize);
-    } else if (fontThickness == "regular") {
-      font = (fontName == "Rounded") ? Font.regularRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.regularMonospacedSystemFont(fontSize) : Font.regularSystemFont(fontSize);
-    } else if (fontThickness == "medium") {
-      font = (fontName == "Rounded") ? Font.mediumRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.mediumMonospacedSystemFont(fontSize) : Font.mediumSystemFont(fontSize);
-    } else if (fontThickness == "semibold") {
-      font = (fontName == "Rounded") ? Font.semiboldRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.semiboldMonospacedSystemFont(fontSize) : Font.semiboldSystemFont(fontSize);
-    } else if (fontThickness == "bold") {
-      font = (fontName == "Rounded") ? Font.boldRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.boldMonospacedSystemFont(fontSize) : Font.boldSystemFont(fontSize);
-    } else if (fontThickness == "heavy") {
-      font = (fontName == "Rounded") ? Font.heavyRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.heavyMonospacedSystemFont(fontSize) : Font.heavySystemFont(fontSize);
-    } else if (fontThickness == "black") {
-      font = (fontName == "Rounded") ? Font.blackRoundedSystemFont(fontSize) :
-             (fontName == "Monospaced") ? Font.blackMonospacedSystemFont(fontSize) : Font.blackSystemFont(fontSize);
+    switch (fontThickness) {
+      case "ultralight":
+        font = (fontName == "Rounded") ? Font.ultraLightRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.ultraLightMonospacedSystemFont(fontSize) : Font.ultraLightSystemFont(fontSize); break;
+      case "thin":
+        font = (fontName == "Rounded") ? Font.thinRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.thinMonospacedSystemFont(fontSize) : Font.thinSystemFont(fontSize); break;
+      case "light":
+        font = (fontName == "Rounded") ? Font.lightRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.lightMonospacedSystemFont(fontSize) : Font.lightSystemFont(fontSize); break;
+      case "regular":
+        font = (fontName == "Rounded") ? Font.regularRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.regularMonospacedSystemFont(fontSize) : Font.regularSystemFont(fontSize); break;
+      case "medium":
+        font = (fontName == "Rounded") ? Font.mediumRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.mediumMonospacedSystemFont(fontSize) : Font.mediumSystemFont(fontSize); break;
+      case "semibold":
+        font = (fontName == "Rounded") ? Font.semiboldRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.semiboldMonospacedSystemFont(fontSize) : Font.semiboldSystemFont(fontSize); break;
+      case "bold":
+        font = (fontName == "Rounded") ? Font.boldRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.boldMonospacedSystemFont(fontSize) : Font.boldSystemFont(fontSize); break;
+      case "heavy":
+        font = (fontName == "Rounded") ? Font.heavyRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.heavyMonospacedSystemFont(fontSize) : Font.heavySystemFont(fontSize); break;
+      case "black":
+        font = (fontName == "Rounded") ? Font.blackRoundedSystemFont(fontSize) : (fontName == "Monospaced") ? Font.blackMonospacedSystemFont(fontSize) : Font.blackSystemFont(fontSize); break;
     }
   } else {
     font = new Font(fontName, fontSize);
   }
-
   return font;
+}
+
+// check if there's a connection to the interwebz
+async function isOnline() {
+  const view = new WebView();
+  const connection = await view.evaluateJavaScript("navigator.onLine");
+  return connection;
 }
 
 // check if there's a script update available on GitHub
 async function checkForUpdate(currentVersion) {
-  try {
-    const latestVersion = await new Request("https://raw.githubusercontent.com/Saudumm/scriptable-News-Widget/main/version.txt").loadString();
-    return (currentVersion.replace(/[^1-9]+/g, "") < latestVersion.replace(/[^1-9]+/g, "")) ? true : false
-  } catch(err) {
-    return false;
+  if (ONLINE) {
+    try {
+      const latestVersion = await new Request("https://raw.githubusercontent.com/Saudumm/scriptable-News-Widget/main/version.txt").loadString();
+      return (currentVersion.replace(/[^1-9]+/g, "") < latestVersion.replace(/[^1-9]+/g, "")) ? true : false;
+    } catch(err) {
+      log("try checkForUpdate: "+err);
+      return false;
+    }
+  }
+}
+
+// check and process widget parameters
+function checkWidgetParameter() {
+  if (args.widgetParameter) {
+    const aWidgetParameter = args.widgetParameter.split("|");
+    switch (aWidgetParameter.length) {
+      case 8: CONF_FONT_WIDGET_TITLE = CONF_FONT_DATE = CONF_FONT_HEADLINE = aWidgetParameter[7];
+      case 7: PARAM_BG_IMAGE_GRADIENT = aWidgetParameter[6];
+      case 6: PARAM_BG_IMAGE_BLUR = aWidgetParameter[5];
+      case 5: PARAM_BG_IMAGE_NAME = aWidgetParameter[4];
+      case 4: PARAM_SHOW_NEWS_IMAGES = aWidgetParameter[3];
+      case 3: PARAM_WIDGET_TITLE = aWidgetParameter[2];
+      case 2:
+        if (aWidgetParameter[1].substring(0, 4) == "http") {
+          PARAM_LINKS = [[aWidgetParameter[1], ""]];
+        } else {
+          SETTINGS_FILE = aWidgetParameter[1];
+        }
+      case 1:
+        if (aWidgetParameter[0] == "small" || aWidgetParameter[0] == "medium" || aWidgetParameter[0] == "large") {
+          WIDGET_SIZE = aWidgetParameter[0];
+        } else {
+          SETTINGS_FILE = aWidgetParameter[0]
+        }
+    }
   }
 }
 
@@ -1483,12 +1765,8 @@ async function cropImageToSquare(img) {
 
     let rect;
     switch (imgShortSide) {
-      case imgHeight:
-        rect = await new Rect(imgCropSide, 0, imgShortSide, imgShortSide);
-        break;
-      case imgWidth:
-        rect = await new Rect(0, imgCropSide, imgShortSide, imgShortSide);
-        break;
+      case imgHeight: rect = await new Rect(imgCropSide, 0, imgShortSide, imgShortSide); break;
+      case imgWidth: rect = await new Rect(0, imgCropSide, imgShortSide, imgShortSide); break;
     }
     
     let draw = await new DrawContext();
@@ -1498,6 +1776,779 @@ async function cropImageToSquare(img) {
     img = await draw.getImage();
   }
   return img;
+}
+
+// settings wizard
+async function settingsWizard() {
+  try {
+    let fm;
+    try {fm = FileManager.iCloud()} catch (err) {fm = FileManager.local()}
+    try {fm.documentsDirectory()} catch(err) {fm = FileManager.local()}
+    let filePath = fm.documentsDirectory();
+    filePath = fm.joinPath(filePath, "News-Widget-Settings")
+    
+    let settingsFileName = "widget-settings.txt";
+    let jsonData;
+    
+    const alAddEdit = await _createNewAlert("Welcome to News Widget Settings Wizard\nDo you want to create a new Settings File or edit an exisiting file?");
+    alAddEdit.addAction("Create New File");
+    alAddEdit.addAction("Edit Existing File");
+    alAddEdit.addAction("Delete Existing File");
+    alAddEdit.addCancelAction("Cancel");
+    
+    switch (await alAddEdit.presentSheet()) {
+      case 0: jsonData = await _getStandardSettings(); break;
+      case 1:
+        const settingsContent = fm.listContents(filePath)
+        settingsContent.sort();
+        const alLoad = await _createNewAlert("Select which Settings File you want to edit:");
+        if (settingsContent && settingsContent.length > 0) {
+          for (let iLoad = 0; iLoad < settingsContent.length; iLoad++) {alLoad.addAction(settingsContent[iLoad]);}
+          alLoad.addCancelAction("Cancel");
+          const answerLoad = await alLoad.presentSheet();
+          if (answerLoad > -1) {
+            settingsFileName = settingsContent[answerLoad]
+            const filePathLoad = fm.joinPath(filePath, settingsFileName);
+            if (fm.fileExists(filePathLoad)) {
+              if (fm.isFileStoredIniCloud(filePathLoad)) {await fm.downloadFileFromiCloud(filePathLoad);}
+              jsonData = await JSON.parse(fm.readString(filePathLoad));
+            }
+          }
+        }
+        break;
+      case 2:
+        const settingsContentDel = fm.listContents(filePath)
+        const alDel = await _createNewAlert("Select which Settings File you want to delete:");
+        if (settingsContentDel && settingsContentDel.length > 0) {
+          for (let iDel = 0; iDel < settingsContentDel.length; iDel++) {alDel.addAction(settingsContentDel[iDel]);}
+          alDel.addCancelAction("Cancel");
+          const answerDel = await alDel.presentSheet();
+          if (answerDel > -1) {
+            const settingsFileNameDel = settingsContentDel[answerDel]
+            const filePathDel = fm.joinPath(filePath, settingsFileNameDel);
+            if (fm.fileExists(filePathDel)) {
+              if (fm.isFileStoredIniCloud(filePathDel)) {await fm.downloadFileFromiCloud(filePathDel);}
+              const alDelConfirm = await _createNewAlert("Are you sure you want to delete "+settingsFileNameDel+"?");
+              alDelConfirm.addAction("Yes");
+              alDelConfirm.addAction("No");
+              switch (await alDelConfirm.presentSheet()) {
+                case 0:
+                  fm.remove(filePathDel);
+                  const alDelOK = await _createNewAlert("File "+settingsFileNameDel+" deleted!");
+                  alDelOK.addAction("OK");
+                  await alDelOK.presentSheet();
+                  break;
+                case 1: return await settingsWizard();
+              }
+            }
+          }
+        }
+        return await settingsWizard();
+      case -1: return null;
+    }
+    
+    if (jsonData !== undefined) {
+      await createTable();
+    } else {
+      const alErr = await _createNewAlert("Couldn't load Settings Data. Please try again.");
+      alErr.addAction("OK");
+      await alErr.presentSheet();
+      return;
+    }
+    
+    async function createTable() {
+      const jsonKeys = Object.keys(jsonData);
+      const translate = _translateSettings();
+      
+      const tblSettings = new UITable();
+      tblSettings.showSeparators = true
+      await _reCreateRows();
+      await tblSettings.present(true);
+      return;
+      
+      // Create or recreate all Rows
+      async function _reCreateRows() {
+        const rowTitle = new UITableRow();
+        rowTitle.addText("Tap on the Settings to edit their values!\n\nTap \"SAVE\" when you're done").centerAligned();
+        rowTitle.height = 90;
+        tblSettings.addRow(rowTitle);
+        
+        const rowSave = new UITableRow();
+        rowSave.addText("SAVE").centerAligned();
+        rowSave.backgroundColor = Color.blue();
+        rowSave.height = 50;
+        rowSave.dismissOnSelect = false;
+        rowSave.onSelect = async () => {
+          let isWritten = await _saveSettings();
+          if (isWritten == true) {
+            let alDone = await _createNewAlert("Settings File successfully saved!\nYou can now close the Settings Wizard (Top Left) and configure\n\n"+settingsFileName+"\n\nas a Widget Parameter or in the News Widget Code.");
+            alDone.addAction("OK");
+            await alDone.presentAlert();
+            return;
+          } else {
+            let alDone = await _createNewAlert("No Settings File saved.");
+            alDone.addAction("OK");
+            await alDone.presentAlert();
+            return;
+          }
+        }
+        tblSettings.addRow(rowSave);
+        
+        let rowSpacer = new UITableRow();
+        rowSpacer.height = 30;
+        tblSettings.addRow(rowSpacer);
+        
+        let rowBGColor = Color.dynamic(new Color("#e3e3e1"),new Color("#1c1c1e"));
+        
+        for (let i = 0; i < jsonKeys.length; i++) {
+          let rowSetting = new UITableRow()
+          rowSetting.height = 70;
+          rowSetting.dismissOnSelect = false;
+          
+          let rowTitleTXT = translate[jsonKeys[i]];
+          
+          // color every second row
+          if (i%2 != 0) {rowSetting.backgroundColor = rowBGColor;}
+          
+          let rowTXT;
+          switch (jsonKeys[i].toString()) {
+            case "CHECK_FOR_SCRIPT_UPDATE":
+            case "CONF_LARGE_WIDGET_MAX_NEWS":
+            case "CONF_12_HOUR":
+            case "CONF_BG_GRADIENT":
+            case "CONF_FONT_SIZE_WIDGET_TITLE":
+            case "CONF_FONT_SIZE_DATE":
+            case "CONF_FONT_SIZE_HEADLINE":
+              rowTXT = jsonKeys[i].toString() + " = " + jsonData[jsonKeys[i]].toString(); break;
+            case "PARAM_WIDGET_TITLE":
+            case "PARAM_BG_IMAGE_NAME":
+            case "PARAM_BG_IMAGE_BLUR":
+            case "PARAM_BG_IMAGE_GRADIENT":
+            case "PARAM_SHOW_NEWS_IMAGES":
+            case "CONF_DISPLAY_NEWS":
+            case "CONF_DATE_TIME_LOCALE":
+            case "CONF_FONT_WIDGET_TITLE":
+            case "CONF_FONT_WEIGHT_WIDGET_TITLE":
+            case "CONF_FONT_DATE":
+            case "CONF_FONT_WEIGHT_DATE":
+            case "CONF_FONT_HEADLINE":
+            case "CONF_FONT_WEIGHT_HEADLINE":
+              rowTXT = jsonKeys[i].toString() + " = \"" + jsonData[jsonKeys[i]].toString() + "\"";
+              break;
+            case "PARAM_LINKS":
+              if (jsonData[jsonKeys[i]].length >= 1) {
+                let strWebsite = "";
+                for (let cArr = 0; cArr < jsonData[jsonKeys[i]].length; cArr++) {
+                  strWebsite += "[\""+jsonData[jsonKeys[i]][cArr][0]+"\", \""+jsonData[jsonKeys[i]][cArr][1]+"\"],\n";
+                }
+                rowTXT = strWebsite.slice(0, -2);
+                rowSetting.height = 70+(15*jsonData[jsonKeys[i]].length);
+              }
+              break;
+            case "CONF_BG_COLOR":
+            case "CONF_BG_GRADIENT_COLOR_TOP":
+            case "CONF_BG_GRADIENT_COLOR_BTM":
+            case "CONF_BG_GRADIENT_OVERLAY_TOP":
+            case "CONF_BG_GRADIENT_OVERLAY_BTM":
+            case "CONF_FONT_COLOR_WIDGET_TITLE":
+            case "CONF_FONT_COLOR_DATE":
+            case "CONF_FONT_COLOR_HEADLINE":
+              if (typeof jsonData[jsonKeys[i]] === "object") {
+                let height = 75;
+                let strWebsite = jsonKeys[i].toString() + ":\n";
+                if (jsonData[jsonKeys[i]].lightMode !== undefined) {strWebsite += "lightMode = \""+jsonData[jsonKeys[i]].lightMode+"\"\n"; height += 15;}
+                if (jsonData[jsonKeys[i]].lightModeAlpha !== undefined) {strWebsite += "lightModeAlpha = "+jsonData[jsonKeys[i]].lightModeAlpha+"\n"; height += 15;}
+                if (jsonData[jsonKeys[i]].darkMode !== undefined) {strWebsite += "darkMode = \""+jsonData[jsonKeys[i]].darkMode+"\"\n"; height += 15;}
+                if (jsonData[jsonKeys[i]].darkModeAlpha !== undefined) {strWebsite += "darkModeAlpha = "+jsonData[jsonKeys[i]].darkModeAlpha+"\n"; height += 15;}
+                rowSetting.height = height;
+                rowTXT = strWebsite.slice(0, -1);
+              }
+              break;
+            default: rowTXT = jsonData[jsonKeys[i]].toString(); break;
+          }
+          rowSetting.addText(rowTitleTXT, rowTXT)
+          rowSetting.onSelect = async (number) => {
+            await _showMessage(number);
+            await tblSettings.removeAllRows();
+            await _reCreateRows();
+            await tblSettings.reload();
+          }
+          tblSettings.addRow(rowSetting);
+        }
+      }
+    }
+    
+    /* === Settings Wizard internal functions === */
+    async function _saveSettings() {
+      let alertSave = await _createNewAlert("Enter the Filename of your Settings File including the Extension (.txt)");
+      alertSave.addTextField("filename.txt", settingsFileName);
+      alertSave.addAction("Save");
+      alertSave.addCancelAction("Cancel");
+      switch (await alertSave.presentAlert()) {
+        case 0:
+          if (alertSave.textFieldValue(0).length > 0 && alertSave.textFieldValue(0).slice(-4) == ".txt") {
+            settingsFileName = alertSave.textFieldValue(0);
+            settingsFileName = settingsFileName.replaceAll(/[\?\|&;\$%@"<>\(\)\+,]/g, "");
+            let filePathWrite = fm.joinPath(filePath, settingsFileName);
+            if (fm.fileExists(filePathWrite)) {
+              let alertOverwrite = await _createNewAlert("The File \""+settingsFileName+"\" already exists.\nDo you want to overwrite the File?");
+              alertOverwrite.addAction("No");
+              alertOverwrite.addAction("Yes");
+              switch (await alertOverwrite.presentAlert()) {
+                case 0: return false;
+                case 1: await fm.writeString(filePathWrite, JSON.stringify(jsonData)); return true;
+              }
+            } else {
+              await fm.writeString(filePathWrite, JSON.stringify(jsonData));
+              return true;
+            }
+          }
+          break;
+        case -1: return false;
+      }
+    }
+    
+    async function _showMessage(rowID) {
+      let al = await _createNewAlert("");
+      switch (rowID) {
+        case 3: // CHECK_FOR_SCRIPT_UPDATE
+          al.message = "Do you want to automatically search for Script Updates to News Widget?\n(Default: Yes)"
+          al.addAction("Yes");
+          al.addAction("No");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData["CHECK_FOR_SCRIPT_UPDATE"] = true; break;
+            case 1: jsonData["CHECK_FOR_SCRIPT_UPDATE"] = false; break;
+            case -1: return;
+          }
+          break;
+        case 4: // PARAM_LINKS
+          await _editParamLinks()
+          break;
+        case 5: // PARAM_WIDGET_TITLE
+          al.message = "Enter the Title of the Widget\nThe Title is displayed at the top of the Widget\n(Default: News Widget)";
+          al.addTextField("example: News Widget", jsonData["PARAM_WIDGET_TITLE"].toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length > 0) {jsonData["PARAM_WIDGET_TITLE"] = al.textFieldValue(0);}
+              break;
+            case -1: return;
+          }
+          break;
+        case 6: // PARAM_BG_IMAGE_NAME
+          al.message = "Enter the Filename of the image you want to use as a Widget Background\n(Default: none)";
+          al.addTextField("example: image.jpg", jsonData["PARAM_BG_IMAGE_NAME"].toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length > 0) {jsonData["PARAM_BG_IMAGE_NAME"] = al.textFieldValue(0);} else {jsonData["PARAM_BG_IMAGE_NAME"] = "none"}
+              break;
+            case -1: return;
+          }
+          break;
+        case 7: // PARAM_BG_IMAGE_BLUR
+          al.message = "Do you want Widget Background Images to be blurred?\n(Default: Yes)"
+          al.addAction("Yes");
+          al.addAction("No");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData["PARAM_BG_IMAGE_BLUR"] = "true"; break;
+            case 1: jsonData["PARAM_BG_IMAGE_BLUR"] = "false"; break;
+            case -1: return;
+          }
+          break;
+        case 8: // PARAM_BG_IMAGE_GRADIENT
+          al.message = "Do you want to display a Color Gradient over the Background Image?\nThis can improve legibility of text\n(Default: Yes)"
+          al.addAction("Yes");
+          al.addAction("No");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData["PARAM_BG_IMAGE_GRADIENT"] = "true"; break;
+            case 1: jsonData["PARAM_BG_IMAGE_GRADIENT"] = "false"; break;
+            case -1: return;
+          }
+          break;
+        case 9: // PARAM_SHOW_NEWS_IMAGES
+          al.message = "Do you want to display Images next to the News?\n(Default: Yes)"
+          al.addAction("Yes");
+          al.addAction("No");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData["PARAM_SHOW_NEWS_IMAGES"] = "true"; break;
+            case 1: jsonData["PARAM_SHOW_NEWS_IMAGES"] = "false"; break;
+            case -1: return;
+          }
+          break;
+        case 10: // CONF_LARGE_WIDGET_MAX_NEWS
+          al.message = "Do you want to display a max. number of 4 (like iOS News Widget) or 5 News in a Large Widget?\n\n(Default: Max. 5 News)"
+          al.addAction("Max. 4 News");
+          al.addAction("Max. 5 News");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData["CONF_LARGE_WIDGET_MAX_NEWS"] = 4; break;
+            case 1: jsonData["CONF_LARGE_WIDGET_MAX_NEWS"] = 5; break;
+            case -1: return;
+          }
+          break;
+        case 11: // CONF_DISPLAY_NEWS
+          al.message = "Do you want to prioritize seeing News from all Websites (like iOS News Widget) or prioritize sorting all News by Date?\n(Default: Prioritize Websites)"
+          al.addAction("Prioritize Websites");
+          al.addAction("Prioritize Date");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData["CONF_DISPLAY_NEWS"] = "websites"; break;
+            case 1: jsonData["CONF_DISPLAY_NEWS"] = "date"; break;
+            case -1: return;
+          }
+          break;
+        case 12: // CONF_DATE_TIME_LOCALE
+          al.message = "Enter the Region you want to use for the Date and Time\n(e.g. en-US, de-DE, ko)\n(Default: default)";
+          al.addTextField("example: en-US", jsonData["CONF_DATE_TIME_LOCALE"].toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length > 0) {jsonData["CONF_DATE_TIME_LOCALE"] = al.textFieldValue(0);} else {jsonData["PARAM_BG_IMAGE_NAME"] = "default"}
+              break;
+            case -1: return;
+          }
+          break;
+        case 13: // CONF_12_HOUR
+          al.message = "Do you want to display the TIME\nin 12 or 24 hour format?\n(Default: 24 Hour)"
+          al.addAction("12 Hour");
+          al.addAction("24 Hour");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData["CONF_12_HOUR"] = true; break;
+            case 1: jsonData["CONF_12_HOUR"] = false; break;
+            case -1: return;
+          }
+          break;
+        case 14: // CONF_BG_COLOR
+          al.message = "Enter the Widget Background Color (HEX)\n(Default Light Mode: #fefefe)\n(Default Dark Mode: #2c2c2e)\n\nFirst Value is used in iOS Light Mode\nSecond Value is used in iOS Dark Mode";
+          al.addTextField("example: #fefefe", jsonData["CONF_BG_COLOR"].lightMode.toString());
+          al.addTextField("example: #2c2c2e", jsonData["CONF_BG_COLOR"].darkMode.toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          let wBGColorLight, wBGColorDark;
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length == 6 || al.textFieldValue(0).length == 7) {
+                wBGColorLight = (al.textFieldValue(0).substring(0,1) == "#") ? al.textFieldValue(0) : "#"+al.textFieldValue(0)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGColorLight)) {jsonData["CONF_BG_COLOR"].lightMode = wBGColorLight;}
+              }
+              if (al.textFieldValue(1).length == 6 || al.textFieldValue(1).length == 7) {
+                wBGColorDark = (al.textFieldValue(1).substring(0,1) == "#") ? al.textFieldValue(1) : "#"+al.textFieldValue(1)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGColorDark)) {jsonData["CONF_BG_COLOR"].darkMode = wBGColorDark;}
+              }
+              break;
+            case -1: return;
+          }
+          break;
+        case 15: // CONF_BG_GRADIENT
+          al.message = "Do you want to use a Widget Background Color Gradient instead of a Solid Color? (Only active if no Background Image is displayed)\n(Default: No)"
+          al.addAction("Yes");
+          al.addAction("No");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData["CONF_BG_GRADIENT"] = true; break;
+            case 1: jsonData["CONF_BG_GRADIENT"] = false; break;
+            case -1: return;
+          }
+          break;
+        case 16: // CONF_BG_GRADIENT_COLOR_TOP
+          al.message = "Enter the Widget Background Gradient Top Color (HEX)\n(Default Light Mode: #fefefe)\n(Default Dark Mode: #000000)\n\nFirst Value is used in iOS Light Mode\nSecond Value is used in iOS Dark Mode";
+          al.addTextField("example: #fefefe", jsonData["CONF_BG_GRADIENT_COLOR_TOP"].lightMode.toString());
+          al.addTextField("example: #000000", jsonData["CONF_BG_GRADIENT_COLOR_TOP"].darkMode.toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          let wBGGTopColorLight, wBGGTopColorDark;
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length == 6 || al.textFieldValue(0).length == 7) {
+                wBGGTopColorLight = (al.textFieldValue(0).substring(0,1) == "#") ? al.textFieldValue(0) : "#"+al.textFieldValue(0)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGGTopColorLight)) {jsonData["CONF_BG_GRADIENT_COLOR_TOP"].lightMode = wBGGTopColorLight;}
+              }
+              if (al.textFieldValue(1).length == 6 || al.textFieldValue(1).length == 7) {
+                wBGGTopColorDark = (al.textFieldValue(1).substring(0,1) == "#") ? al.textFieldValue(1) : "#"+al.textFieldValue(1)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGGTopColorDark)) {jsonData["CONF_BG_GRADIENT_COLOR_TOP"].darkMode = wBGGTopColorDark;}
+              }
+              break;
+            case -1: return;
+          }
+          break;
+        case 17: // CONF_BG_GRADIENT_COLOR_BTM
+          al.message = "Enter the Widget Background Gradient Bottom Color (HEX)\n(Default Light Mode:#cccccc)\n(Default Dark Mode: #2c2c2e)\n\nFirst Value is used in iOS Light Mode\nSecond Value is used in iOS Dark Mode";
+          al.addTextField("example: #cccccc", jsonData["CONF_BG_GRADIENT_COLOR_BTM"].lightMode.toString());
+          al.addTextField("example: #2c2c2e", jsonData["CONF_BG_GRADIENT_COLOR_BTM"].darkMode.toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          let wBGGBtmColorLight, wBGGBtmColorDark;
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length == 6 || al.textFieldValue(0).length == 7) {
+                wBGGBtmColorLight = (al.textFieldValue(0).substring(0,1) == "#") ? al.textFieldValue(0) : "#"+al.textFieldValue(0)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGGBtmColorLight)) {jsonData["CONF_BG_GRADIENT_COLOR_BTM"].lightMode = wBGGBtmColorLight;}
+              }
+              if (al.textFieldValue(1).length == 6 || al.textFieldValue(1).length == 7) {
+                wBGGBtmColorDark = (al.textFieldValue(1).substring(0,1) == "#") ? al.textFieldValue(1) : "#"+al.textFieldValue(1)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGGBtmColorDark)) {jsonData["CONF_BG_GRADIENT_COLOR_BTM"].darkMode = wBGGBtmColorDark;}
+              }
+              break;
+            case -1: return;
+          }
+          break;
+        case 18: // CONF_BG_GRADIENT_OVERLAY_TOP
+          al.message = "Enter the BG Image Overlay Gradient Top Color (HEX)\n(Default Light Mode: #fefefe, 0.3)\n(Default Dark Mode: #2c2c2e, 0.3)\n\n1st Value is Color in iOS Light Mode\n2nd Value is Alpha in Light Mode\n3rd Value is Color in iOS Dark Mode\n4th Value is Alpha value in Dark Mode";
+          al.addTextField("example: #fefefe", jsonData["CONF_BG_GRADIENT_OVERLAY_TOP"].lightMode.toString());
+          al.addTextField("example: 0.3", jsonData["CONF_BG_GRADIENT_OVERLAY_TOP"].lightModeAlpha.toString());
+          al.addTextField("example: #2c2c2e", jsonData["CONF_BG_GRADIENT_OVERLAY_TOP"].darkMode.toString());
+          al.addTextField("example: 0.3", jsonData["CONF_BG_GRADIENT_OVERLAY_TOP"].darkModeAlpha.toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          let wBGGOTopColorLight, wBGGOTopColorDark;
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length == 6 || al.textFieldValue(0).length == 7) {
+                wBGGOTopColorLight = (al.textFieldValue(0).substring(0,1) == "#") ? al.textFieldValue(0) : "#"+al.textFieldValue(0)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGGOTopColorLight)) {jsonData["CONF_BG_GRADIENT_OVERLAY_TOP"].lightMode = wBGGOTopColorLight;}
+              }
+              if (al.textFieldValue(1).length > 0 && parseFloat(al.textFieldValue(1)).toString() != "NaN") {jsonData["CONF_BG_GRADIENT_OVERLAY_TOP"].lightModeAlpha = parseFloat(al.textFieldValue(1));}
+              
+              if (al.textFieldValue(2).length == 6 || al.textFieldValue(2).length == 7) {
+                wBGGOTopColorDark = (al.textFieldValue(2).substring(0,1) == "#") ? al.textFieldValue(2) : "#"+al.textFieldValue(2)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGGOTopColorDark)) {jsonData["CONF_BG_GRADIENT_OVERLAY_TOP"].darkMode = wBGGOTopColorDark;}
+              }
+              if (al.textFieldValue(3).length > 0 && parseFloat(al.textFieldValue(3)).toString() != "NaN") {jsonData["CONF_BG_GRADIENT_OVERLAY_TOP"].darkModeAlpha = parseFloat(al.textFieldValue(3));}
+              break;
+            case -1: return;
+          }
+          break;
+        case 19: // CONF_BG_GRADIENT_OVERLAY_BTM
+          al.message = "Enter the BG Image Overlay Gradient Bottom Color (HEX)\n(Default Light Mode: #fefefe, 1)\n(Default Dark Mode: #2c2c2e, 1)\n\n1st Value is Color in iOS Light Mode\n2nd Value is Alpha in Light Mode\n3rd Value is Color in iOS Dark Mode\n4th Value is Alpha value in Dark Mode";
+          al.addTextField("example: #fefefe", jsonData["CONF_BG_GRADIENT_OVERLAY_BTM"].lightMode.toString());
+          al.addTextField("example: 1", jsonData["CONF_BG_GRADIENT_OVERLAY_BTM"].lightModeAlpha.toString());
+          al.addTextField("example: #2c2c2e", jsonData["CONF_BG_GRADIENT_OVERLAY_BTM"].darkMode.toString());
+          al.addTextField("example: 1", jsonData["CONF_BG_GRADIENT_OVERLAY_BTM"].darkModeAlpha.toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          let wBGGOBtmColorLight, wBGGOBtmColorDark;
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length == 6 || al.textFieldValue(0).length == 7) {
+                wBGGOBtmColorLight = (al.textFieldValue(0).substring(0,1) == "#") ? al.textFieldValue(0) : "#"+al.textFieldValue(0)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGGOBtmColorLight)) {jsonData["CONF_BG_GRADIENT_OVERLAY_BTM"].lightMode = wBGGOBtmColorLight;}
+              }
+              if (al.textFieldValue(1).length > 0 && parseFloat(al.textFieldValue(1)).toString() != "NaN") {jsonData["CONF_BG_GRADIENT_OVERLAY_BTM"].lightModeAlpha = parseFloat(al.textFieldValue(1));}
+              
+              if (al.textFieldValue(2).length == 6 || al.textFieldValue(2).length == 7) {
+                wBGGOBtmColorDark = (al.textFieldValue(2).substring(0,1) == "#") ? al.textFieldValue(2) : "#"+al.textFieldValue(2)
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(wBGGOBtmColorDark)) {jsonData["CONF_BG_GRADIENT_OVERLAY_BTM"].darkMode = wBGGOBtmColorDark;}
+              }
+              if (al.textFieldValue(3).length > 0 && parseFloat(al.textFieldValue(3)).toString() != "NaN") {jsonData["CONF_BG_GRADIENT_OVERLAY_BTM"].darkModeAlpha = parseFloat(al.textFieldValue(3));}
+              break;
+            case -1: return;
+          }
+          break;
+        case 20: // CONF_FONT_WIDGET_TITLE
+        case 24: // CONF_FONT_DATE
+        case 28: // CONF_FONT_HEADLINE
+          let selTextFont = (rowID == 20) ? "Widget Title\n(Default: System)" : (rowID == 24) ? "Date and Time\n(Default: System)" : "Headline\n(Default: System)";
+          let selKeyFont = (rowID == 20) ? "CONF_FONT_WIDGET_TITLE" : (rowID == 24) ? "CONF_FONT_DATE" : "CONF_FONT_HEADLINE";
+          al.message = "Enter your Font Weight for the "+selTextFont;
+          al.addTextField("example: MarkerFelt-Thin", jsonData[selKeyFont].toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length > 0) {jsonData[selKeyFont] = al.textFieldValue(0);}
+              break;
+            case -1: return;
+          }
+          break;
+        case 21: // CONF_FONT_WEIGHT_WIDGET_TITLE
+        case 25: // CONF_FONT_WEIGHT_DATE
+        case 29: // CONF_FONT_WEIGHT_HEADLINE
+          let selTextWeight = (rowID == 21) ? "Widget Title\n(Default: heavy)" : (rowID == 25) ? "Date and Time\n(Default: heavy)" : "Headline\n(Default: semibold)";
+          let selKeyWeight = (rowID == 21) ? "CONF_FONT_WEIGHT_WIDGET_TITLE" : (rowID == 25) ? "CONF_FONT_WEIGHT_DATE" : "CONF_FONT_WEIGHT_HEADLINE";
+          al.message = "Select your Font Weight for the "+selTextWeight;
+          al.addAction("ultralight");
+          al.addAction("thin");
+          al.addAction("light");
+          al.addAction("regular");
+          al.addAction("medium");
+          al.addAction("semibold");
+          al.addAction("bold");
+          al.addAction("heavy");
+          al.addAction("black");
+          al.addCancelAction("Cancel");
+          switch (await al.presentSheet()) {
+            case 0: jsonData[selKeyWeight] = "ultralight"; break;
+            case 1: jsonData[selKeyWeight] = "thin"; break;
+            case 2: jsonData[selKeyWeight] = "light"; break;
+            case 3: jsonData[selKeyWeight] = "regular"; break;
+            case 4: jsonData[selKeyWeight] = "medium"; break;
+            case 5: jsonData[selKeyWeight] = "semibold"; break;
+            case 6: jsonData[selKeyWeight] = "bold"; break;
+            case 7: jsonData[selKeyWeight] = "heavy"; break;
+            case 8: jsonData[selKeyWeight] = "black"; break;
+            case -1: return;
+          }
+          break;
+        case 22: // CONF_FONT_SIZE_WIDGET_TITLE
+        case 26: // CONF_FONT_SIZE_DATE
+        case 30: // CONF_FONT_SIZE_HEADLINE
+          let selTextSize = (rowID == 22) ? "Widget Title\n(Default: 16)" : (rowID == 26) ? "Date and Time\n(Default: 12)" : "Headline\n(Default: 13)";
+          let selKeySize = (rowID == 22) ? "CONF_FONT_SIZE_WIDGET_TITLE" : (rowID == 26) ? "CONF_FONT_SIZE_DATE" : "CONF_FONT_SIZE_HEADLINE";
+          al.message = "Enter your Font Weight for the "+selTextSize;
+          al.addTextField("example: 12", jsonData[selKeySize].toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length > 0 && parseFloat(al.textFieldValue(0)).toString() != "NaN") {jsonData[selKeySize] = parseFloat(al.textFieldValue(0));}
+              break;
+            case -1: return;
+          }
+          break;
+        case 23: // CONF_FONT_COLOR_WIDGET_TITLE
+        case 27: // CONF_FONT_COLOR_DATE
+        case 31: // CONF_FONT_COLOR_HEADLINE
+          let selTextColor = (rowID == 23) ? "Widget Title\n(Default Light Mode: #000000)\n(Default Dark Mode: #fefefe)" : (rowID == 27) ? "News Date and Time\n(Default Light Mode: #8a8a8d)\n(Default Dark Mode: #9f9fa4)" : "News Headline\n(Default Light Mode: #000000)\n(Default Dark Mode: #fefefe)";
+          let selKeyColor = (rowID == 23) ? "CONF_FONT_COLOR_WIDGET_TITLE" : (rowID == 27) ? "CONF_FONT_COLOR_DATE" : "CONF_FONT_COLOR_HEADLINE";
+          al.message = "Enter the Font Color (HEX) for the "+selTextColor+"\n\nFirst Value is used in iOS Light Mode\nSecond Value is used in iOS Dark Mode";
+          al.addTextField("example: #8a8a8d", jsonData[selKeyColor].lightMode.toString());
+          al.addTextField("example: #9f9fa4", jsonData[selKeyColor].darkMode.toString());
+          al.addAction("OK");
+          al.addCancelAction("Cancel");
+          let fontColorLight, fontColorDark;
+          switch (await al.presentAlert()) {
+            case 0:
+              if (al.textFieldValue(0).length == 6 || al.textFieldValue(0).length == 7) {
+                fontColorLight = (al.textFieldValue(0).substring(0,1) == "#") ? al.textFieldValue(0) : "#"+al.textFieldValue(0);
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(fontColorLight)) {jsonData[selKeyColor].lightMode = fontColorLight;}
+              }
+              if (al.textFieldValue(1).length == 6 || al.textFieldValue(1).length == 7) {
+                fontColorDark = (al.textFieldValue(1).substring(0,1) == "#") ? al.textFieldValue(1) : "#"+al.textFieldValue(1);
+                if (/^#([0-9A-F]{3}){1,2}$/i.test(fontColorDark)) {jsonData[selKeyColor].darkMode = fontColorDark;}
+              }
+              break;
+            case -1: return;
+          }
+          break;
+      }
+    }
+    
+    // edit websites
+    async function _editParamLinks() {
+      var tableParamLinks = new UITable();
+      tableParamLinks.showSeparators = true
+      await _reCreateRowsParamLinks();
+      await tableParamLinks.present(false);
+      return;
+      
+      async function _reCreateRowsParamLinks() {
+        const rowLinkTitle = new UITableRow();
+        rowLinkTitle.addText("Tap on the Links to edit or remove!\n\nTap on Close (Top Left)\nwhen you're done").centerAligned();
+        rowLinkTitle.height = 115;
+        rowLinkTitle.backgroundColor = Color.dynamic(new Color("#fefefe"), new Color("#000000"));
+        tableParamLinks.addRow(rowLinkTitle);
+        
+        let rowLinkSpacer = new UITableRow();
+        rowLinkSpacer.height = 30;
+        rowLinkSpacer.backgroundColor = Color.dynamic(new Color("#fefefe"), new Color("#000000"));
+        tableParamLinks.addRow(rowLinkSpacer);
+        
+        let rowLinkBGColor = Color.dynamic(new Color("#e3e3e1"), new Color("#000000"));
+        
+        for (let iLink = 0; iLink < jsonData["PARAM_LINKS"].length; iLink++) {
+          let rowLink = new UITableRow();
+          rowLink.height = 70;
+          rowLink.dismissOnSelect = false;
+          
+          // color every second row
+          if (iLink%2 != 0) {rowLink.backgroundColor = rowLinkBGColor;}
+          
+          rowLink.addText(jsonData.PARAM_LINKS[iLink][1].toString(), jsonData.PARAM_LINKS[iLink][0].toString());
+          rowLink.onSelect = async (number) => {
+            await _showLinkEdit(number-2);
+            await tableParamLinks.removeAllRows();
+            await _reCreateRowsParamLinks();
+            await tableParamLinks.reload();
+          }
+          tableParamLinks.addRow(rowLink);
+        }
+        
+        const rowAddLink = new UITableRow();
+        rowAddLink.addText("Add another Website").centerAligned();
+        rowAddLink.backgroundColor = Color.blue();
+        rowAddLink.height = 50;
+        rowAddLink.dismissOnSelect = false;
+        rowAddLink.onSelect = async () => {
+          let alAddLink = await _createNewAlert("Enter the Link and Name of a Website or RSS Feed:");
+          alAddLink.addTextField("Website URL (https://...)", "");
+          alAddLink.addTextField("Website Name", "");
+          alAddLink.addAction("Add");
+          alAddLink.addCancelAction("Cancel");
+          
+          switch (await alAddLink.presentAlert()) {
+            case 0:
+              if (alAddLink.textFieldValue(0).length > 0 && alAddLink.textFieldValue(1).length > 0) {jsonData.PARAM_LINKS.push([alAddLink.textFieldValue(0), alAddLink.textFieldValue(1)]);}
+              break;
+          }
+          await tableParamLinks.removeAllRows();
+          await _reCreateRowsParamLinks();
+          await tableParamLinks.reload();
+        }
+        tableParamLinks.addRow(rowAddLink);
+      }
+      
+      async function _showLinkEdit(linkID) {
+        let websiteURL = jsonData.PARAM_LINKS[linkID][0];
+        let websiteName = jsonData.PARAM_LINKS[linkID][1];
+        let alertEditLink = await _createNewAlert("Enter the Link and Name of a Website or RSS Feed:");
+        alertEditLink.addTextField("Website URL", websiteURL);
+        alertEditLink.addTextField("Website Name", websiteName);
+        alertEditLink.addAction("OK");
+        alertEditLink.addDestructiveAction("Remove");
+        alertEditLink.addCancelAction("Cancel");
+        
+        switch (await alertEditLink.presentAlert()) {
+          case 0:
+            if (alertEditLink.textFieldValue(0).length > 0) {jsonData.PARAM_LINKS[linkID][0] = alertEditLink.textFieldValue(0);}
+            if (alertEditLink.textFieldValue(1).length > 0) {jsonData.PARAM_LINKS[linkID][1] = alertEditLink.textFieldValue(1);}
+            break;
+          case 1:
+            let alertWantToDelete = await _createNewAlert("Are you sure you want to remove this Website?");
+            alertWantToDelete.addAction("No");
+            alertWantToDelete.addAction("Yes");
+            switch (await alertWantToDelete.presentAlert()) {
+              case 0: break;
+              case 1: jsonData.PARAM_LINKS.splice(linkID, 1); break;
+            }
+            break;
+          case -1: return;
+        }
+        return;
+      }
+    }
+    
+    // create a new alert (saving on lines and file size)
+    async function _createNewAlert(message) {
+      let newAlert = await new Alert();
+      newAlert.title = "News Widget Settings Wizard";
+      newAlert.message = message;
+      return newAlert;
+    }
+    
+    // translate the settings var name to a string
+    function _translateSettings() {
+      return {
+        "CHECK_FOR_SCRIPT_UPDATE": "Check For News Widget Script Updates:",
+        "PARAM_LINKS": "Configure Websites:",
+        "PARAM_WIDGET_TITLE": "Widget Title:",
+        "PARAM_BG_IMAGE_NAME": "Widget Background Image:",
+        "PARAM_BG_IMAGE_BLUR": "Blur Background Image:",
+        "PARAM_BG_IMAGE_GRADIENT": "Background Image Color Gradient Overlay:",
+        "PARAM_SHOW_NEWS_IMAGES": "Show Images Next to News:",
+        "CONF_LARGE_WIDGET_MAX_NEWS": "Max News in Large Widget:",
+        "CONF_DISPLAY_NEWS": "Prioritize News In Widget by:",
+        "CONF_DATE_TIME_LOCALE": "Region Settings for Date and Time:",
+        "CONF_12_HOUR": "12 Hour Time Format:",
+        "CONF_BG_COLOR": "Widget Background Color:",
+        "CONF_BG_GRADIENT": "Color Gradient as Widget Background:",
+        "CONF_BG_GRADIENT_COLOR_TOP": "Top Color of Background Gradient:",
+        "CONF_BG_GRADIENT_COLOR_BTM": "Bottom Color of Background Gradient:",
+        "CONF_BG_GRADIENT_OVERLAY_TOP": "Top Color of Image Gradient Overlay:",
+        "CONF_BG_GRADIENT_OVERLAY_BTM": "Bottom Color of Image Gradient Overlay:",
+        "CONF_FONT_WIDGET_TITLE": "Font of Widget Title:",
+        "CONF_FONT_WEIGHT_WIDGET_TITLE": "Font Weight of Widget Title:",
+        "CONF_FONT_SIZE_WIDGET_TITLE": "Font Size of Widget Title:",
+        "CONF_FONT_COLOR_WIDGET_TITLE": "Font Color of Widget Title:",
+        "CONF_FONT_DATE": "Font of News Date+Time:",
+        "CONF_FONT_WEIGHT_DATE": "Font Weight of News Date+Time:",
+        "CONF_FONT_SIZE_DATE": "Font Size of News Date+Time:",
+        "CONF_FONT_COLOR_DATE": "Font Color of News Date+Time:",
+        "CONF_FONT_HEADLINE": "Font of News Headlines:",
+        "CONF_FONT_WEIGHT_HEADLINE": "Font Weight of News Headlines:",
+        "CONF_FONT_SIZE_HEADLINE": "Font Size of News Headlines:",
+        "CONF_FONT_COLOR_HEADLINE": "Font Color of News Headlines:"
+      };
+    }
+    
+    // load standard settings
+    function _getStandardSettings() {
+      const jsonData = `
+      {
+        "CHECK_FOR_SCRIPT_UPDATE": true,
+        "PARAM_LINKS": [
+                        ["https://venturebeat.com", "VENTUREBEAT"],
+                        ["http://rss.cnn.com/rss/edition.rss", "CNN"]
+                        ],
+        "PARAM_WIDGET_TITLE": "News Widget",
+        "PARAM_BG_IMAGE_NAME": "none",
+        "PARAM_BG_IMAGE_BLUR": "true",
+        "PARAM_BG_IMAGE_GRADIENT": "true",
+        "PARAM_SHOW_NEWS_IMAGES": "true",
+        "CONF_LARGE_WIDGET_MAX_NEWS": 4,
+        "CONF_DISPLAY_NEWS": "websites",
+        "CONF_DATE_TIME_LOCALE": "default",
+        "CONF_12_HOUR": false,
+        "CONF_BG_COLOR": {
+          "lightMode": "#fefefe",
+          "darkMode": "#2c2c2e"
+        },
+        "CONF_BG_GRADIENT": false,
+        "CONF_BG_GRADIENT_COLOR_TOP": {
+          "lightMode": "#fefefe",
+          "darkMode": "#000000"
+        },
+        "CONF_BG_GRADIENT_COLOR_BTM": {
+          "lightMode": "#cccccc",
+          "darkMode": "#2c2c2e"
+        },
+        "CONF_BG_GRADIENT_OVERLAY_TOP": {
+          "lightMode": "#fefefe",
+          "lightModeAlpha": 0.3,
+          "darkMode": "#2c2c2e",
+          "darkModeAlpha": 0.3
+        },
+        "CONF_BG_GRADIENT_OVERLAY_BTM": {
+          "lightMode": "#fefefe",
+          "lightModeAlpha": 1.0,
+          "darkMode": "#2c2c2e",
+          "darkModeAlpha": 1.0
+        },
+        "CONF_FONT_WIDGET_TITLE": "System",
+        "CONF_FONT_WEIGHT_WIDGET_TITLE": "heavy",
+        "CONF_FONT_SIZE_WIDGET_TITLE": 16,
+        "CONF_FONT_COLOR_WIDGET_TITLE": {
+          "lightMode": "#000000",
+          "darkMode" : "#fefefe"
+        },
+        "CONF_FONT_DATE" : "System",
+        "CONF_FONT_WEIGHT_DATE": "heavy",
+        "CONF_FONT_SIZE_DATE": 12,
+        "CONF_FONT_COLOR_DATE": {
+          "lightMode": "#8a8a8d",
+          "darkMode" : "#9f9fa4"
+        },
+        "CONF_FONT_HEADLINE": "System",
+        "CONF_FONT_WEIGHT_HEADLINE": "semibold",
+        "CONF_FONT_SIZE_HEADLINE": 13,
+        "CONF_FONT_COLOR_HEADLINE": {
+          "lightMode": "#000000",
+          "darkMode" : "#fefefe"
+        }
+      }`
+      return JSON.parse(jsonData);
+    }
+  } catch(err) {
+    log("try settingsWizard: "+err);
+  }
 }
 
 /* ============ END OF SCRIPT ============ */
