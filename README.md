@@ -99,6 +99,8 @@ You can also add the Widget directly via the Scriptable Gallery: https://scripta
 7. Edit your parameters for the widget (see Widget Parameters below)
 8. Tap anywhere outside of the config window and you're done! The widget should now load. 
 
+![widget-config-old](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widget-config-old.jpg)
+
 <a name="widget-parameters"></a>
 ## Widget Parameters
 
@@ -112,9 +114,6 @@ Just run the Settings Wizard, create a settings file and add it via Widget Param
     - small|widget-settings.txt
 
 Of course, the old Parameters still work:
-
-![widget-config-old](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widget-config-old.jpg)
-
 - Example:
     - small|https://www.stadt-bremerhaven.de|Caschys Blog|true|background.jpg|false|true|MarkerFelt-Thin
 - Parameter order has to be:
