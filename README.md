@@ -248,7 +248,7 @@ To install or update News Widget hassle-free, please add __News Widget Update.js
 You can configure one or multiple Links to WordPress website and/or RSS feeds (at the same time!) directly in the script code (section STANDARD WIDGET CONFIG) or via Settings Files, if you want to set up different News Widgets.
 
 In case you're not sure if a website is using WordPress, just add _/wp-json/wp/v2/posts_ at the end of the url (https://stadt-bremerhaven.de/wp-json/wp/v2/posts). If you see a lot of text in your browser, the site should work.
-If not, you can search for an RSS feed (if the site has one) and use the link of the RSS feed (for example: )
+If not, you can search for an RSS feed (if the site has one) and use the link of the RSS feed.
 
 Here are a few links to help you get started:
 
