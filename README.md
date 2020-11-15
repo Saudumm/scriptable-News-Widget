@@ -13,7 +13,7 @@ Tap on a news in the widget to open it directly in your browser.
 - [Changelog](#changelog)
 - [Setup](#setup)
     - [Widget Parameters](#widget-parameters)
-    - [Widget Examples](#widget-examples)
+    - [Widget Settings](#widget-settings)
     - [News Widget Clear Cache.js](#clear-cache)
 - [Update News Widget](#widget-update)
 - [Links](#links)
@@ -69,6 +69,20 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
     - added date/time region config setting
     - additional fixes for fetching images from RSS feeds
     - changed chaches from cache dir to documents dir
+- v1.2.0
+    - added offline mode
+        - if you lose your internet connection, the widget won't go blank (if all necessary data is cached)
+        - the widget will show a small cloud icon on the top right, if offline mode is temporarily active
+    - added settings files (see [Settings](#settings) for more info)
+    - added Settings Wizard (run script directly in Scriptable to use the Settings Wizard)
+    - removed links files in favor of settings files
+    - added blank image symbol if a news image isn't available
+    - standard design now resembles the official news widget more closely
+    - added setting CONF_LARGE_WIDGET_MAX_NEWS
+        - configure how much news you want to see max. in a large widget
+    - added setting CONF_DISPLAY_NEWS
+        - "websites" prioritizes showing at least one news per link
+        - "date" just sorts everything by date
 
 <a name="setup"></a>
 # Setup:
@@ -85,10 +99,21 @@ You can also add the Widget directly via the Scriptable Gallery: https://scripta
 7. Edit your parameters for the widget (see Widget Parameters below)
 8. Tap anywhere outside of the config window and you're done! The widget should now load. 
 
-![widget-config](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widget-config.jpg)
-
 <a name="widget-parameters"></a>
 ## Widget Parameters
+
+In v1.2.0, i've added settings files, so you don't have to configure your widget with a thousand different parameters.
+Just run the Settings Wizard, create a settings file and add it via Widget Parameters. See Settings Wizard for more information.
+
+![widget-config](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widget-config.jpg)
+
+- Example:
+    - widget-settings.txt
+    - small|widget-settings.txt
+
+Of course, the old Parameters still work:
+
+![widget-config-old](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/widget-config-old.jpg)
 
 - Example:
     - small|https://www.stadt-bremerhaven.de|Caschys Blog|true|background.jpg|false|true|MarkerFelt-Thin
@@ -108,58 +133,104 @@ You can also add the Widget directly via the Scriptable Gallery: https://scripta
 - Parameters that are not set will be set by the standard widget config in the source code
 - You can change more things like background color, font color and more in the source code. Look at the comments in the code for explanations
 
-<a name="widget-examples"></a>
-## Widget Examples
+<a name="widget-settings"></a>
+## Widget Settings
 
-### Example 1
-![example1](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example1.jpg)
+![settings-wizard](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/settings-wizard.jpg)
 
-This medium widget uses a __medium__ layout, loads links via a file called __tech-news.txt__, has a widget title called __GERMAN TECH-NEWS__, loads images next to the posts with parameter __true__ and has a custom background image with the filename __circuit.jpg__
-- __Parameter:__ medium|tech-news.txt|GERMAN TECH-NEWS|true|circuit.jpg
+To start Settings Wizard, just run News Widget in the Scriptable App.
+
+You can create, edit or delete settings files.
+To edit a specific setting, just tap on it, edit it to your liking and once you're done, tap on "SAVE" at the top of the list, set a filename (ending in .txt) and you're done! You can now set this file as a Parameter for your Widget.
+
+I've tried to make this as simple as possible, but feel free to contact me, if there are any questions or problems.
+
+Here are all Settings that you can edit, there are also explanations for everything in the code:
+
+### CHECK_FOR_SCRIPT_UPDATE
+Check for script updates and get notified as soon as a new version is released
+- true = check for script updates
+- false = don't check for updates
+
+### PARAM_LINKS
+Add Addresses (URLs/Links) of the website(s) and/or the RSS Feed(s) you want to fetch posts from.
+Format of a new line has to be: ["Link to site/feed", "Name of site"],
+Please note, the more sites you add, the longer the widgets needs to load all data. It's possible that the widget on your homescreen won't load anything or takes a very long time if you add too many links.
+
+### PARAM_WIDGET_TITLE
+Name of the website/feed to display in the widget (at the top). If only one site is configured (in the code or parameters), the name of the site is used.
+
+### PARAM_BG_IMAGE_NAME
+Note: custom background image files have to be in the Scriptable (iCloud) Files folder (same as the script .js file).
+Change to the filename of a custom background image (CASE SENSITIVE!) or set to "none" if you don't want a custom image
+
+### PARAM_BG_IMAGE_BLUR
+Blur the background image (custom or the news image in small widgets).
+- "true" = blur the background image
+- "false" = no blur
+
+### PARAM_BG_IMAGE_GRADIENT
+- "true" = gradient over the background image
+- "false" = no gradient
+
+### PARAM_SHOW_NEWS_IMAGES
+Note: combining PARAM_SHOW_NEWS_IMAGES = true + small widget will ignore CONF_BG_GRADIENT_COLOR values in small config widgets.
+- "true" = display images next to headlines
+- "false" = no images next to posts
+
+### CONF_LARGE_WIDGET_MAX_NEWS
+Configure if you want a maximum of four or five News displayed in the LARGE Widget.
+Please only set 4 or 5. Other values will default to 4. If you have exactly four websites configured in PARAM_LINKS, this Setting will always default to 4.
+
+### CONF_DISPLAY_NEWS
+Configure how posts should be displayed in the widget.
+- Set to "websites" if you want to prioritize seeing news from all your configured websites. This will more closely resemble the iOS News Widget.
+- Set to "date" if you want to prioritize just sorting by date. This will more closely resemble a timeline or feed of all configured websites combined.
+
+### CONF_DATE_TIME_LOCALE
+Configure your preferred region to format how date and time values will be displayed
+- "default" = uses your system region
+- Use locales shortcodes like "en-US", "en-GB", "ko", "fr-CA" or "de-DE"
+For a list of possible iOS locales, see: https://gist.github.com/jacobbubu/1836273
+
+### CONF_12_HOUR
+Configure which time format to use
+- true = 12h time format
+- false = 24h time format
+
+### CONF_BG_COLOR
+Set the background color of your widget
+
+### CONF_BG_GRADIENT
+Configure to use a color Gradient instead of the single background color (above)
+- true = use a color gradient (colors configured below)
+- false = use a single color (color configured above)
+
+### CONF_BG_GRADIENT_COLOR_TOP
+Gradient color from the top of the widget
+
+### CONF_BG_GRADIENT_COLOR_BTM
+Gradient color to the bottom of the widget
+
+### CONF_BG_GRADIENT_OVERLAY_TOP
+Gradient color image overlay from the top of the widget
+- used if a background image is displayed and PARAM_BG_IMAGE_GRADIENT = "true"
+
+### CONF_BG_GRADIENT_OVERLAY_BTM
+Gradient Color Image Overlay to the bottom of the Widget
+- used if a background image is displayed and PARAM_BG_IMAGE_GRADIENT = "true"
+
+### CONF_FONT_WIDGET_TITLE, CONF_FONT_WEIGHT_WIDGET_TITLE, CONF_FONT_SIZE_WIDGET_TITLE, CONF_FONT_COLOR_WIDGET_TITLE
+Set the font, size and text color of the widget title at the top of the widget
+
+### CONF_FONT_DATE, CONF_FONT_WEIGHT_DATE, CONF_FONT_SIZE_DATE, CONF_FONT_COLOR_DATE 
+Set the font, size and text color of the date and time line(s) in the widget
+
+### CONF_FONT_HEADLINE, CONF_FONT_WEIGHT_HEADLINE, CONF_FONT_SIZE_HEADLINE, CONF_FONT_COLOR_HEADLINE
+Set the font, size and text color of the news headlines in the widget
 
 ---
-### Example 2
-![example2](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example2.jpg)
 
-This large widget uses a __large__ layout, loads links via a file called __world-news.txt__, has a widget title called __World News__, doesn't load images next to the posts with parameter __false__ and has a custom background image with the filename __earth.jpg__
-- __Parameter:__ large|world-news.txt|World News|false|earth.jpg
-
----
-### Example 3
-![example3](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example3.jpg)
-
-This medium widget uses a __small__ layout, loads posts from the website __https://stadt-bremerhaven.de__ and has a widget title called __Caschys Blog__
-- __Parameter:__ small|https://stadt-bremerhaven.de|Caschys Blog
-
----
-### Example 4
-![example4](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example4.jpg)
-
-This large widget uses a __large__ layout, loads posts from the website __https://cretaweather.gr__ and has a widget title called __Creta Weather__
-- __Parameter:__ large|https://cretaweather.gr|Creta Weather
-
----
-### Example 5
-![example5](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example5.jpg)
-
-This small widget uses a __small__ layout, loads links via a file called __xbox-news.txt__ and has a widget title called __XBOX__
-- __Parameter:__ small|xbox-news.txt|XBOX
-
----
-### Example 6
-![example6](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example6.jpg)
-
-This small widget uses a __small__ layout, loads links via a file called __apple-news.txt__, has a widget title called __APPLE NEWS__, doesn't load images next to the posts with parameter __false__, doesn't have a custom background image - parameter __none__, blurs the background __true__ (if there is one), has a color gradient over the background - parameter __true__ and uses a custom font with the font name __MarkerFelt-Thin__
-- __Parameter:__ small|apple-news.txt|APPLE NEWS|false|none|true|true|MarkerFelt-Thin
-
----
-### Example 7
-![example7](https://github.com/Saudumm/scriptable-News-Widget/blob/main/images/example7.jpg)
-
-This large widget uses a __large__ layout, loads links via a file called __ps-news.txt__, has a widget title called __PLAYSTATION__, loads images next to the posts with parameter __true__, has a custom background image with the filename __playstation.jpg__, blurs the background image with parameter __true__ and with parameter __false__ it doesn't use a background color gradient over the image
-- __Parameter:__ large|ps-news.txt|PLAYSTATION|true|playstation.jpg|true|false
-
----
 <a name="clear-cache"></a>
 ## News Widget Clear Cache.js
 
