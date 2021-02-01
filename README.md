@@ -46,29 +46,8 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
 <a name="changelog"></a>
 # Changelog
 
-- v1.0.0
-    - Initial Upload
-- v1.0.1
-    - Small bugfix loading images in RSS feed
-- v1.0.2
-    - Support for iOS light and dark mode
-- v1.1.0
-    - Multi URL support in the code or via text files
-    - better RSS support
-    - support for Atom feeds
-    - more customization options
-- v1.1.1
-    - Fix for links that don't start with http:// or https://
-- v1.1.2
-    - Fix for fetching images from RSS feeds
-- v1.1.3
-    - Added instructions for Script Updates and Widget Setup
-- v1.1.4
-    - fixed incorrect display of date and time
-    - added new font config options "Rounded" and "Monospaced"
-    - added date/time region config setting
-    - additional fixes for fetching images from RSS feeds
-    - changed chaches from cache dir to documents dir
+- v1.2.0
+    - small fix for RSS feeds without a published date
 - v1.2.0
     - added offline mode
         - if you lose your internet connection, the widget won't go blank (if all necessary data is cached)
@@ -83,6 +62,29 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
     - added setting CONF_DISPLAY_NEWS
         - "websites" prioritizes showing at least one news per link
         - "date" just sorts everything by date
+- v1.1.4
+    - fixed incorrect display of date and time
+    - added new font config options "Rounded" and "Monospaced"
+    - added date/time region config setting
+    - additional fixes for fetching images from RSS feeds
+    - changed chaches from cache dir to documents dir
+- v1.1.3
+    - Added instructions for Script Updates and Widget Setup
+- v1.1.2
+    - Fix for fetching images from RSS feeds
+- v1.1.1
+    - Fix for links that don't start with http:// or https://
+- v1.1.0
+    - Multi URL support in the code or via text files
+    - better RSS support
+    - support for Atom feeds
+    - more customization options
+- v1.0.2
+    - Support for iOS light and dark mode
+- v1.0.1
+    - Small bugfix loading images in RSS feed
+- v1.0.0
+    - Initial Upload
 
 <a name="setup"></a>
 # Setup:

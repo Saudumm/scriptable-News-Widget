@@ -5,7 +5,7 @@
  *                                          *
  *      NEWS WIDGET (WORDPRESS AND RSS)     *
  *                                          *
- *        v1.2.0 - made by @saudumm         *
+ *        v1.2.1 - made by @saudumm         *
  *       https://twitter.com/saudumm        *
  *                                          *
  ********************************************
@@ -314,7 +314,7 @@ const ONLINE = await isOnline();
 
 // check for updates
 var UPDATE_AVAILABLE = false;
-if (ONLINE && CHECK_FOR_SCRIPT_UPDATE === true) {UPDATE_AVAILABLE = await checkForUpdate("v1.2.0");}
+if (ONLINE && CHECK_FOR_SCRIPT_UPDATE === true) {UPDATE_AVAILABLE = await checkForUpdate("v1.2.1");}
 
 // define default size of widget
 var WIDGET_SIZE = (config.runsInWidget ? config.widgetFamily : "large");
@@ -660,7 +660,7 @@ async function getData() {
             if (hasItem && name == "title") {currentItem["title"] = itemValue;}
             
             // published date
-            if (hasItem && (name == "published" || name == "pubDate")) {currentItem["published"] = itemValue;}
+            if (hasItem && (name == "published" || name == "pubDate" || name == "updated")) {currentItem["published"] = itemValue;}
             
             // possible image link location
             if (hasItem && name == "image" && searchForImage) {
