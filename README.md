@@ -264,6 +264,7 @@ Here are a few links to help you get started:
 - Xbox Wire Germany: https://news.xbox.com/de-de
 - InsideXbox (German): https://insidexbox.de
 - Dualshockers: https://www.dualshockers.com
+- InverseGamer: https://www.inversegamer.com/
 -  Twinfinite: https://twinfinite.net
 
 ### Tech:
