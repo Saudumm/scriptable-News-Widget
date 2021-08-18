@@ -5,7 +5,7 @@
  *                                          *
  *      NEWS WIDGET (WORDPRESS AND RSS)     *
  *                                          *
- *        v1.2.1 - made by @saudumm         *
+ *        v1.2.2 - made by @saudumm         *
  *       https://twitter.com/saudumm        *
  *                                          *
  ********************************************
@@ -314,7 +314,7 @@ const ONLINE = await isOnline();
 
 // check for updates
 var UPDATE_AVAILABLE = false;
-if (ONLINE && CHECK_FOR_SCRIPT_UPDATE === true) {UPDATE_AVAILABLE = await checkForUpdate("v1.2.1");}
+if (ONLINE && CHECK_FOR_SCRIPT_UPDATE === true) {UPDATE_AVAILABLE = await checkForUpdate("v1.2.2");}
 
 // define default size of widget
 var WIDGET_SIZE = (config.runsInWidget ? config.widgetFamily : "large");
@@ -637,7 +637,7 @@ async function getData() {
             // possible image values in element name
             if ((name.substring(0, 6) == "media:" || name == "enclosure") && searchForImage) {
               if (elementContent.url !== null && elementContent.url !== undefined && currentItem !== null && currentItem !== undefined) {
-                let imgLink = elementContent.url.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
+                let imgLink = elementContent.url.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp|webp)"?/i);
                 if (imgLink && imgLink.length == 3) {
                   imgLink = imgLink[1]+imgLink[2];
                   currentItem["image"] = imgLink;
@@ -664,7 +664,7 @@ async function getData() {
             
             // possible image link location
             if (hasItem && name == "image" && searchForImage) {
-              let imgLink = itemValue.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
+              let imgLink = itemValue.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp|webp)"?/i);
               if (imgLink && imgLink.length == 3) {
                 imgLink = imgLink[1]+imgLink[2];
                 currentItem["image"] = imgLink;
@@ -674,7 +674,7 @@ async function getData() {
             
             // possible image link location
             if (hasItem && name == "thumb" && searchForImage) {
-              let imgLink = itemValue.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
+              let imgLink = itemValue.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp|webp)"?/i);
               if (imgLink && imgLink.length == 3) {
                 imgLink = imgLink[1]+imgLink[2];
                 currentItem["image"] = imgLink;
@@ -684,18 +684,18 @@ async function getData() {
             
             // possible image link location
             if (hasItem && name.includes("content")) {
-              let imgLink = itemValue.match(/src="(https?\:\/\/.*?\.)(jpe?g|png|bmp).*?"/i);
+              let imgLink = itemValue.match(/src="(https?\:\/\/.*?\.)(jpe?g|png|bmp|webp).*?"/i);
               if (imgLink && imgLink.length == 3) {
                 imgLink = imgLink[1]+imgLink[2];
                 currentItem["image"] = imgLink;
                 searchForImage = false;
               } else {
-                imgLink = itemValue.match(/src="(.*?\.)(jpe?g|png|bmp).*?"/i);
+                imgLink = itemValue.match(/src="(.*?\.)(jpe?g|png|bmp|webp).*?"/i);
                 if (imgLink && imgLink.length == 3) {
                   let urlFromParam = PARAM_LINKS[iLink][0].match(/(https?\:\/\/.*?)\//i);
                   if (urlFromParam && urlFromParam.length == 2) {
                     imgLink = urlFromParam[1]+imgLink[1]+imgLink[2];
-                    imgLink = imgLink.match(/(https?\:\/\/.*?\.)(jpe?g|png|bmp).*?/i);
+                    imgLink = imgLink.match(/(https?\:\/\/.*?\.)(jpe?g|png|bmp|webp).*?/i);
                     if (imgLink && imgLink.length == 3) {
                       imgLink = imgLink[1]+imgLink[2];
                       currentItem["image"] = imgLink;
@@ -708,18 +708,18 @@ async function getData() {
             
             // possible image link location
             if (hasItem && name == "description") {
-              let imgLink = itemValue.match(/src="(https?\:\/\/.*?\.)(jpe?g|png|bmp).*?"/i);
+              let imgLink = itemValue.match(/src="(https?\:\/\/.*?\.)(jpe?g|png|bmp|webp).*?"/i);
               if (imgLink && imgLink.length == 3) {
                 imgLink = imgLink[1]+imgLink[2];
                 currentItem["image"] = imgLink;
                 searchForImage = false;
               } else {
-                imgLink = itemValue.match(/src="(.*?\.)(jpe?g|png|bmp).*?"/i);
+                imgLink = itemValue.match(/src="(.*?\.)(jpe?g|png|bmp|webp).*?"/i);
                 if (imgLink && imgLink.length == 3) {
                   let urlFromParam = PARAM_LINKS[iLink][0].match(/(https?\:\/\/.*?)\//i);
                   if (urlFromParam && urlFromParam.length == 2) {
                     imgLink = urlFromParam[1]+imgLink[1]+imgLink[2];
-                    imgLink = imgLink.match(/(https?\:\/\/.*?\.)(jpe?g|png|bmp).*?/i);
+                    imgLink = imgLink.match(/(https?\:\/\/.*?\.)(jpe?g|png|bmp|webp).*?/i);
                     if (imgLink && imgLink.length == 3) {
                       imgLink = imgLink[1]+imgLink[2];
                       currentItem["image"] = imgLink;
@@ -769,7 +769,7 @@ async function getData() {
             
             if (aRSSItems[iRSS].image) {
               // double check if link is image link
-              const rssIMGRegEx = await aRSSItems[iRSS].image.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp)"?/i);
+              const rssIMGRegEx = await aRSSItems[iRSS].image.match(/"?(http(?!.*http)s?\:\/\/.*?\.)(jpe?g|png|bmp|webp)"?/i);
               if (rssIMGRegEx && rssIMGRegEx.length == 3) {
                 rssIMGURL = rssIMGRegEx[1]+rssIMGRegEx[2];
               }
@@ -989,12 +989,12 @@ async function getData() {
       if (mediaURL === undefined || mediaURL == "undefined") {
         return "none";
       } else {
-        mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
+        mediaURL = mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp|webp)/i)
         mediaURL = mediaURL[1]+""+mediaURL[2];
         return await encodeURI(mediaURL);
       }
     } else {
-      mediaURL = await mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp)/i)
+      mediaURL = await mediaURL.match(/(http?s.*\.)(jpe?g|png|bmp|webp)/i)
       mediaURL = mediaURL[1]+""+mediaURL[2];
       return await encodeURI(mediaURL);
     }

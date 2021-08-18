@@ -46,7 +46,9 @@ __Please mention the URL of the website or RSS feed, so I can help you faster.__
 <a name="changelog"></a>
 # Changelog
 
-- v1.2.0
+- v1.2.2
+    - fix for feeds containing webp images
+- v1.2.1
     - small fix for RSS feeds without a published date
 - v1.2.0
     - added offline mode
