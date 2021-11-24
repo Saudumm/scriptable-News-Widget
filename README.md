@@ -271,6 +271,7 @@ Here are a few links to help you get started:
 ### Tech:
 
 - Caschys Blog (German): https://stadt-bremerhaven.de
+- Tarnkappe.info (German): https://tarnkappe.info
 - 9to5Mac: https://9to5mac.com
 - 9to5Google: https://9to5google.com
 - TechCrunch: https://techcrunch.com
